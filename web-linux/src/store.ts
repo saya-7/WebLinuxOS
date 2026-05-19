@@ -1,16 +1,20 @@
 import { create } from 'zustand'
 import type { AppDefinition, WindowState, DesktopIcon, FileNode } from './types'
+import {
+  FolderIcon, TerminalIcon, FileTextIcon, BrowserIcon, CalculatorIcon,
+  CalendarIcon, SettingsIcon, ActivityIcon, CodeIcon
+} from './icons'
 
 const defaultIcons: DesktopIcon[] = [
-  { id: 'icon-files', appId: 'files', name: '文件管理器', icon: '📁', x: 20, y: 20 },
-  { id: 'icon-terminal', appId: 'terminal', name: '终端', icon: '💻', x: 20, y: 120 },
-  { id: 'icon-editor', appId: 'text-editor', name: '文本编辑器', icon: '📝', x: 20, y: 220 },
-  { id: 'icon-browser', appId: 'browser', name: '浏览器', icon: '🌐', x: 20, y: 320 },
-  { id: 'icon-code', appId: 'code-editor', name: '代码编辑器', icon: '⚡', x: 20, y: 420 },
-  { id: 'icon-calc', appId: 'calculator', name: '计算器', icon: '🔢', x: 140, y: 20 },
-  { id: 'icon-calendar', appId: 'calendar', name: '日历', icon: '📅', x: 140, y: 120 },
-  { id: 'icon-settings', appId: 'settings', name: '设置', icon: '⚙️', x: 140, y: 220 },
-  { id: 'icon-monitor', appId: 'system-monitor', name: '系统监视器', icon: '📊', x: 140, y: 320 },
+  { id: 'icon-files', appId: 'files', name: '文件管理器', icon: <FolderIcon />, x: 20, y: 20 },
+  { id: 'icon-terminal', appId: 'terminal', name: '终端', icon: <TerminalIcon />, x: 20, y: 120 },
+  { id: 'icon-editor', appId: 'text-editor', name: '文本编辑器', icon: <FileTextIcon />, x: 20, y: 220 },
+  { id: 'icon-browser', appId: 'browser', name: '浏览器', icon: <BrowserIcon />, x: 20, y: 320 },
+  { id: 'icon-code', appId: 'code-editor', name: '代码编辑器', icon: <CodeIcon />, x: 20, y: 420 },
+  { id: 'icon-calc', appId: 'calculator', name: '计算器', icon: <CalculatorIcon />, x: 140, y: 20 },
+  { id: 'icon-calendar', appId: 'calendar', name: '日历', icon: <CalendarIcon />, x: 140, y: 120 },
+  { id: 'icon-settings', appId: 'settings', name: '设置', icon: <SettingsIcon />, x: 140, y: 220 },
+  { id: 'icon-monitor', appId: 'system-monitor', name: '系统监视器', icon: <ActivityIcon />, x: 140, y: 320 },
 ]
 
 const initialFiles: FileNode[] = [

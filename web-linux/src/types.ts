@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react'
+
 export interface AppDefinition {
   id: string
   name: string
-  icon: string
+  icon: ReactNode
   component: string
   category: 'system' | 'office' | 'internet' | 'multimedia' | 'utilities' | 'development' | 'games'
   defaultWidth: number
@@ -33,7 +35,7 @@ export interface DesktopIcon {
   id: string
   appId: string
   name: string
-  icon: string
+  icon: ReactNode
   x: number
   y: number
 }
