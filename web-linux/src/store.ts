@@ -2,15 +2,15 @@ import { create } from 'zustand'
 import type { AppDefinition, WindowState, DesktopIcon, FileNode } from './types'
 
 const defaultIcons: DesktopIcon[] = [
-  { id: 'icon-files', appId: 'files', name: '文件管理器', icon: '📁', x: 20, y: 20 },
-  { id: 'icon-terminal', appId: 'terminal', name: '终端', icon: '💻', x: 20, y: 120 },
-  { id: 'icon-editor', appId: 'text-editor', name: '文本编辑器', icon: '📝', x: 20, y: 220 },
-  { id: 'icon-browser', appId: 'browser', name: '浏览器', icon: '🌐', x: 20, y: 320 },
-  { id: 'icon-code', appId: 'code-editor', name: '代码编辑器', icon: '⚡', x: 20, y: 420 },
-  { id: 'icon-calc', appId: 'calculator', name: '计算器', icon: '🔢', x: 140, y: 20 },
-  { id: 'icon-calendar', appId: 'calendar', name: '日历', icon: '📅', x: 140, y: 120 },
-  { id: 'icon-settings', appId: 'settings', name: '设置', icon: '⚙️', x: 140, y: 220 },
-  { id: 'icon-monitor', appId: 'system-monitor', name: '系统监视器', icon: '📊', x: 140, y: 320 },
+  { id: 'icon-files', appId: 'files', name: '文件管理器', icon: 'files', x: 20, y: 20 },
+  { id: 'icon-terminal', appId: 'terminal', name: '终端', icon: 'terminal', x: 20, y: 120 },
+  { id: 'icon-editor', appId: 'text-editor', name: '文本编辑器', icon: 'text-editor', x: 20, y: 220 },
+  { id: 'icon-browser', appId: 'browser', name: '浏览器', icon: 'browser', x: 20, y: 320 },
+  { id: 'icon-code', appId: 'code-editor', name: '代码编辑器', icon: 'code-editor', x: 20, y: 420 },
+  { id: 'icon-calc', appId: 'calculator', name: '计算器', icon: 'calculator', x: 140, y: 20 },
+  { id: 'icon-calendar', appId: 'calendar', name: '日历', icon: 'calendar', x: 140, y: 120 },
+  { id: 'icon-settings', appId: 'settings', name: '设置', icon: 'settings', x: 140, y: 220 },
+  { id: 'icon-monitor', appId: 'system-monitor', name: '系统监视器', icon: 'system-monitor', x: 140, y: 320 },
 ]
 
 const initialFiles: FileNode[] = [

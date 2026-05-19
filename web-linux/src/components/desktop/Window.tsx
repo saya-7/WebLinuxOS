@@ -1,6 +1,7 @@
 import { useCallback, useRef, useEffect, useState } from 'react'
 import { useStore } from '../../store'
 import type { WindowState } from '../../types'
+import Icon from '../Icon'
 
 interface WindowProps {
   window: WindowState
@@ -133,7 +134,7 @@ export default function Window({ window: win, children }: WindowProps) {
     >
       <div className="window-titlebar">
         <div className="window-titlebar-drag" onMouseDown={handleDragStart}>
-          <span className="window-titlebar-icon">{app?.icon}</span>
+          {app && <Icon iconId={app.icon} size={14} className="window-titlebar-icon" />}
           <span className="window-titlebar-title">{win.title}</span>
         </div>
         <div className="window-titlebar-buttons">
