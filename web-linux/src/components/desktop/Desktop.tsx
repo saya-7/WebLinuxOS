@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useStore } from '../../store'
-import Icon from '../Icon'
 
 const wallpapers = [
   '',
@@ -74,11 +73,11 @@ export default function Desktop() {
   }, [wallpaper, setWallpaper])
 
   const menuItems: MenuEntry[] = [
-    { label: '打开终端', icon: 'terminal', action: () => openApp('terminal') },
-    { label: '打开文件管理器', icon: 'files', action: () => openApp('files') },
+    { label: '打开终端', icon: '💻', action: () => openApp('terminal') },
+    { label: '打开文件管理器', icon: '📁', action: () => openApp('files') },
     { type: 'separator' },
-    { label: '更换壁纸', icon: 'image-viewer', action: handleWallpaperChange },
-    { label: '显示设置', icon: 'settings', action: () => openApp('settings') },
+    { label: '更换壁纸', icon: '🖼️', action: handleWallpaperChange },
+    { label: '显示设置', icon: '⚙️', action: () => openApp('settings') },
   ]
 
   const wallpaperStyle = wallpaper
@@ -104,7 +103,7 @@ export default function Desktop() {
             handleIconClick(icon.appId, icon.id)
           }}
         >
-          <Icon iconId={icon.icon} size={32} className="desktop-icon-icon" />
+          <span className="desktop-icon-icon">{icon.icon}</span>
           <span className="desktop-icon-name">{icon.name}</span>
         </div>
       ))}
@@ -127,7 +126,7 @@ export default function Desktop() {
                   hideContextMenu()
                 }}
               >
-                <Icon iconId={item.icon} size={16} />
+                <span>{item.icon}</span>
                 <span>{item.label}</span>
               </div>
             ),
