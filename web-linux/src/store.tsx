@@ -62,6 +62,7 @@ interface Store {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   focusWindow: (id: string) => void
+  restoreWindow: (id: string) => void
   updateWindowPosition: (id: string, x: number, y: number) => void
   updateWindowSize: (id: string, width: number, height: number) => void
   toggleLauncher: () => void
@@ -94,15 +95,18 @@ export const useStore = create<Store>((set, get) => ({
   addWindow: (app) => {
     const state = get()
     const existing = state.windows.filter((w) => w.appId === app.id)
-    if (!app.multiple && existing.length > 0) {
-      const win = existing[0]
-      set((s) => ({
-        windows: s.windows.map((w) =>
-          w.id === win.id ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 } : { ...w, focused: false }
-        ),
-        nextZIndex: s.nextZIndex + 1,
-      }))
-      return win
+    if (existing.length > 0) {
+      const minimized = existing.find((w) => w.minimized)
+      if (!app.multiple || minimized) {
+        const win = minimized || existing[0]
+        set((s) => ({
+          windows: s.windows.map((w) =>
+            w.id === win.id ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 } : { ...w, focused: false }
+          ),
+          nextZIndex: s.nextZIndex + 1,
+        }))
+        return win
+      }
     }
     const id = `window-${++windowIdCounter}`
     const offset = (state.windows.filter((w) => w.appId === app.id).length % 8) * 30
@@ -138,9 +142,19 @@ export const useStore = create<Store>((set, get) => ({
   closeWindow: (id) => set((s) => ({ windows: s.windows.filter((w) => w.id !== id) })),
 
   minimizeWindow: (id) =>
-    set((s) => ({
-      windows: s.windows.map((w) => (w.id === id ? { ...w, minimized: true } : w)),
-    })),
+    set((s) => {
+      const remaining = s.windows.filter((w) => w.id !== id && !w.minimized)
+      const topWindow = remaining.length > 0
+        ? remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b))
+        : null
+      return {
+        windows: s.windows.map((w) =>
+          w.id === id
+            ? { ...w, minimized: true, focused: false }
+            : { ...w, focused: w.id === topWindow?.id }
+        ),
+      }
+    }),
 
   maximizeWindow: (id) =>
     set((s) => ({
@@ -156,6 +170,16 @@ export const useStore = create<Store>((set, get) => ({
         focused: w.id === id,
         zIndex: w.id === id ? s.nextZIndex + 1 : w.zIndex,
       })),
+      nextZIndex: s.nextZIndex + 1,
+    })),
+
+  restoreWindow: (id) =>
+    set((s) => ({
+      windows: s.windows.map((w) =>
+        w.id === id
+          ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 }
+          : { ...w, focused: false }
+      ),
       nextZIndex: s.nextZIndex + 1,
     })),
 
@@ -203,3 +227,7 @@ export const useStore = create<Store>((set, get) => ({
       return { files: updateTree(s.files) }
     }),
 }))
+
+if (typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).__ZUSTAND_STORE__ = useStore
+}

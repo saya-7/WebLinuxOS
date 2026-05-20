@@ -5,8 +5,9 @@ import { WifiIcon, VolumeIcon, BatteryIcon, GridIcon } from '../../icons'
 export default function Taskbar() {
   const windows = useStore((s) => s.windows)
   const apps = useStore((s) => s.apps)
-  const openApp = useStore((s) => s.openApp)
   const minimizeWindow = useStore((s) => s.minimizeWindow)
+  const restoreWindow = useStore((s) => s.restoreWindow)
+  const focusWindow = useStore((s) => s.focusWindow)
   const toggleLauncher = useStore((s) => s.toggleLauncher)
   const launcherOpen = useStore((s) => s.launcherOpen)
 
@@ -18,14 +19,16 @@ export default function Taskbar() {
   }, [])
 
   const handleTaskbarButtonClick = useCallback(
-    (appId: string, winId: string, focused: boolean, minimized: boolean) => {
-      if (focused && !minimized) {
+    (_appId: string, winId: string, focused: boolean, minimized: boolean) => {
+      if (minimized) {
+        restoreWindow(winId)
+      } else if (focused) {
         minimizeWindow(winId)
       } else {
-        openApp(appId)
+        focusWindow(winId)
       }
     },
-    [minimizeWindow, openApp],
+    [minimizeWindow, restoreWindow, focusWindow],
   )
 
   const formatTime = (d: Date) => {
