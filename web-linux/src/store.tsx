@@ -23,8 +23,16 @@ const initialFiles: FileNode[] = [
       { id: 'user', name: 'user', type: 'folder', parentId: 'home', children: [
         { id: 'desktop', name: '桌面', type: 'folder', parentId: 'user', children: [] },
         { id: 'documents', name: '文档', type: 'folder', parentId: 'user', children: [
-          { id: 'readme', name: 'README.txt', type: 'file', parentId: 'documents', content: '欢迎使用 Web Linux 系统!\n\n这是一个基于 Web 的 Linux 桌面环境。\n\n特性:\n- 50+ 功能齐全的应用程序\n- 完整的窗口管理系统\n- 文件系统\n- 终端仿真器\n\n祝你使用愉快!' },
+          { id: 'readme', name: 'README.txt', type: 'file', parentId: 'documents', content: '欢迎使用 Web Linux 系统!\n\n这是一个基于 Web 的 Linux 桌面环境。\n\n特性:\n- 50+ 功能齐全的应用程序\n- 完整的窗口管理系统\n- 文件系统\n- 终端仿真器\n- Python 环境\n\n祝你使用愉快!' },
           { id: 'notes', name: '笔记.txt', type: 'file', parentId: 'documents', content: '今天的待办事项:\n1. 完成项目开发\n2. 测试所有应用程序\n3. 优化性能' },
+        ] },
+        { id: 'projects', name: '项目', type: 'folder', parentId: 'user', children: [
+          { id: 'hello-py', name: 'hello.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 我的第一个 Python 程序\n\ndef greet(name):\n    return f"你好, {name}! 欢迎使用 Web Linux!"\n\nif __name__ == "__main__":\n    print(greet("世界"))\n    print("1 + 1 =", 1 + 1)\n    print("Python 在浏览器中运行!")' },
+          { id: 'fib-py', name: 'fibonacci.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 斐波那契数列\n\ndef fibonacci(n):\n    """生成斐波那契数列前n项"""\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nif __name__ == "__main__":\n    n = 15\n    fib = fibonacci(n)\n    print(f"斐波那契数列前{n}项:")\n    print(fib)\n    print(f"\\n第{n}项是: {fib[-1]}")' },
+          { id: 'sort-py', name: 'sort_demo.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 排序算法演示\nimport random\n\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr\n\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)\n\nif __name__ == "__main__":\n    data = [random.randint(1, 100) for _ in range(10)]\n    print(f"原始数据: {data}")\n    print(f"冒泡排序: {bubble_sort(data.copy())}")\n    print(f"快速排序: {quick_sort(data.copy())}")' },
+          { id: 'calc-py', name: 'calculator.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 简易计算器\n\ndef add(a, b): return a + b\ndef sub(a, b): return a - b\ndef mul(a, b): return a * b\ndef div(a, b): return a / b if b != 0 else "Error: 除数不能为0"\n\ncalculators = {\n    "+": add, "-": sub,\n    "*": mul, "/": div\n}\n\nif __name__ == "__main__":\n    print("简易计算器")\n    ops = [(10, "+", 5), (20, "-", 8), (6, "*", 7), (15, "/", 3)]\n    for a, op, b in ops:\n        result = calculators[op](a, b)\n        print(f"  {a} {op} {b} = {result}")' },
+          { id: 'hello-js', name: 'hello.js', type: 'file', parentId: 'projects', content: '// JavaScript 示例\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet("Web Linux"));\nconsole.log("1 + 1 =", 1 + 1);' },
+          { id: 'index-html', name: 'index.html', type: 'file', parentId: 'projects', content: '<!DOCTYPE html>\n<html lang="zh">\n<head>\n  <meta charset="UTF-8">\n  <title>我的网页</title>\n  <style>\n    body { font-family: sans-serif; text-align: center; padding: 50px; }\n    h1 { color: #6c5ce7; }\n  </style>\n</head>\n<body>\n  <h1>Hello Web Linux!</h1>\n  <p>这是一个示例网页文件</p>\n</body>\n</html>' },
         ] },
         { id: 'downloads', name: '下载', type: 'folder', parentId: 'user', children: [] },
         { id: 'pictures', name: '图片', type: 'folder', parentId: 'user', children: [] },
@@ -75,6 +83,8 @@ interface Store {
   deleteFile: (id: string) => void
   addFile: (parentId: string, name: string, type: 'file' | 'folder') => void
   updateFileContent: (id: string, content: string) => void
+  renameFile: (id: string, name: string) => void
+  openFileWith: (fileId: string, appId: string) => void
 }
 
 let windowIdCounter = 0
@@ -226,6 +236,24 @@ export const useStore = create<Store>((set, get) => ({
         nodes.map((n) => (n.id === id ? { ...n, content } : n.children ? { ...n, children: updateTree(n.children) } : n))
       return { files: updateTree(s.files) }
     }),
+
+  renameFile: (id, name) =>
+    set((s) => {
+      const updateTree = (nodes: FileNode[]): FileNode[] =>
+        nodes.map((n) => (n.id === id ? { ...n, name } : n.children ? { ...n, children: updateTree(n.children) } : n))
+      return { files: updateTree(s.files) }
+    }),
+
+  openFileWith: (fileId, appId) => {
+    const state = get()
+    const app = state.apps.find((a) => a.id === appId)
+    if (app) {
+      const win = state.addWindow(app)
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('open-file', { detail: { fileId, appId, windowId: win.id } }))
+      }, 100)
+    }
+  },
 }))
 
 if (typeof window !== 'undefined') {

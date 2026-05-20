@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useStore } from '../store'
 import type { FileNode } from '../types'
 
@@ -53,6 +53,18 @@ export default function TextEditor() {
     setOpenFileId(file.id)
     setContent(file.content || '')
   }, [])
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      if (detail.appId === 'text-editor' && detail.fileId) {
+        const file = allFiles.find((f) => f.id === detail.fileId)
+        if (file) openFile(file)
+      }
+    }
+    window.addEventListener('open-file', handler)
+    return () => window.removeEventListener('open-file', handler)
+  }, [allFiles, openFile])
 
   const handleSave = useCallback(() => {
     if (openFileId) {

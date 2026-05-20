@@ -207,6 +207,19 @@ else:
         break
       case 'python':
       case 'python3': {
+        if (args.length > 0 && args[0].endsWith('.py')) {
+          const resolved = resolvePath(cwd, args[0])
+          const node = findNodeByPath(files, resolved)
+          if (!node || node.type !== 'file') {
+            output = `python: 无法打开文件'${args[0]}': 没有那个文件或目录`
+            break
+          }
+          const code = node.content || ''
+          setHistory(prev => [...prev, { input: trimmed, output: `⏳ 正在运行 ${args[0]}...` }])
+          const result = await executePython(code)
+          setHistory(prev => [...prev, { input: '', output: result || '(程序执行完毕，无输出)' }])
+          return
+        }
         setPythonMode(true)
         setPythonBuffer([])
         if (!pyodideRef.current && !pyodideLoading) {

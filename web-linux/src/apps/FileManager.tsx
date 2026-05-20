@@ -25,7 +25,7 @@ export default function FileManager() {
   const addFile = useStore((s) => s.addFile)
   const deleteFile = useStore((s) => s.deleteFile)
   const updateFileContent = useStore((s) => s.updateFileContent)
-  const openApp = useStore((s) => s.openApp)
+  const openFileWith = useStore((s) => s.openFileWith)
 
   const [currentPath, setCurrentPath] = useState<string[]>(['root'])
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']))
@@ -91,10 +91,10 @@ export default function FileManager() {
     if (file.type === 'folder') {
       navigateTo(file.id)
     } else {
-      openApp('text-editor')
-      setTimeout(() => {
-        updateFileContent(file.id, file.content || '')
-      }, 100)
+      const ext = file.name.split('.').pop()?.toLowerCase()
+      const codeExts = ['py', 'js', 'jsx', 'ts', 'tsx', 'html', 'css', 'json', 'xml', 'yml', 'yaml', 'sh', 'sql', 'java', 'cpp', 'c', 'go', 'rs', 'php', 'rb', 'md']
+      const appId = codeExts.includes(ext || '') ? 'code-editor' : 'text-editor'
+      openFileWith(file.id, appId)
     }
   }
 
