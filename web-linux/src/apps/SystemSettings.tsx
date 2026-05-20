@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import { useStore } from '../store'
-import { PaletteIcon, ImageIcon, VolumeIcon, WifiIcon, BatteryIcon, InfoIcon, SettingsIcon } from '../icons'
 
 const wallpapers = [
-  { id: 'default', name: '默认', style: { background: '#1e1e2e' }, css: '' },
-  { id: 'sunset', name: '日落', style: { background: 'linear-gradient(135deg, #ff6b6b, #feca57)' }, css: 'linear-gradient(135deg, #ff6b6b, #feca57)' },
-  { id: 'ocean', name: '海洋', style: { background: 'linear-gradient(135deg, #0c3483, #a2b6df)' }, css: 'linear-gradient(135deg, #0c3483, #a2b6df)' },
-  { id: 'forest', name: '森林', style: { background: 'linear-gradient(135deg, #134e5e, #71b280)' }, css: 'linear-gradient(135deg, #134e5e, #71b280)' },
-  { id: 'purple', name: '紫色', style: { background: 'linear-gradient(135deg, #6a0572, #ab83a1)' }, css: 'linear-gradient(135deg, #6a0572, #ab83a1)' },
-  { id: 'midnight', name: '午夜', style: { background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)' }, css: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)' },
-  { id: 'cherry', name: '樱花', style: { background: 'linear-gradient(135deg, #ffb7b2, #e2f0cb)' }, css: 'linear-gradient(135deg, #ffb7b2, #e2f0cb)' },
-  { id: 'fire', name: '火焰', style: { background: 'linear-gradient(135deg, #f12711, #f5af19)' }, css: 'linear-gradient(135deg, #f12711, #f5af19)' },
+  { id: 'default', name: '默认', style: { background: '#1e1e2e' } },
+  { id: 'sunset', name: '日落', style: { background: 'linear-gradient(135deg, #ff6b6b, #feca57)' } },
+  { id: 'ocean', name: '海洋', style: { background: 'linear-gradient(135deg, #0c3483, #a2b6df)' } },
+  { id: 'forest', name: '森林', style: { background: 'linear-gradient(135deg, #134e5e, #71b280)' } },
+  { id: 'purple', name: '紫色', style: { background: 'linear-gradient(135deg, #6a0572, #ab83a1)' } },
+  { id: 'midnight', name: '午夜', style: { background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)' } },
+  { id: 'cherry', name: '樱花', style: { background: 'linear-gradient(135deg, #ffb7b2, #e2f0cb)' } },
+  { id: 'fire', name: '火焰', style: { background: 'linear-gradient(135deg, #f12711, #f5af19)' } },
 ]
 
 const wifiNetworks = [
@@ -23,18 +22,18 @@ const wifiNetworks = [
 function SignalIcon({ level }: { level: number }) {
   return (
     <span style={{ fontSize: 14, opacity: level >= 3 ? 1 : level >= 2 ? 0.7 : 0.3 }}>
-      <WifiIcon />
+      {level === 4 ? '📶' : level === 3 ? '📶' : level === 2 ? '📶' : '📶'}
     </span>
   )
 }
 
 const categories = [
-  { id: 'appearance', name: '外观', icon: <PaletteIcon /> },
-  { id: 'wallpaper', name: '壁纸', icon: <ImageIcon /> },
-  { id: 'sound', name: '声音', icon: <VolumeIcon /> },
-  { id: 'network', name: '网络', icon: <WifiIcon /> },
-  { id: 'power', name: '电源', icon: <BatteryIcon /> },
-  { id: 'about', name: '关于', icon: <InfoIcon /> },
+  { id: 'appearance', name: '外观', icon: '🎨' },
+  { id: 'wallpaper', name: '壁纸', icon: '🖼️' },
+  { id: 'sound', name: '声音', icon: '🔊' },
+  { id: 'network', name: '网络', icon: '🌐' },
+  { id: 'power', name: '电源', icon: '🔋' },
+  { id: 'about', name: '关于', icon: 'ℹ️' },
 ]
 
 export default function Settings() {
@@ -121,18 +120,18 @@ export default function Settings() {
               {wallpapers.map((wp) => (
                 <div
                   key={wp.id}
-                  onClick={() => setWallpaper(wp.css)}
+                  onClick={() => setWallpaper(wp.style.background)}
                   style={{
                     cursor: 'pointer',
                     borderRadius: 8,
                     overflow: 'hidden',
-                    border: wallpaper === wp.css ? '2px solid var(--accent)' : '1px solid #333',
+                    border: wallpaper === wp.style.background ? '2px solid var(--accent)' : '1px solid #333',
                   }}
                 >
                   <div style={{ ...wp.style, height: 80 }} />
                   <div style={{ padding: '6px 8px', fontSize: 12, textAlign: 'center', background: '#2d2d2d' }}>
                     {wp.name}
-                    {wallpaper === wp.css && <span style={{ marginLeft: 4, color: 'var(--accent)' }}>✓</span>}
+                    {wallpaper === wp.style.background && <span style={{ marginLeft: 4, color: 'var(--accent)' }}>✓</span>}
                   </div>
                 </div>
               ))}
@@ -155,7 +154,7 @@ export default function Settings() {
                   onChange={(e) => setVolume(parseInt(e.target.value))}
                   style={{ flex: 1 }}
                 />
-                <span><VolumeIcon /></span>
+                <span>🔊</span>
                 <span style={{ fontFamily: 'monospace', width: 40, textAlign: 'right' }}>{volume}%</span>
               </div>
             </div>
@@ -294,7 +293,7 @@ export default function Settings() {
           <div>
             <h3 style={{ marginTop: 0, marginBottom: 24, fontSize: 20 }}>关于系统</h3>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 64, marginBottom: 8 }}><SettingsIcon /></div>
+              <div style={{ fontSize: 64, marginBottom: 8 }}>🐧</div>
               <div style={{ fontSize: 24, fontWeight: 600 }}>Web Linux</div>
               <div style={{ fontSize: 14, color: '#888', marginTop: 4 }}>版本 1.0.0</div>
             </div>

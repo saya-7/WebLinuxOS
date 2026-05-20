@@ -23,16 +23,8 @@ const initialFiles: FileNode[] = [
       { id: 'user', name: 'user', type: 'folder', parentId: 'home', children: [
         { id: 'desktop', name: '桌面', type: 'folder', parentId: 'user', children: [] },
         { id: 'documents', name: '文档', type: 'folder', parentId: 'user', children: [
-          { id: 'readme', name: 'README.txt', type: 'file', parentId: 'documents', content: '欢迎使用 Web Linux 系统!\n\n这是一个基于 Web 的 Linux 桌面环境。\n\n特性:\n- 50+ 功能齐全的应用程序\n- 完整的窗口管理系统\n- 文件系统\n- 终端仿真器\n- Python 环境\n\n祝你使用愉快!' },
+          { id: 'readme', name: 'README.txt', type: 'file', parentId: 'documents', content: '欢迎使用 Web Linux 系统!\n\n这是一个基于 Web 的 Linux 桌面环境。\n\n特性:\n- 50+ 功能齐全的应用程序\n- 完整的窗口管理系统\n- 文件系统\n- 终端仿真器\n\n祝你使用愉快!' },
           { id: 'notes', name: '笔记.txt', type: 'file', parentId: 'documents', content: '今天的待办事项:\n1. 完成项目开发\n2. 测试所有应用程序\n3. 优化性能' },
-        ] },
-        { id: 'projects', name: '项目', type: 'folder', parentId: 'user', children: [
-          { id: 'hello-py', name: 'hello.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 我的第一个 Python 程序\n\ndef greet(name):\n    return f"你好, {name}! 欢迎使用 Web Linux!"\n\nif __name__ == "__main__":\n    print(greet("世界"))\n    print("1 + 1 =", 1 + 1)\n    print("Python 在浏览器中运行!")' },
-          { id: 'fib-py', name: 'fibonacci.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 斐波那契数列\n\ndef fibonacci(n):\n    """生成斐波那契数列前n项"""\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nif __name__ == "__main__":\n    n = 15\n    fib = fibonacci(n)\n    print(f"斐波那契数列前{n}项:")\n    print(fib)\n    print(f"\\n第{n}项是: {fib[-1]}")' },
-          { id: 'sort-py', name: 'sort_demo.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 排序算法演示\nimport random\n\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr\n\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)\n\nif __name__ == "__main__":\n    data = [random.randint(1, 100) for _ in range(10)]\n    print(f"原始数据: {data}")\n    print(f"冒泡排序: {bubble_sort(data.copy())}")\n    print(f"快速排序: {quick_sort(data.copy())}")' },
-          { id: 'calc-py', name: 'calculator.py', type: 'file', parentId: 'projects', content: '#!/usr/bin/env python3\n# 简易计算器\n\ndef add(a, b): return a + b\ndef sub(a, b): return a - b\ndef mul(a, b): return a * b\ndef div(a, b): return a / b if b != 0 else "Error: 除数不能为0"\n\ncalculators = {\n    "+": add, "-": sub,\n    "*": mul, "/": div\n}\n\nif __name__ == "__main__":\n    print("简易计算器")\n    ops = [(10, "+", 5), (20, "-", 8), (6, "*", 7), (15, "/", 3)]\n    for a, op, b in ops:\n        result = calculators[op](a, b)\n        print(f"  {a} {op} {b} = {result}")' },
-          { id: 'hello-js', name: 'hello.js', type: 'file', parentId: 'projects', content: '// JavaScript 示例\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet("Web Linux"));\nconsole.log("1 + 1 =", 1 + 1);' },
-          { id: 'index-html', name: 'index.html', type: 'file', parentId: 'projects', content: '<!DOCTYPE html>\n<html lang="zh">\n<head>\n  <meta charset="UTF-8">\n  <title>我的网页</title>\n  <style>\n    body { font-family: sans-serif; text-align: center; padding: 50px; }\n    h1 { color: #6c5ce7; }\n  </style>\n</head>\n<body>\n  <h1>Hello Web Linux!</h1>\n  <p>这是一个示例网页文件</p>\n</body>\n</html>' },
         ] },
         { id: 'downloads', name: '下载', type: 'folder', parentId: 'user', children: [] },
         { id: 'pictures', name: '图片', type: 'folder', parentId: 'user', children: [] },
@@ -70,7 +62,6 @@ interface Store {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   focusWindow: (id: string) => void
-  restoreWindow: (id: string) => void
   updateWindowPosition: (id: string, x: number, y: number) => void
   updateWindowSize: (id: string, width: number, height: number) => void
   toggleLauncher: () => void
@@ -84,6 +75,7 @@ interface Store {
   addFile: (parentId: string, name: string, type: 'file' | 'folder') => void
   updateFileContent: (id: string, content: string) => void
   renameFile: (id: string, name: string) => void
+  restoreWindow: (id: string) => void
   openFileWith: (fileId: string, appId: string) => void
 }
 
@@ -105,18 +97,15 @@ export const useStore = create<Store>((set, get) => ({
   addWindow: (app) => {
     const state = get()
     const existing = state.windows.filter((w) => w.appId === app.id)
-    if (existing.length > 0) {
-      const minimized = existing.find((w) => w.minimized)
-      if (!app.multiple || minimized) {
-        const win = minimized || existing[0]
-        set((s) => ({
-          windows: s.windows.map((w) =>
-            w.id === win.id ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 } : { ...w, focused: false }
-          ),
-          nextZIndex: s.nextZIndex + 1,
-        }))
-        return win
-      }
+    if (!app.multiple && existing.length > 0) {
+      const win = existing[0]
+      set((s) => ({
+        windows: s.windows.map((w) =>
+          w.id === win.id ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 } : { ...w, focused: false }
+        ),
+        nextZIndex: s.nextZIndex + 1,
+      }))
+      return win
     }
     const id = `window-${++windowIdCounter}`
     const offset = (state.windows.filter((w) => w.appId === app.id).length % 8) * 30
@@ -154,14 +143,12 @@ export const useStore = create<Store>((set, get) => ({
   minimizeWindow: (id) =>
     set((s) => {
       const remaining = s.windows.filter((w) => w.id !== id && !w.minimized)
-      const topWindow = remaining.length > 0
-        ? remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b))
-        : null
+      const topWindow = remaining.sort((a, b) => b.zIndex - a.zIndex)[0]
       return {
         windows: s.windows.map((w) =>
-          w.id === id
-            ? { ...w, minimized: true, focused: false }
-            : { ...w, focused: w.id === topWindow?.id }
+          w.id === id ? { ...w, minimized: true, focused: false } :
+          topWindow && w.id === topWindow.id ? { ...w, focused: true } :
+          { ...w, focused: false }
         ),
       }
     }),
@@ -180,16 +167,6 @@ export const useStore = create<Store>((set, get) => ({
         focused: w.id === id,
         zIndex: w.id === id ? s.nextZIndex + 1 : w.zIndex,
       })),
-      nextZIndex: s.nextZIndex + 1,
-    })),
-
-  restoreWindow: (id) =>
-    set((s) => ({
-      windows: s.windows.map((w) =>
-        w.id === id
-          ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 }
-          : { ...w, focused: false }
-      ),
       nextZIndex: s.nextZIndex + 1,
     })),
 
@@ -244,6 +221,14 @@ export const useStore = create<Store>((set, get) => ({
       return { files: updateTree(s.files) }
     }),
 
+  restoreWindow: (id) =>
+    set((s) => ({
+      windows: s.windows.map((w) =>
+        w.id === id ? { ...w, minimized: false, focused: true, zIndex: s.nextZIndex + 1 } : { ...w, focused: false }
+      ),
+      nextZIndex: s.nextZIndex + 1,
+    })),
+
   openFileWith: (fileId, appId) => {
     const state = get()
     const app = state.apps.find((a) => a.id === appId)
@@ -255,7 +240,3 @@ export const useStore = create<Store>((set, get) => ({
     }
   },
 }))
-
-if (typeof window !== 'undefined') {
-  ;(window as unknown as Record<string, unknown>).__ZUSTAND_STORE__ = useStore
-}

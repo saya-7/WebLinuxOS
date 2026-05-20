@@ -21,7 +21,7 @@ function loadComponent(name: string) {
               height: '100%',
             }}
           >
-            {name} - 开发中
+            {name} - 加载失败，请重试
           </div>
         ),
       })),

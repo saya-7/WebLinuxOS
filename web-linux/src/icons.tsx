@@ -1,5 +1,4 @@
 
-
 export const FolderIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V9C21 7.89543 20.1046 7 19 7H12L10 5H5C3.89543 5 3 5.89543 3 7Z" fill="currentColor" opacity="0.2"/>
@@ -387,14 +386,6 @@ export const MicIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
 export const BluetoothIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M6.5 6.5L17.5 17.5L11 24V8L17.5 14.5L6.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-)
-
-export const VolumeIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M15 9C16.4741 10.1255 17.5 12.1603 17.5 14.5C17.5 16.8397 16.4741 18.8745 15 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M13 12C13.9214 12.6755 14.5 13.738 14.5 15C14.5 16.262 13.9214 17.3245 13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
   </svg>
 )
 

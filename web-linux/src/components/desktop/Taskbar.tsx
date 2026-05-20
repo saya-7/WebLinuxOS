@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useStore } from '../../store'
-import { WifiIcon, VolumeIcon, BatteryIcon, GridIcon } from '../../icons'
 
 export default function Taskbar() {
   const windows = useStore((s) => s.windows)
   const apps = useStore((s) => s.apps)
+
   const minimizeWindow = useStore((s) => s.minimizeWindow)
   const restoreWindow = useStore((s) => s.restoreWindow)
-  const focusWindow = useStore((s) => s.focusWindow)
   const toggleLauncher = useStore((s) => s.toggleLauncher)
   const launcherOpen = useStore((s) => s.launcherOpen)
 
@@ -25,10 +24,10 @@ export default function Taskbar() {
       } else if (focused) {
         minimizeWindow(winId)
       } else {
-        focusWindow(winId)
+        restoreWindow(winId)
       }
     },
-    [minimizeWindow, restoreWindow, focusWindow],
+    [minimizeWindow, restoreWindow],
   )
 
   const formatTime = (d: Date) => {
@@ -51,7 +50,7 @@ export default function Taskbar() {
           onClick={toggleLauncher}
           title="启动器"
         >
-          <GridIcon />
+          🐧
         </div>
       </div>
 
@@ -73,9 +72,9 @@ export default function Taskbar() {
       </div>
 
       <div className="taskbar-right">
-        <div className="taskbar-tray-item" title="网络"><WifiIcon /></div>
-        <div className="taskbar-tray-item" title="音量"><VolumeIcon /></div>
-        <div className="taskbar-tray-item" title="电源"><BatteryIcon /></div>
+        <div className="taskbar-tray-item" title="网络">📶</div>
+        <div className="taskbar-tray-item" title="音量">🔊</div>
+        <div className="taskbar-tray-item" title="电源">🔋</div>
         <div className="taskbar-clock">
           <div style={{ fontSize: 12, lineHeight: 1.2 }}>{formatTime(time)}</div>
           <div style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.2 }}>{formatDate(time)}</div>

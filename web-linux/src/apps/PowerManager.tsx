@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { BatteryIcon } from '../icons'
 
 export default function PowerManager() {
   const [batteryPercent, setBatteryPercent] = useState(85)
@@ -32,7 +31,7 @@ export default function PowerManager() {
       <div style={{ padding: '16px', borderBottom: '1px solid #313244', textAlign: 'center' }}>
         <div style={{ fontSize: '13px', color: '#a6adc8', marginBottom: '8px' }}>电池状态</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span style={{ fontSize: '28px' }}><BatteryIcon /></span>
+          <span style={{ fontSize: '28px' }}>🔋</span>
           <span style={{ fontSize: '32px', fontWeight: 700, color: batteryColor }}>{batteryPercent}%</span>
           {charging && <span style={{ fontSize: '16px', color: '#f9e2af' }}>⚡</span>}
         </div>

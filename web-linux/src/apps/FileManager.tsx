@@ -24,8 +24,10 @@ export default function FileManager() {
   const files = useStore((s) => s.files)
   const addFile = useStore((s) => s.addFile)
   const deleteFile = useStore((s) => s.deleteFile)
-  const updateFileContent = useStore((s) => s.updateFileContent)
+
+  const renameFile = useStore((s) => s.renameFile)
   const openFileWith = useStore((s) => s.openFileWith)
+
 
   const [currentPath, setCurrentPath] = useState<string[]>(['root'])
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']))
@@ -125,10 +127,7 @@ export default function FileManager() {
 
   function handleRenameSubmit() {
     if (renameTarget && renameValue.trim()) {
-      const node = findNodeById(files, renameTarget)
-      if (node) {
-        updateFileContent(renameTarget, node.content || '')
-      }
+      renameFile(renameTarget, renameValue.trim())
     }
     setRenameTarget(null)
     setRenameValue('')
@@ -314,7 +313,7 @@ export default function FileManager() {
           className="app-context-menu"
           style={{ position: 'fixed', left: contextMenu.x, top: contextMenu.y }}
         >
-          <div className="app-context-menu-item" onClick={() => handleFileDoubleClick(findNodeById(files, contextMenu.fileId)!)}>
+          <div className="app-context-menu-item" onClick={() => { handleFileDoubleClick(findNodeById(files, contextMenu.fileId)!); closeContextMenu() }}>
             📂 打开
           </div>
           <div className="app-context-menu-item" onClick={() => handleDelete(contextMenu.fileId)}>
