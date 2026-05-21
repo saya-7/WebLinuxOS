@@ -144,11 +144,7 @@ const App = memo(function App() {
         return
       }
 
-      if (isMod && e.key === 't') {
-        e.preventDefault()
-        openApp('text-editor')
-        return
-      }
+      // Ctrl+T 快捷键已在 Ctrl+Shift+T 中用于打开终端，避免冲突
 
       if (e.key === 'PrintScreen') {
         e.preventDefault()
