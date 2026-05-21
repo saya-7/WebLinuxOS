@@ -162,7 +162,7 @@ export default function Firewall() {
 
   useEffect(() => {
     if (tab !== 'connections') return
-    setConnections(makeConnections())
+    requestAnimationFrame(() => setConnections(makeConnections()))
     const iv = setInterval(() => setConnections(makeConnections()), 3000)
     return () => clearInterval(iv)
   }, [tab])
@@ -170,21 +170,21 @@ export default function Firewall() {
   useEffect(() => {
     if (tab !== 'logs') return
     const add = () => setLogs(prev => [makeLog(rules), ...prev].slice(0, 100))
-    add()
+    requestAnimationFrame(add)
     const iv = setInterval(add, 2000)
     return () => clearInterval(iv)
   }, [tab, rules])
 
   useEffect(() => {
     if (tab !== 'traffic') return
-    setTrafficData(makeTraffic())
+    requestAnimationFrame(() => setTrafficData(makeTraffic()))
     const iv = setInterval(() => setTrafficData(makeTraffic()), 3000)
     return () => clearInterval(iv)
   }, [tab])
 
   useEffect(() => {
     if (tab !== 'scan') return
-    setScans(makeScans())
+    requestAnimationFrame(() => setScans(makeScans()))
     const iv = setInterval(() => setScans(makeScans()), 5000)
     return () => clearInterval(iv)
   }, [tab])

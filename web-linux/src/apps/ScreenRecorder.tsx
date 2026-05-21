@@ -27,7 +27,10 @@ export default function ScreenRecorder() {
   const streamRef = useRef<MediaStream | null>(null)
 
   useEffect(() => {
-    setSupported(!!navigator.mediaDevices?.getDisplayMedia)
+    const isSupported = !!navigator.mediaDevices?.getDisplayMedia
+    requestAnimationFrame(() => {
+      setSupported(isSupported)
+    })
   }, [])
 
   const qualityBitrate: Record<string, number> = { low: 1000000, medium: 2500000, high: 5000000, ultra: 8000000 }

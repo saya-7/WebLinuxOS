@@ -24,6 +24,27 @@ export default function Notepad() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const lineNumRef = useRef<HTMLDivElement>(null)
 
+  const findFolderByName = (nodes: FileNode[], name: string): FileNode | undefined => {
+    for (const n of nodes) {
+      if (n.name === name && n.type === 'folder') return n
+      if (n.children) { const f = findFolderByName(n.children, name); if (f) return f }
+    }
+    return undefined
+  }
+
+  const handleSave = useCallback(() => {
+    if (fileId) {
+      updateFileContent(fileId, content)
+      setIsModified(false)
+    } else {
+      const documentsFolder = findFolderByName(files, '文档') || findFolderByName(files, 'documents')
+      if (documentsFolder) {
+        addFile(documentsFolder.id, fileName, 'file')
+      }
+      setIsModified(false)
+    }
+  }, [fileId, content, fileName, files, addFile, updateFileContent, findFolderByName])
+
   const loadFile = useCallback((id: string) => {
     const findFile = (nodes: FileNode[]): FileNode | undefined => {
       for (const n of nodes) {
@@ -59,28 +80,7 @@ export default function Notepad() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  })
-
-  const handleSave = () => {
-    if (fileId) {
-      updateFileContent(fileId, content)
-      setIsModified(false)
-    } else {
-      const documentsFolder = findFolderByName(files, '文档') || findFolderByName(files, 'documents')
-      if (documentsFolder) {
-        addFile(documentsFolder.id, fileName, 'file')
-      }
-      setIsModified(false)
-    }
-  }
-
-  const findFolderByName = (nodes: FileNode[], name: string): FileNode | undefined => {
-    for (const n of nodes) {
-      if (n.name === name && n.type === 'folder') return n
-      if (n.children) { const f = findFolderByName(n.children, name); if (f) return f }
-    }
-    return undefined
-  }
+  }, [handleSave])
 
   const handleNameSubmit = () => {
     if (nameInput.trim()) {
@@ -94,10 +94,22 @@ export default function Notepad() {
     if (searchText) {
       const lower = content.toLowerCase()
       const searchLower = searchText.toLowerCase()
-      let count = 0; let idx = lower.indexOf(searchLower)
-      while (idx !== -1) { count++; idx = lower.indexOf(searchLower, idx + 1) }
-      setMatchCount(count); setCurrentMatch(count > 0 ? 1 : 0)
-    } else { setMatchCount(0); setCurrentMatch(0) }
+      let count = 0
+      let idx = lower.indexOf(searchLower)
+      while (idx !== -1) {
+        count++
+        idx = lower.indexOf(searchLower, idx + 1)
+      }
+      requestAnimationFrame(() => {
+        setMatchCount(count)
+        setCurrentMatch(count > 0 ? 1 : 0)
+      })
+    } else {
+      requestAnimationFrame(() => {
+        setMatchCount(0)
+        setCurrentMatch(0)
+      })
+    }
   }, [searchText, content])
 
   const handleReplace = () => {

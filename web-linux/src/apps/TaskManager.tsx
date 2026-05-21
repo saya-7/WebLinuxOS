@@ -1,6 +1,17 @@
 import { useMemo } from 'react'
 import { useStore } from '../store'
 
+// 简单的伪随机数生成器，基于字符串种子
+function pseudoRandom(seed: string): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return Math.abs(hash % 1000) / 1000
+}
+
 export default function TaskManager() {
   const windows = useStore((s) => s.windows)
   const closeWindow = useStore((s) => s.closeWindow)
@@ -9,12 +20,14 @@ export default function TaskManager() {
   const processes = useMemo(() => {
     return windows.map((w) => {
       const app = apps.find((a) => a.id === w.appId)
+      const rand = pseudoRandom(w.id)
+      const rand2 = pseudoRandom(w.id + w.id)
       return {
         id: w.id,
         name: app?.name || w.title,
         appId: w.appId,
-        cpu: Math.round((Math.random() * 8 + 0.1) * 10) / 10,
-        memory: Math.round((Math.random() * 200 + 10) * 10) / 10,
+        cpu: Math.round((rand * 8 + 0.1) * 10) / 10,
+        memory: Math.round((rand2 * 200 + 10) * 10) / 10,
         status: w.minimized ? '后台' : '运行中',
         windowId: w.id,
       }

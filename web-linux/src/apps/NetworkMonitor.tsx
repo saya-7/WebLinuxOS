@@ -20,6 +20,7 @@ export default function NetworkMonitor() {
   const [uploadSpeed, setUploadSpeed] = useState(12.8)
   const [totalDown, setTotalDown] = useState(1024.5)
   const [totalUp, setTotalUp] = useState(512.3)
+  const [activeConnections, setActiveConnections] = useState(12)
   const [trafficHistory, setTrafficHistory] = useState<{ down: number; up: number }[]>(
     Array.from({ length: 30 }, () => ({ down: 0, up: 0 }))
   )
@@ -33,6 +34,7 @@ export default function NetworkMonitor() {
       setTotalDown((prev) => +(prev + down / 60).toFixed(1))
       setTotalUp((prev) => +(prev + up / 60).toFixed(1))
       setTrafficHistory((prev) => [...prev.slice(1), { down, up }])
+      setActiveConnections(Math.floor(Math.random() * 20 + 5))
     }, 1000)
     return () => clearInterval(interval)
   }, [])
@@ -93,7 +95,7 @@ export default function NetworkMonitor() {
           </div>
           <div style={{ background: '#313244', borderRadius: '6px', padding: '10px' }}>
             <div style={{ fontSize: '11px', color: '#a6adc8' }}>活跃连接数</div>
-            <div style={{ fontSize: '16px', fontWeight: 700 }}>{Math.floor(Math.random() * 20 + 5)}</div>
+            <div style={{ fontSize: '16px', fontWeight: 700 }}>{activeConnections}</div>
           </div>
           <div style={{ background: '#313244', borderRadius: '6px', padding: '10px' }}>
             <div style={{ fontSize: '11px', color: '#a6adc8' }}>数据包丢失率</div>

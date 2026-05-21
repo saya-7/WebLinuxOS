@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 const PRESET_SONGS = [
   { title: '星空下的旋律', artist: '林若曦', duration: '4:32', album: '星夜' },
@@ -26,13 +26,19 @@ export default function MusicPlayer() {
 
   const currentSong = playlist[currentIndex]
   const totalSeconds = currentSong.duration.split(':').reduce((m, s) => m * 60 + parseInt(s), 0)
+  const handleNextRef = useRef<() => void>(() => {})
+
+  const pause = useCallback(() => {
+    setIsPlaying(false)
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
+  }, [])
 
   const play = useCallback(() => {
     setIsPlaying(true)
     intervalRef.current = setInterval(() => {
       setCurrentTime((prev) => {
         if (prev >= totalSeconds) {
-          handleNext()
+          handleNextRef.current()
           return 0
         }
         return prev + 1
@@ -40,12 +46,13 @@ export default function MusicPlayer() {
     }, 1000)
   }, [totalSeconds])
 
-  const pause = useCallback(() => {
-    setIsPlaying(false)
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
-  }, [])
-
-  const handlePlayPause = () => { isPlaying ? pause() : play() }
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      pause()
+    } else {
+      play()
+    }
+  }
 
   const handlePrev = () => {
     setCurrentTime(0)
@@ -54,21 +61,23 @@ export default function MusicPlayer() {
     if (!isPlaying) play()
   }
 
-  const handleNext = useCallback(() => {
-    setCurrentTime(0)
-    if (repeat === 'one') {
+  useEffect(() => {
+    handleNextRef.current = () => {
+      setCurrentTime(0)
+      if (repeat === 'one') {
+        if (!isPlaying) play()
+      } else if (shuffle) {
+        const next = Math.floor(Math.random() * playlist.length)
+        setCurrentIndex(next)
+      } else if (currentIndex < playlist.length - 1) {
+        setCurrentIndex(currentIndex + 1)
+      } else {
+        if (repeat === 'all') setCurrentIndex(0)
+        else { setCurrentIndex(0); pause() }
+      }
       if (!isPlaying) play()
-    } else if (shuffle) {
-      const next = Math.floor(Math.random() * playlist.length)
-      setCurrentIndex(next)
-    } else if (currentIndex < playlist.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-    } else {
-      if (repeat === 'all') setCurrentIndex(0)
-      else { setCurrentIndex(0); pause() }
     }
-    if (!isPlaying) play()
-  }, [currentIndex, isPlaying, playlist.length, repeat, shuffle])
+  }, [currentIndex, isPlaying, playlist.length, repeat, shuffle, play, pause])
 
   const seek = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentTime(parseInt(e.target.value))
@@ -129,19 +138,19 @@ export default function MusicPlayer() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 20 }}>
-            <button onClick={() => setShuffle(!shuffle)} style={{ ...ctrlBtn, color: shuffle ? '#4ecca3' : '#aaa' }}>🔀</button>
-            <button onClick={handlePrev} style={ctrlBtn}>⏮</button>
-            <button onClick={handlePlayPause} style={{ ...ctrlBtn, fontSize: 28, width: 48, height: 48, borderRadius: '50%', background: '#4ecca3', color: '#121212' }}>
-              {isPlaying ? '⏸' : '▶'}
-            </button>
-            <button onClick={handleNext} style={ctrlBtn}>⏭</button>
-            <button
-              onClick={() => setRepeat(repeat === 'none' ? 'all' : repeat === 'all' ? 'one' : 'none')}
-              style={{ ...ctrlBtn, color: repeat !== 'none' ? '#4ecca3' : '#aaa' }}
-            >
-              {repeat === 'one' ? '🔂' : '🔁'}
-            </button>
-          </div>
+          <button onClick={() => setShuffle(!shuffle)} style={{ ...ctrlBtn, color: shuffle ? '#4ecca3' : '#aaa' }}>🔀</button>
+          <button onClick={handlePrev} style={ctrlBtn}>⏮</button>
+          <button onClick={handlePlayPause} style={{ ...ctrlBtn, fontSize: 28, width: 48, height: 48, borderRadius: '50%', background: '#4ecca3', color: '#121212' }}>
+            {isPlaying ? '⏸' : '▶'}
+          </button>
+          <button onClick={() => handleNextRef.current()} style={ctrlBtn}>⏭</button>
+          <button
+            onClick={() => setRepeat(repeat === 'none' ? 'all' : repeat === 'all' ? 'one' : 'none')}
+            style={{ ...ctrlBtn, color: repeat !== 'none' ? '#4ecca3' : '#aaa' }}
+          >
+            {repeat === 'one' ? '🔂' : '🔁'}
+          </button>
+        </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16 }}>
             <span style={{ fontSize: 14 }}>🔈</span>

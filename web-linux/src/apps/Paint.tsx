@@ -36,35 +36,6 @@ export default function Paint() {
     c.fillRect(0, 0, canvas.width, canvas.height)
   }, [])
 
-  const saveCanvasState = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const c = canvas.getContext('2d')
-    if (!c) return
-    setCanvasImage(c.getImageData(0, 0, canvas.width, canvas.height))
-  }, [])
-
-  const restoreCanvas = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas || !canvasImage) return
-    const c = canvas.getContext('2d')
-    if (!c) return
-    c.putImageData(canvasImage, 0, 0)
-  }, [canvasImage])
-
-  const redrawAll = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const c = canvas.getContext('2d')
-    if (!c) return
-    c.fillStyle = '#ffffff'
-    c.fillRect(0, 0, canvas.width, canvas.height)
-    for (const action of actions) {
-      drawAction(c, action)
-    }
-    saveCanvasState()
-  }, [actions])
-
   const drawAction = (c: CanvasRenderingContext2D, action: DrawAction) => {
     c.strokeStyle = action.type === 'erase' ? '#ffffff' : action.color
     c.fillStyle = action.color
@@ -112,6 +83,35 @@ export default function Paint() {
       }
     }
   }
+
+  const saveCanvasState = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const c = canvas.getContext('2d')
+    if (!c) return
+    setCanvasImage(c.getImageData(0, 0, canvas.width, canvas.height))
+  }, [])
+
+  const restoreCanvas = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas || !canvasImage) return
+    const c = canvas.getContext('2d')
+    if (!c) return
+    c.putImageData(canvasImage, 0, 0)
+  }, [canvasImage])
+
+  const redrawAll = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const c = canvas.getContext('2d')
+    if (!c) return
+    c.fillStyle = '#ffffff'
+    c.fillRect(0, 0, canvas.width, canvas.height)
+    for (const action of actions) {
+      drawAction(c, action)
+    }
+    saveCanvasState()
+  }, [actions, saveCanvasState])
 
   const getCanvasCoords = (e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current

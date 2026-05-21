@@ -37,20 +37,24 @@ function listDir(files: FileNode[], path: string): string {
   const node = findNodeByPath(files, path)
   if (!node || node.type !== 'folder') return `ls: 无法访问'${path}': 没有那个文件或目录`
   if (!node.children || node.children.length === 0) return ''
+  const escapeChar = String.fromCharCode(27)
   const items = node.children.map((c) => {
-    const color = c.type === 'folder' ? '\x1b[34m' : '\x1b[0m'
-    return `${color}${c.name}\x1b[0m`
+    const color = c.type === 'folder' ? `${escapeChar}[34m` : `${escapeChar}[0m`
+    return `${color}${c.name}${escapeChar}[0m`
   })
   return items.join('  ')
 }
 
 function processOutput(text: string): React.ReactNode[] {
-  const parts = text.split(/(\x1b\[[0-9;]*m)/)
+  // 使用字符代码匹配ANSI转义序列，避免直接的控制字符
+  const escapeChar = String.fromCharCode(27)
+  const regex = new RegExp(`(${escapeChar}\\[[0-9;]*m)`, 'g')
+  const parts = text.split(regex)
   const result: React.ReactNode[] = []
   let currentStyle: React.CSSProperties = {}
   for (let i = 0; i < parts.length; i++) {
-    if (parts[i].startsWith('\x1b[')) {
-      const code = parts[i].replace('\x1b[', '').replace('m', '')
+    if (parts[i].startsWith(escapeChar + '[')) {
+      const code = parts[i].replace(escapeChar + '[', '').replace('m', '')
       if (code === '0') currentStyle = {}
       else if (code === '34') currentStyle = { color: '#569cd6' }
       else if (code === '32') currentStyle = { color: '#6a9955' }

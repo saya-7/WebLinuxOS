@@ -60,6 +60,7 @@ export default function GameTetris() {
   const linesRef = useRef(0)
   const runningRef = useRef(false)
   const speedRef = useRef(800)
+  const gameLoopRef = useRef<() => void>(() => {})
 
   const [score, setScore] = useState(0)
   const [lines, setLines] = useState(0)
@@ -215,10 +216,12 @@ export default function GameTetris() {
     moveDown()
   }
 
-  const gameLoop = useCallback(() => {
-    if (!runningRef.current) return
-    moveDown()
-    setTimeout(gameLoop, speedRef.current)
+  useEffect(() => {
+    gameLoopRef.current = () => {
+      if (!runningRef.current) return
+      moveDown()
+      setTimeout(() => gameLoopRef.current(), speedRef.current)
+    }
   }, [moveDown])
 
   const startGame = () => {
@@ -235,7 +238,7 @@ export default function GameTetris() {
     runningRef.current = true
     drawBoard()
     drawNext()
-    setTimeout(gameLoop, speedRef.current)
+    setTimeout(() => gameLoopRef.current(), speedRef.current)
   }
 
   useEffect(() => {

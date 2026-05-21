@@ -59,9 +59,11 @@ export default function ColorPicker() {
 
   useEffect(() => {
     const [h, s, l] = hexToHsl(color)
-    setHue(h)
-    setSat(s)
-    setLight(l)
+    requestAnimationFrame(() => {
+      setHue(h)
+      setSat(s)
+      setLight(l)
+    })
   }, [color])
 
   const handleSatLightClick = (e: React.MouseEvent<HTMLCanvasElement>) => {

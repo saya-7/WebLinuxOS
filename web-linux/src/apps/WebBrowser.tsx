@@ -64,8 +64,7 @@ export default function WebBrowser() {
 
   const navigate = useCallback((targetUrl: string) => {
     let finalUrl = targetUrl.trim()
-    if (finalUrl === 'about:blank') {
-    } else if (!/^https?:\/\//i.test(finalUrl) && !finalUrl.startsWith('about:')) {
+    if (!(finalUrl === 'about:blank' || /^https?:\/\//i.test(finalUrl) || finalUrl.startsWith('about:'))) {
       finalUrl = 'https://' + finalUrl
     }
     setUrl(finalUrl)

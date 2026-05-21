@@ -12,27 +12,39 @@ const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 const ROWS = 10
 const COLS = 10
 
-function evaluateFormula(formula: string, cells: Record<string, CellData>, getCellValue: (key: string) => number): string {
+function evaluateFormula(formula: string, cells: Record<string, CellData>): string {
+  const getValue = (key: string): number => {
+    const cell = cells[key]
+    if (!cell) return NaN
+    if (cell.value.startsWith('=')) {
+      const result = evaluateFormula(cell.value, cells)
+      const n = parseFloat(result)
+      return isNaN(n) ? NaN : n
+    }
+    const n = parseFloat(cell.value)
+    return isNaN(n) ? NaN : n
+  }
+
   const upper = formula.toUpperCase().trim()
 
   if (upper.startsWith('=SUM(')) {
     const range = upper.slice(5, -1)
-    const result = parseRange(range, getCellValue)
+    const result = parseRange(range, getValue)
     return result.reduce((a, b) => a + b, 0).toString()
   }
   if (upper.startsWith('=AVG(')) {
     const range = upper.slice(5, -1)
-    const result = parseRange(range, getCellValue)
+    const result = parseRange(range, getValue)
     return result.length > 0 ? (result.reduce((a, b) => a + b, 0) / result.length).toFixed(2) : '0'
   }
   if (upper.startsWith('=MAX(')) {
     const range = upper.slice(5, -1)
-    const result = parseRange(range, getCellValue)
+    const result = parseRange(range, getValue)
     return result.length > 0 ? Math.max(...result).toString() : '0'
   }
   if (upper.startsWith('=MIN(')) {
     const range = upper.slice(5, -1)
-    const result = parseRange(range, getCellValue)
+    const result = parseRange(range, getValue)
     return result.length > 0 ? Math.min(...result).toString() : '0'
   }
   if (upper.startsWith('=') && upper.length > 1) {
@@ -80,26 +92,14 @@ export default function Spreadsheet() {
   const [selectedCell, setSelectedCell] = useState<string | null>(null)
   const [formulaBar, setFormulaBar] = useState('')
 
-  const getCellValue = useCallback((key: string): number => {
-    const cell = cells[key]
-    if (!cell) return NaN
-    if (cell.value.startsWith('=')) {
-      const result = evaluateFormula(cell.value, cells, getCellValue)
-      const n = parseFloat(result)
-      return isNaN(n) ? NaN : n
-    }
-    const n = parseFloat(cell.value)
-    return isNaN(n) ? NaN : n
-  }, [cells])
-
   const getDisplayValue = useCallback((key: string): string => {
     const cell = cells[key]
     if (!cell) return ''
     if (cell.value.startsWith('=')) {
-      return evaluateFormula(cell.value, cells, getCellValue)
+      return evaluateFormula(cell.value, cells)
     }
     return cell.value
-  }, [cells, getCellValue])
+  }, [cells])
 
   const startEdit = (key: string) => {
     setEditingCell(key)

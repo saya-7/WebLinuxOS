@@ -32,7 +32,9 @@ export default function SystemMonitor() {
       { pid: 901, name: 'calendar', cpu: 0.2, memory: 18.9, status: '运行中' },
       { pid: 1012, name: 'clock', cpu: 0.1, memory: 10.2, status: '运行中' },
     ]
-    setProcesses(procs)
+    requestAnimationFrame(() => {
+      setProcesses(procs)
+    })
   }, [])
 
   useEffect(() => {

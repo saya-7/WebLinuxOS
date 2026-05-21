@@ -73,9 +73,9 @@ export default function BackupTool() {
 
   useEffect(() => {
     if (schedule !== 'manual') {
-      setNextBackup(getNextBackupTime(schedule))
+      requestAnimationFrame(() => setNextBackup(getNextBackupTime(schedule)))
     } else {
-      setNextBackup('未设置')
+      requestAnimationFrame(() => setNextBackup('未设置'))
     }
   }, [schedule])
 

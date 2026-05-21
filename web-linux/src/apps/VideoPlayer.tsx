@@ -23,6 +23,20 @@ export default function VideoPlayer() {
   const currentVideo = PLAYLIST[currentIndex]
   const totalSeconds = currentVideo.duration.split(':').reduce((m, s) => m * 60 + parseInt(s), 0)
 
+  const pause = useCallback(() => {
+    setIsPlaying(false)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }, [])
+
+  const handleNext = useCallback(() => {
+    setCurrentTime(0)
+    pause()
+    setCurrentIndex((prev) => prev < PLAYLIST.length - 1 ? prev + 1 : 0)
+  }, [pause])
+
   const play = useCallback(() => {
     setIsPlaying(true)
     intervalRef.current = setInterval(() => {
@@ -34,24 +48,21 @@ export default function VideoPlayer() {
         return prev + 1
       })
     }, 1000)
-  }, [totalSeconds])
+  }, [totalSeconds, handleNext])
 
-  const pause = useCallback(() => {
-    setIsPlaying(false)
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
-  }, [])
-
-  const handlePlayPause = () => { isPlaying ? pause() : play() }
-
-  const handlePrev = () => {
-    setCurrentTime(0); pause()
-    setCurrentIndex(currentIndex > 0 ? currentIndex - 1 : PLAYLIST.length - 1)
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      pause()
+    } else {
+      play()
+    }
   }
 
-  const handleNext = useCallback(() => {
-    setCurrentTime(0); pause()
-    setCurrentIndex(currentIndex < PLAYLIST.length - 1 ? currentIndex + 1 : 0)
-  }, [currentIndex])
+  const handlePrev = () => {
+    setCurrentTime(0)
+    pause()
+    setCurrentIndex((prev) => prev > 0 ? prev - 1 : PLAYLIST.length - 1)
+  }
 
   const seek = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentTime(parseInt(e.target.value))

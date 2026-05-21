@@ -153,13 +153,13 @@ export default function PasswordManager() {
           <div style={{ maxWidth: 420, margin: '0 auto', background: cardBg, borderRadius: 10, padding: 20, border: `1px solid ${borderColor}` }}>
             <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>{editingId ? '编辑密码条目' : '添加密码条目'}</h3>
             {[
-              { key: 'website', label: '网站/服务名称' },
-              { key: 'url', label: '网址 (可选)' },
-              { key: 'username', label: '用户名 (可选)' },
+              { key: 'website' as const, label: '网站/服务名称' },
+              { key: 'url' as const, label: '网址 (可选)' },
+              { key: 'username' as const, label: '用户名 (可选)' },
             ].map(({ key, label }) => (
               <div key={key} style={{ marginBottom: 10 }}>
                 <div style={{ fontSize: 11, marginBottom: 3, color: isDark ? '#9ca3af' : '#666' }}>{label}</div>
-                <input value={(form as any)[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                <input value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                   style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${borderColor}`, background: inputBg, color: textColor, fontSize: 13, boxSizing: 'border-box', outline: 'none' }} />
               </div>
             ))}

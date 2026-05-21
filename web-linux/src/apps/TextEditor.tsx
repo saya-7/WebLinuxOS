@@ -140,7 +140,7 @@ export default function TextEditor() {
       { label: '复制', action: handleCopy, shortcut: 'Ctrl+C' },
       { label: '粘贴', action: handlePaste, shortcut: 'Ctrl+V' },
       { label: '──', action: () => {} },
-      { label: '全选', action: () => textareaRef.current?.select(), shortcut: 'Ctrl+A' },
+      { label: '全选', action: () => { if (textareaRef.current) textareaRef.current.select() }, shortcut: 'Ctrl+A' },
       { label: '查找...', action: handleFind, shortcut: 'Ctrl+F' },
     ],
     '查看': [

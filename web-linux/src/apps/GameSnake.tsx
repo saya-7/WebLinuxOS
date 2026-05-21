@@ -25,6 +25,7 @@ export default function GameSnake() {
   const scoreRef = useRef(0)
   const runningRef = useRef(false)
   const speedRef = useRef(150)
+  const gameLoopRef = useRef<() => void>(() => {})
 
   const [score, setScore] = useState(0)
   const [gameOver, setGameOver] = useState(false)
@@ -79,43 +80,45 @@ export default function GameSnake() {
     ctx.fill()
   }, [])
 
-  const gameLoop = useCallback(() => {
-    if (!runningRef.current) return
+  useEffect(() => {
+    gameLoopRef.current = () => {
+      if (!runningRef.current) return
 
-    directionRef.current = nextDirectionRef.current
-    const snake = snakeRef.current
-    const head = snake[0]
-    const dir = directionVectors[directionRef.current]
-    const newHead = { x: head.x + dir.x, y: head.y + dir.y }
+      directionRef.current = nextDirectionRef.current
+      const snake = snakeRef.current
+      const head = snake[0]
+      const dir = directionVectors[directionRef.current]
+      const newHead = { x: head.x + dir.x, y: head.y + dir.y }
 
-    if (newHead.x < 0 || newHead.x >= COLS || newHead.y < 0 || newHead.y >= ROWS) {
-      runningRef.current = false
-      setGameOver(true)
-      setStarted(false)
+      if (newHead.x < 0 || newHead.x >= COLS || newHead.y < 0 || newHead.y >= ROWS) {
+        runningRef.current = false
+        setGameOver(true)
+        setStarted(false)
+        draw()
+        return
+      }
+
+      if (snake.some((s) => s.x === newHead.x && s.y === newHead.y)) {
+        runningRef.current = false
+        setGameOver(true)
+        setStarted(false)
+        draw()
+        return
+      }
+
+      const newSnake = [newHead, ...snake]
+      if (newHead.x === foodRef.current.x && newHead.y === foodRef.current.y) {
+        scoreRef.current += 10
+        setScore(scoreRef.current)
+        foodRef.current = randomFood(newSnake)
+        speedRef.current = Math.max(60, speedRef.current - 3)
+      } else {
+        newSnake.pop()
+      }
+      snakeRef.current = newSnake
       draw()
-      return
+      setTimeout(() => gameLoopRef.current(), speedRef.current)
     }
-
-    if (snake.some((s) => s.x === newHead.x && s.y === newHead.y)) {
-      runningRef.current = false
-      setGameOver(true)
-      setStarted(false)
-      draw()
-      return
-    }
-
-    const newSnake = [newHead, ...snake]
-    if (newHead.x === foodRef.current.x && newHead.y === foodRef.current.y) {
-      scoreRef.current += 10
-      setScore(scoreRef.current)
-      foodRef.current = randomFood(newSnake)
-      speedRef.current = Math.max(60, speedRef.current - 3)
-    } else {
-      newSnake.pop()
-    }
-    snakeRef.current = newSnake
-    draw()
-    setTimeout(gameLoop, speedRef.current)
   }, [draw])
 
   const startGame = () => {
@@ -130,7 +133,7 @@ export default function GameSnake() {
     runningRef.current = true
     foodRef.current = randomFood(snakeRef.current)
     draw()
-    setTimeout(gameLoop, speedRef.current)
+    setTimeout(() => gameLoopRef.current(), speedRef.current)
   }
 
   useEffect(() => {

@@ -85,14 +85,14 @@ export default function Clock() {
       timerRef.current = setInterval(() => {
         setTimerSeconds((t) => {
           if (t <= 1) {
-            setTimerRunning(false)
+            requestAnimationFrame(() => setTimerRunning(false))
             return 0
           }
           return t - 1
         })
       }, 1000)
     } else if (timerRunning && timerSeconds === 0) {
-      setTimerRunning(false)
+      requestAnimationFrame(() => setTimerRunning(false))
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
