@@ -97,7 +97,7 @@ export default function Clock() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [timerRunning])
+  }, [timerRunning, timerSeconds])
 
   const formatTime = useCallback((ms: number): string => {
     const m = Math.floor(ms / 60000)

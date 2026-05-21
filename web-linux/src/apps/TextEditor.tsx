@@ -124,6 +124,14 @@ export default function TextEditor() {
   }, [])
 
   const menuItems = ['文件', '编辑', '查看', '工具']
+  const handleSelectAll = useCallback(() => {
+    if (textareaRef.current) textareaRef.current.select()
+  }, [])
+
+  const handleWordCount = useCallback(() => {
+    alert(`字数: ${content.length} | 行数: ${content.split('\n').length}`)
+  }, [content])
+
   const menuContent: Record<string, { label: string; action: () => void; shortcut?: string }[]> = {
     '文件': [
       { label: '新建', action: handleNew, shortcut: 'Ctrl+N' },
@@ -140,7 +148,7 @@ export default function TextEditor() {
       { label: '复制', action: handleCopy, shortcut: 'Ctrl+C' },
       { label: '粘贴', action: handlePaste, shortcut: 'Ctrl+V' },
       { label: '──', action: () => {} },
-      { label: '全选', action: () => { if (textareaRef.current) textareaRef.current.select() }, shortcut: 'Ctrl+A' },
+      { label: '全选', action: handleSelectAll, shortcut: 'Ctrl+A' },
       { label: '查找...', action: handleFind, shortcut: 'Ctrl+F' },
     ],
     '查看': [
@@ -148,7 +156,7 @@ export default function TextEditor() {
       { label: '状态栏', action: () => {} },
     ],
     '工具': [
-      { label: '字数统计', action: () => { alert(`字数: ${content.length} | 行数: ${content.split('\n').length}`) } },
+      { label: '字数统计', action: handleWordCount },
     ],
   }
 

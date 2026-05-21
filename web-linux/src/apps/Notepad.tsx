@@ -24,13 +24,16 @@ export default function Notepad() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const lineNumRef = useRef<HTMLDivElement>(null)
 
-  const findFolderByName = (nodes: FileNode[], name: string): FileNode | undefined => {
-    for (const n of nodes) {
-      if (n.name === name && n.type === 'folder') return n
-      if (n.children) { const f = findFolderByName(n.children, name); if (f) return f }
+  const findFolderByName = useCallback((nodes: FileNode[], name: string): FileNode | undefined => {
+    const search = (ns: FileNode[]): FileNode | undefined => {
+      for (const n of ns) {
+        if (n.name === name && n.type === 'folder') return n
+        if (n.children) { const f = search(n.children); if (f) return f }
+      }
+      return undefined
     }
-    return undefined
-  }
+    return search(nodes)
+  }, [])
 
   const handleSave = useCallback(() => {
     if (fileId) {

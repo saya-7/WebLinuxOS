@@ -1,8 +1,8 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useStore } from '../store'
 import type { FileNode } from '../types'
 
-let pyodide: any = null
+let pyodide: unknown = null
 
 async function loadPyodide() {
   if (pyodide) return pyodide
@@ -13,20 +13,21 @@ async function loadPyodide() {
     script.onload = () => resolve()
     script.onerror = () => reject(new Error('Failed to load Pyodide'))
   })
-  pyodide = await (window as any).loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/' })
+  pyodide = await (window as unknown as { loadPyodide: (options: { indexURL: string }) => Promise<unknown> }).loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/' })
   return pyodide
 }
 
 async function executePython(code: string): Promise<string> {
   try {
-    const py = await loadPyodide()
+    const py = await loadPyodide() as { runPython: (code: string) => string }
     py.runPython('import io, sys; sys.stdout = io.StringIO(); sys.stderr = io.StringIO()')
     py.runPython(code)
     const stdout = py.runPython('sys.stdout.getvalue()')
     const stderr = py.runPython('sys.stderr.getvalue()')
     return stdout + (stderr ? '\n' + stderr : '')
-  } catch (err: any) {
-    return err.message || String(err)
+  } catch (err) {
+    const error = err as { message?: string }
+    return error.message || String(err)
   }
 }
 
@@ -142,7 +143,7 @@ export default function CodeEditor() {
   const activeTab = openTabs.find((t) => t.id === activeTabId)
   const code = activeTabId ? tabContents[activeTabId] || '' : ''
   const lang = activeTab ? detectLang(activeTab.name) : 'text'
-  const highlighted = useMemo(() => highlightCode(code, lang), [code, lang])
+  const highlighted = highlightCode(code, lang)
   const isUnsaved = activeTabId ? tabContents[activeTabId] !== savedContents[activeTabId] : false
 
   const handleCursorChange = () => {
@@ -190,20 +191,22 @@ export default function CodeEditor() {
         const logs: string[] = []
         const origLog = console.log
         const origError = console.error
-        console.log = (...args: any[]) => logs.push(args.map(String).join(' '))
-        console.error = (...args: any[]) => logs.push('Error: ' + args.map(String).join(' '))
-        try {
-          const fn = new Function(code)
-          fn()
-          setOutput(logs.join('\n') || '(无输出)')
-        } catch (err: any) {
-          setOutput(logs.join('\n') + '\n' + (err.message || String(err)))
-        }
+        console.log = (...args: unknown[]) => logs.push(args.map(String).join(' '))
+            console.error = (...args: unknown[]) => logs.push('Error: ' + args.map(String).join(' '))
+            try {
+              const fn = new Function(code)
+              fn()
+              setOutput(logs.join('\n') || '(无输出)')
+            } catch (err) {
+              const error = err as { message?: string }
+              setOutput(logs.join('\n') + '\n' + (error.message || String(err)))
+            }
         console.log = origLog
         console.error = origError
       }
-    } catch (err: any) {
-      setOutput(err.message || String(err))
+    } catch (err) {
+      const error = err as { message?: string }
+      setOutput(error.message || String(err))
     }
     setIsRunning(false)
     setPyodideLoading(false)

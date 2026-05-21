@@ -132,7 +132,7 @@ export default function Contacts() {
                 <div style={{ fontSize: 11, marginBottom: 3, color: isDark ? '#9ca3af' : '#666' }}>
                   {field === 'name' ? '姓名' : field === 'phone' ? '电话' : field === 'email' ? '邮箱' : '地址'}
                 </div>
-                <input value={(form as any)[field]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                <input value={form[field as keyof typeof form]} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                   style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${borderColor}`, background: inputBg, color: textColor, fontSize: 13, boxSizing: 'border-box', outline: 'none' }} />
               </div>
             ))}
