@@ -166,7 +166,7 @@ export default function Calculator() {
         <button style={btnStyle} onClick={() => handleNumber('2')}>2</button>
         <button style={btnStyle} onClick={() => handleNumber('3')}>3</button>
         <button style={funcBtnStyle} onClick={() => handleUnary(Math.tan)}>tan</button>
-        <button style={opBtnStyle} onClick={() => handleOperator('+')}>+</button>
+        <button style={funcBtnStyle} onClick={() => handleUnary((x) => 1 / x)}>1/x</button>
 
         <button style={btnStyle} onClick={handleSign}>±</button>
         <button style={btnStyle} onClick={() => handleNumber('0')}>0</button>

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:github": "tsc -b && vite build --mode github-pages"
+    "build:github": "tsc -b && vite build --mode github-pages",
+    "deploy": "npm run build:github && cp -r ../dist/* ../"
   },
   "dependencies": {
     "react": "^19.2.6",

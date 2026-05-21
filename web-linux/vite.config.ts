@@ -9,14 +9,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     base: isGitHubPages ? '/WebLinuxOS/' : '/',
     build: {
-      outDir: '../',
-      emptyOutDir: false,
+      outDir: isGitHubPages ? '../' : '../dist',
+      emptyOutDir: isGitHubPages ? false : true,
       rollupOptions: {
         output: {
           manualChunks: undefined
         }
       },
-      publicDir: isGitHubPages ? false : 'public'
+      publicDir: 'public'
     }
   }
 })
