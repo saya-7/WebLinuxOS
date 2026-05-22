@@ -133,7 +133,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
         left: win.maximized ? 0 : win.x,
         top: win.maximized ? 0 : win.y,
         width: win.maximized ? '100%' : win.width,
-        height: win.maximized ? 'calc(100% - 40px)' : win.height,
+        height: win.maximized ? '100%' : win.height,
         zIndex: win.zIndex,
         display: win.minimized ? 'none' : 'flex',
       }}

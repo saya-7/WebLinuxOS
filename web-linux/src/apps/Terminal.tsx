@@ -468,6 +468,35 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
   }, [cwd, files, addFile, deleteFile, cmdHistory, theme, username, hostname, searchHistory])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.ctrlKey && e.key === 'c') {
+      e.preventDefault()
+      const cmd = input.trim()
+      if (cmd) {
+        setCmdHistory((prev) => {
+          const filtered = prev.filter(c => c !== cmd)
+          return [...filtered, cmd]
+        })
+        setHistoryIndex(-1)
+      }
+      setHistory((prev) => [...prev, { input: `^C`, output: '' }])
+      setInput('')
+      return
+    }
+    
+    if (e.ctrlKey && e.key === 'v') {
+      e.preventDefault()
+      navigator.clipboard.readText().then(text => {
+        setInput(prev => prev + text)
+      })
+      return
+    }
+    
+    if (e.ctrlKey && e.key === 'l') {
+      e.preventDefault()
+      setHistory([])
+      return
+    }
+    
     if (e.key === 'Enter') {
       const cmd = input.trim()
       if (cmd) {

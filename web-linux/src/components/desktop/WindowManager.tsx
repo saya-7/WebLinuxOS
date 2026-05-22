@@ -50,7 +50,10 @@ function loadComponent(name: string) {
 function preloadComponents() {
   const commonComponents = [
     'Terminal', 'FileManager', 'TextEditor', 'Calculator', 'Settings',
-    'SystemMonitor', 'WebBrowser', 'CodeEditor', 'Notepad'
+    'SystemMonitor', 'WebBrowser', 'CodeEditor', 'Notepad', 'Calendar',
+    'ImageViewer', 'MusicPlayer', 'Paint', 'Weather', 'Notes',
+    'TodoList', 'Contacts', 'Email', 'Help', 'About',
+    'Screenshot', 'ScreenRecorder', 'SoundRecorder', 'Camera'
   ]
   commonComponents.forEach(name => {
     loadComponent(name)

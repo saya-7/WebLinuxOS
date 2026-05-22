@@ -1192,3 +1192,57 @@ svg {
     transform: rotate(360deg);
   }
 }
+
+.window {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.window.maximized {
+  will-change: auto;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  transition: all 0.2s ease-out;
+}
+
+.window-titlebar-drag {
+  will-change: transform;
+}
+
+.desktop-icon {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.taskbar-button {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.desktop-icon:hover {
+  transform: translateZ(0) scale(1.02);
+}
+
+.desktop-icon:active {
+  transform: translateZ(0) scale(0.98);
+}
+
+.taskbar-button:hover {
+  transform: translateZ(0) scale(1.02);
+}
+
+.taskbar-button:active {
+  transform: translateZ(0) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
