@@ -495,7 +495,9 @@ export default function Terminal() {
           output = `alias ${args[0]}='${args.slice(1).join(' ')}'`
         }
         break
-      case 'dashboard':
+      case 'dashboard': {
+        const activeWindows = getWindowsRef.current.length
+        const themeLabel = theme === 'dark' ? '深色' : '浅色'
         output = [
           `╔══════════════════════════════════════════════════════════╗`,
           `║           Web Linux System Dashboard                    ║`,
@@ -510,11 +512,12 @@ export default function Terminal() {
           `║  磁盘: ${Math.floor(Math.random() * 30 + 10)}% 使用中${' '.repeat(31)}║`,
           `║  负载: ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}${' '.repeat(29)}║`,
           `╠══════════════════════════════════════════════════════════╣`,
-          `║  活动窗口: ${useStore.getState().windows.length} 个${' '.repeat(32)}║`,
-          `║  主题: ${theme === 'dark' ? '深色' : '浅色'.padEnd(42)}║`,
+          `║  活动窗口: ${activeWindows} 个${' '.repeat(32)}║`,
+          `║  主题: ${themeLabel.padEnd(42)}║`,
           `╚══════════════════════════════════════════════════════════╝`,
         ].join('\n')
         break
+      }
       case 'type': {
         if (args.length === 0) {
           output = 'type: 缺少操作数'
