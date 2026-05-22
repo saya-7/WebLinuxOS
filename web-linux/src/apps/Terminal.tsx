@@ -100,7 +100,7 @@ export default function Terminal() {
   const executeCommand = useCallback((cmd: string) => {
     const trimmed = cmd.trim()
     const parts = trimmed.split(/\s+/)
-    const command = parts[0]
+    const command = parts[0].toLowerCase()
     const args = parts.slice(1)
 
     let output = ''
@@ -109,12 +109,13 @@ export default function Terminal() {
       case '':
         break
       case 'help':
+      case '?':
         output = `可用命令:
   文件操作: ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree, wc
   信息查看: whoami, hostname, date, uname, uptime, cal, free, df, ps, top
-  网络工具: ping, ifconfig
-  系统工具: clear, help, history, neofetch, alias, type, man
-  工具命令: echo, find, grep, env, export
+  网络工具: ping, ifconfig, curl
+  系统工具: clear, help, history, neofetch, alias, type, man, exit
+  工具命令: echo, find, grep, env, export, pwd
 
 快捷键:
   Ctrl+Shift+L - 切换启动器
@@ -459,6 +460,32 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         loop  txqueuelen 1000  (Local Loopback)
         RX packets 234  bytes 23456 (22.9 KiB)
         TX packets 234  bytes 23456 (22.9 KiB)`
+        break
+      case 'curl':
+        if (args.length === 0) {
+          output = 'curl: 请指定 URL'
+        } else {
+          output = `<!DOCTYPE html>
+<html>
+<head><title>WebLinuxOS Test</title></head>
+<body>
+  <h1>Hello from WebLinuxOS!</h1>
+  <p>You requested: ${args[0]}</p>
+</body>
+</html>`
+        }
+        break
+      case 'exit':
+      case 'quit':
+      case 'q':
+        output = 'Exiting terminal... (closing window)'
+        setTimeout(() => {
+          const state = useStore.getState()
+          const thisWindow = state.windows.find(w => w.appId === 'terminal' && w.focused)
+          if (thisWindow) {
+            state.closeWindow(thisWindow.id)
+          }
+        }, 500)
         break
       default:
         output = `bash: ${command}: 未找到命令 (输入 'help' 查看可用命令)`

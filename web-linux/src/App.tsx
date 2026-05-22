@@ -1,4 +1,4 @@
-import { useEffect, memo } from 'react'
+import { useEffect, memo, useCallback } from 'react'
 import { useStore } from './store'
 import { appRegistry } from './apps'
 import Desktop from './components/desktop/Desktop'
@@ -15,6 +15,8 @@ const App = memo(function App() {
   const minimizeWindow = useStore((s) => s.minimizeWindow)
   const maximizeWindow = useStore((s) => s.maximizeWindow)
   const theme = useStore((s) => s.theme)
+  const windows = useStore((s) => s.windows)
+  const launcherOpen = useStore((s) => s.launcherOpen)
 
   useEffect(() => {
     appRegistry.forEach((app) => registerApp(app))
@@ -28,144 +30,129 @@ const App = memo(function App() {
     }
   }, [theme])
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const getFocusedWindow = useCallback(() => {
+    return windows.find((w) => w.focused)
+  }, [windows])
+
+  const cycleWindows = useCallback(() => {
+    if (windows.length <= 1) return
+    const sortedWindows = [...windows].sort((a, b) => b.zIndex - a.zIndex)
+    const currentIndex = sortedWindows.findIndex((w) => w.focused)
+    const nextIndex = (currentIndex + 1) % sortedWindows.length
+    focusWindow(sortedWindows[nextIndex].id)
+  }, [windows, focusWindow])
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey
       const isShift = e.shiftKey
       const isAlt = e.altKey
+      const key = e.key.toLowerCase()
 
-      const state = useStore.getState()
-
-      if (isMod && isShift && e.key === 'l') {
-        e.preventDefault()
-        toggleLauncher()
-        return
-      }
-
-      if (isMod && isShift && e.key === 's') {
-        e.preventDefault()
-        openApp('settings')
-        return
-      }
-
-      if (isMod && isShift && e.key === 'f') {
-        e.preventDefault()
-        openApp('files')
-        return
-      }
-
-      if (isMod && isShift && e.key === 't') {
-        e.preventDefault()
-        openApp('terminal')
-        return
-      }
-
-      if (state.launcherOpen) {
+      // Handle launcher specific keys first
+      if (launcherOpen) {
         if (e.key === 'Escape') {
+          e.preventDefault()
           toggleLauncher()
         }
         return
       }
 
-      if (isMod && e.key === 'n') {
+      // System-wide shortcuts
+      if (isMod && isShift && key === 'l') {
         e.preventDefault()
-        openApp('terminal')
-        return
-      }
-
-      if (isMod && e.key === 'e') {
-        e.preventDefault()
-        openApp('files')
-        return
-      }
-
-      if (isMod && e.key === 'b') {
-        e.preventDefault()
-        openApp('browser')
-        return
-      }
-
-      if (isMod && e.key === ',') {
-        e.preventDefault()
-        openApp('settings')
+        toggleLauncher()
         return
       }
 
       if (isMod && e.key === 'w') {
         e.preventDefault()
-        const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
-        if (lastFocusedWindow) {
-          closeWindow(lastFocusedWindow.id)
-        }
+        const focusedWindow = getFocusedWindow()
+        if (focusedWindow) closeWindow(focusedWindow.id)
         return
       }
 
       if (isMod && isAlt && e.key === 'Tab') {
         e.preventDefault()
-        const sortedWindows = [...state.windows].sort((a, b) => b.zIndex - a.zIndex)
-        if (sortedWindows.length > 1) {
-          const currentIndex = sortedWindows.findIndex(w => w.focused)
-          const nextIndex = (currentIndex + 1) % sortedWindows.length
-          focusWindow(sortedWindows[nextIndex].id)
-        }
-        return
-      }
-
-      if (isMod && e.key === '1') {
-        e.preventDefault()
-        openApp('terminal')
-        return
-      }
-
-      if (isMod && e.key === '2') {
-        e.preventDefault()
-        openApp('files')
-        return
-      }
-
-      if (isMod && e.key === '3') {
-        e.preventDefault()
-        openApp('browser')
+        cycleWindows()
         return
       }
 
       if (isMod && e.key === 'm') {
         e.preventDefault()
-        const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
-        if (lastFocusedWindow) {
-          minimizeWindow(lastFocusedWindow.id)
+        const focusedWindow = getFocusedWindow()
+        if (focusedWindow) minimizeWindow(focusedWindow.id)
+        return
+      }
+
+      if ((isMod && isShift && e.key === 'm') || e.key === 'F11') {
+        e.preventDefault()
+        const focusedWindow = getFocusedWindow()
+        if (focusedWindow) maximizeWindow(focusedWindow.id)
+        return
+      }
+
+      // App shortcuts with Ctrl/Cmd combinations
+      if (isMod) {
+        if (isShift) {
+          switch (key) {
+            case 's':
+              e.preventDefault()
+              openApp('settings')
+              return
+            case 'f':
+              e.preventDefault()
+              openApp('files')
+              return
+            case 't':
+              e.preventDefault()
+              openApp('terminal')
+              return
+          }
+        } else {
+          switch (key) {
+            case 'n':
+              e.preventDefault()
+              openApp('terminal')
+              return
+            case 'e':
+              e.preventDefault()
+              openApp('files')
+              return
+            case 'b':
+              e.preventDefault()
+              openApp('browser')
+              return
+            case ',':
+              e.preventDefault()
+              openApp('settings')
+              return
+            case '1':
+              e.preventDefault()
+              openApp('terminal')
+              return
+            case '2':
+              e.preventDefault()
+              openApp('files')
+              return
+            case '3':
+              e.preventDefault()
+              openApp('browser')
+              return
+            case 'a':
+              e.preventDefault()
+              openApp('calculator')
+              return
+            case 't':
+              e.preventDefault()
+              openApp('text-editor')
+              return
+            case 'p':
+              e.preventDefault()
+              openApp('paint')
+              return
+          }
         }
-        return
-      }
-
-      if (isMod && isShift && e.key === 'm') {
-        e.preventDefault()
-        const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
-        if (lastFocusedWindow) {
-          maximizeWindow(lastFocusedWindow.id)
-        }
-        return
-      }
-
-      if (e.key === 'F11') {
-        e.preventDefault()
-        const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
-        if (lastFocusedWindow) {
-          maximizeWindow(lastFocusedWindow.id)
-        }
-        return
-      }
-
-      if (isMod && e.key === 'a') {
-        e.preventDefault()
-        openApp('calculator')
-        return
-      }
-
-      if (isMod && e.key === 't') {
-        e.preventDefault()
-        openApp('text-editor')
-        return
       }
 
       if (e.key === 'PrintScreen') {
@@ -173,17 +160,14 @@ const App = memo(function App() {
         openApp('screenshot')
         return
       }
+    },
+    [launcherOpen, toggleLauncher, getFocusedWindow, closeWindow, cycleWindows, minimizeWindow, maximizeWindow, openApp]
+  )
 
-      if (isMod && e.key === 'p') {
-        e.preventDefault()
-        openApp('paint')
-        return
-      }
-    }
-
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [openApp, toggleLauncher, closeWindow, focusWindow, minimizeWindow, maximizeWindow])
+  }, [handleKeyDown])
 
   return (
     <>
