@@ -55,6 +55,49 @@ function resolvePath(cwd: string, target: string): string {
   return '/' + resolved.join('/')
 }
 
+function traverseTree(nodes: FileNode[], callback: (node: FileNode, parent?: FileNode) => FileNode | undefined): FileNode[] {
+  return nodes.map(node => {
+    const result = callback(node)
+    if (result !== undefined) return result
+    if (node.children) {
+      return { ...node, children: traverseTree(node.children, callback) }
+    }
+    return node
+  }).filter((node): node is FileNode => node !== null)
+}
+
+function findInTree(nodes: FileNode[], id: string): FileNode | null {
+  for (const node of nodes) {
+    if (node.id === id) return node
+    if (node.children) {
+      const found = findInTree(node.children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+function removeFromTree(nodes: FileNode[], id: string): FileNode[] {
+  return nodes
+    .filter(node => node.id !== id)
+    .map(node => {
+      if (node.children) {
+        return { ...node, children: removeFromTree(node.children, id) }
+      }
+      return node
+    })
+}
+
+function updateInTree(nodes: FileNode[], id: string, updater: (node: FileNode) => FileNode): FileNode[] {
+  return nodes.map(node => {
+    if (node.id === id) return updater(node)
+    if (node.children) {
+      return { ...node, children: updateInTree(node.children, id, updater) }
+    }
+    return node
+  })
+}
+
 export function validateFileName(name: string): { valid: boolean; error?: string } {
   if (!name || name.trim().length === 0) {
     return { valid: false, error: '文件名不能为空' }
@@ -287,34 +330,33 @@ export const useStore = create<Store>((set, get) => ({
   },
 
   deleteFile: (id) =>
-    set((s) => {
-      const removeFromTree = (nodes: FileNode[]): FileNode[] =>
-        nodes.filter((n) => n.id !== id).map((n) => (n.children ? { ...n, children: removeFromTree(n.children) } : n))
-      return { files: removeFromTree(s.files) }
-    }),
+    set((s) => ({
+      files: removeFromTree(s.files, id)
+    })),
 
   addFile: (parentId, name, type) =>
     set((s) => {
       const id = `file-${Date.now()}`
       const newNode: FileNode = { id, name, type, parentId, content: type === 'file' ? '' : undefined, children: type === 'folder' ? [] : undefined }
-      const addToTree = (nodes: FileNode[]): FileNode[] =>
-        nodes.map((n) => (n.id === parentId && n.children ? { ...n, children: [...n.children, newNode] } : n.children ? { ...n, children: addToTree(n.children) } : n))
-      return { files: addToTree(s.files) }
+      return {
+        files: traverseTree(s.files, (node) => {
+          if (node.id === parentId && node.children) {
+            return { ...node, children: [...node.children, newNode] }
+          }
+          return undefined
+        })
+      }
     }),
 
   updateFileContent: (id, content) =>
-    set((s) => {
-      const updateTree = (nodes: FileNode[]): FileNode[] =>
-        nodes.map((n) => (n.id === id ? { ...n, content } : n.children ? { ...n, children: updateTree(n.children) } : n))
-      return { files: updateTree(s.files) }
-    }),
+    set((s) => ({
+      files: updateInTree(s.files, id, (node) => ({ ...node, content }))
+    })),
 
   renameFile: (id, name) =>
-    set((s) => {
-      const updateTree = (nodes: FileNode[]): FileNode[] =>
-        nodes.map((n) => (n.id === id ? { ...n, name } : n.children ? { ...n, children: updateTree(n.children) } : n))
-      return { files: updateTree(s.files) }
-    }),
+    set((s) => ({
+      files: updateInTree(s.files, id, (node) => ({ ...node, name }))
+    })),
 
   restoreWindow: (id) =>
     set((s) => ({
@@ -337,8 +379,8 @@ export const useStore = create<Store>((set, get) => ({
 
   copyFile: (sourceId, targetParentId) => {
     const state = get()
-    const sourceNode = findNodeById(state.files, sourceId)
-    const targetParent = findNodeById(state.files, targetParentId)
+    const sourceNode = findInTree(state.files, sourceId)
+    const targetParent = findInTree(state.files, targetParentId)
     
     if (!sourceNode || !targetParent || targetParent.type !== 'folder') {
       return
@@ -355,14 +397,19 @@ export const useStore = create<Store>((set, get) => ({
     }
     
     set((s) => ({
-      files: addNodeToTree(s.files, targetParentId, newNode),
+      files: traverseTree(s.files, (node) => {
+        if (node.id === targetParentId && node.children !== undefined) {
+          return { ...node, children: [...node.children, newNode] }
+        }
+        return undefined
+      }),
     }))
   },
 
   moveFile: (sourceId, targetParentId) => {
     const state = get()
-    const sourceNode = findNodeById(state.files, sourceId)
-    const targetParent = findNodeById(state.files, targetParentId)
+    const sourceNode = findInTree(state.files, sourceId)
+    const targetParent = findInTree(state.files, targetParentId)
     
     if (!sourceNode || !targetParent || targetParent.type !== 'folder') {
       return
@@ -376,13 +423,18 @@ export const useStore = create<Store>((set, get) => ({
     const nodeWithNewParent = { ...sourceNode, parentId: targetParentId } as FileNode
     
     set((s) => {
-      const updated = removeNodeFromTree(s.files, sourceId)
-      const updatedWithNode = addNodeToTree(updated, targetParentId, nodeWithNewParent)
+      const filtered = removeFromTree(s.files, sourceId)
+      const withNode = traverseTree(filtered, (node) => {
+        if (node.id === targetParentId && node.children !== undefined) {
+          return { ...node, children: [...node.children, nodeWithNewParent] }
+        }
+        return undefined
+      })
       const newHistory = [
         ...s.fileOperationHistory.slice(0, s.historyIndex + 1),
         { type: 'move' as const, fileId: sourceId, previousState, newState: nodeWithNewParent }
       ]
-      return { files: updatedWithNode, fileOperationHistory: newHistory, historyIndex: newHistory.length - 1 }
+      return { files: withNode, fileOperationHistory: newHistory, historyIndex: newHistory.length - 1 }
     })
   },
 
@@ -396,14 +448,19 @@ export const useStore = create<Store>((set, get) => ({
     switch (operation.type) {
       case 'add':
         set((s) => ({
-          files: removeNodeFromTree(s.files, operation.fileId),
+          files: traverseTree(s.files, (node) => node.id === operation.fileId ? undefined : undefined).filter((node): node is FileNode => node.id !== operation.fileId),
           historyIndex: state.historyIndex - 1
         }))
         break
       case 'delete':
         if (operation.previousState) {
           set((s) => {
-            const restored = addNodeToTree(s.files, operation.parentId!, operation.previousState!)
+            const restored = traverseTree(s.files, (node) => {
+              if (node.id === operation.parentId && node.children !== undefined) {
+                return { ...node, children: [...node.children, operation.previousState!] }
+              }
+              return undefined
+            })
             const newHistory = s.fileOperationHistory.slice(0, state.historyIndex)
             return { files: restored, fileOperationHistory: newHistory, historyIndex: newHistory.length - 1 }
           })
@@ -412,7 +469,12 @@ export const useStore = create<Store>((set, get) => ({
       case 'rename':
         if (operation.previousState) {
           set((s) => {
-            const updated = s.files.map(n => n.id === operation.fileId ? { ...n, name: operation.previousState!.name } : n)
+            const updated = traverseTree(s.files, (node) => {
+              if (node.id === operation.fileId) {
+                return { ...node, name: operation.previousState!.name }
+              }
+              return undefined
+            })
             const newHistory = s.fileOperationHistory.slice(0, state.historyIndex)
             return { files: updated, fileOperationHistory: newHistory, historyIndex: newHistory.length - 1 }
           })
@@ -439,21 +501,31 @@ export const useStore = create<Store>((set, get) => ({
       case 'add':
         if (operation.newState) {
           set((s) => ({
-            files: addNodeToTree(s.files, operation.parentId!, operation.newState!),
+            files: traverseTree(s.files, (node) => {
+              if (node.id === operation.parentId && node.children !== undefined) {
+                return { ...node, children: [...node.children, operation.newState!] }
+              }
+              return undefined
+            }),
             historyIndex: state.historyIndex + 1
           }))
         }
         break
       case 'delete':
         set((s) => ({
-          files: removeNodeFromTree(s.files, operation.fileId),
+          files: traverseTree(s.files, (node) => node.id === operation.fileId ? undefined : undefined).filter((node): node is FileNode => node.id !== operation.fileId),
           historyIndex: state.historyIndex + 1
         }))
         break
       case 'rename':
         if (operation.newState) {
           set((s) => ({
-            files: s.files.map(n => n.id === operation.fileId ? { ...n, name: operation.newState!.name } : n),
+            files: traverseTree(s.files, (node) => {
+              if (node.id === operation.fileId) {
+                return { ...node, name: operation.newState!.name }
+              }
+              return undefined
+            }),
             historyIndex: state.historyIndex + 1
           }))
         }
@@ -478,25 +550,5 @@ export const useStore = create<Store>((set, get) => ({
     return state.historyIndex < state.fileOperationHistory.length - 1
   },
 }))
-
-function addNodeToTree(nodes: FileNode[], parentId: string, newNode: FileNode): FileNode[] {
-  return nodes.map((node) => {
-    if (node.id === parentId && node.children !== undefined) {
-      return { ...node, children: [...node.children, newNode] }
-    }
-    if (node.children) {
-      return { ...node, children: addNodeToTree(node.children, parentId, newNode) }
-    }
-    return node
-  })
-}
-
-function removeNodeFromTree(nodes: FileNode[], nodeId: string): FileNode[] {
-  return nodes
-    .filter((n) => n.id !== nodeId)
-    .map((n) =>
-      n.children ? { ...n, children: removeNodeFromTree(n.children, nodeId) } : n
-    )
-}
 
 export { findNodeById, findParentNode, findNodeByPath, resolvePath }

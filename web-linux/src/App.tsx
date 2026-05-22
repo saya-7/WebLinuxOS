@@ -6,6 +6,46 @@ import WindowManager from './components/desktop/WindowManager'
 import Taskbar from './components/desktop/Taskbar'
 import StartMenu from './components/desktop/StartMenu'
 
+interface ShortcutKey {
+  modifier?: 'mod' | 'modShift' | 'modAlt' | 'modAltShift'
+  key: string | string[]
+}
+
+interface SystemShortcut {
+  modifier?: string
+  key: string
+}
+
+const appShortcuts: Record<string, ShortcutKey> = {
+  'terminal': { modifier: 'mod', key: 'n' },
+  'files': { modifier: 'mod', key: 'e' },
+  'browser': { modifier: 'mod', key: 'b' },
+  'settings': { modifier: 'mod', key: ',' },
+  'calculator': { modifier: 'mod', key: 'a' },
+  'text-editor': { modifier: 'mod', key: 't' },
+  'paint': { modifier: 'mod', key: 'p' },
+  'image-viewer': { modifier: 'mod', key: 'i' },
+  'help': { modifier: 'mod', key: 'h' },
+  'terminal-shift': { modifier: 'modShift', key: 't' },
+  'files-shift': { modifier: 'modShift', key: 'f' },
+  'settings-shift': { modifier: 'modShift', key: 's' },
+  'notes-shift': { modifier: 'modShift', key: 'n' },
+  'app-1': { modifier: 'mod', key: '1' },
+  'app-2': { modifier: 'mod', key: '2' },
+  'app-3': { modifier: 'mod', key: '3' },
+}
+
+const systemShortcuts: Record<string, SystemShortcut> = {
+  'launcher': { modifier: 'modShift', key: 'l' },
+  'close-window': { modifier: 'mod', key: 'w' },
+  'cycle-windows': { modifier: 'modAlt', key: 'Tab' },
+  'minimize-window': { modifier: 'mod', key: 'm' },
+  'maximize-window': { modifier: 'modShift', key: 'm' },
+  'maximize-f11': { key: 'F11' },
+  'close-alt-f4': { modifier: 'modAlt', key: 'f4' },
+  'screenshot': { key: 'PrintScreen' },
+}
+
 const App = memo(function App() {
   const registerApp = useStore((s) => s.registerApp)
   const openApp = useStore((s) => s.openApp)
@@ -42,6 +82,57 @@ const App = memo(function App() {
     focusWindow(sortedWindows[nextIndex].id)
   }, [windows, focusWindow])
 
+  const handleSystemShortcut = useCallback((shortcut: string) => {
+    const focusedWindow = getFocusedWindow()
+    switch (shortcut) {
+      case 'launcher':
+        toggleLauncher()
+        break
+      case 'close-window':
+        if (focusedWindow) closeWindow(focusedWindow.id)
+        break
+      case 'cycle-windows':
+        cycleWindows()
+        break
+      case 'minimize-window':
+        if (focusedWindow) minimizeWindow(focusedWindow.id)
+        break
+      case 'maximize-window':
+      case 'maximize-f11':
+        if (focusedWindow) maximizeWindow(focusedWindow.id)
+        break
+      case 'close-alt-f4':
+        if (focusedWindow) closeWindow(focusedWindow.id)
+        break
+      case 'screenshot':
+        openApp('screenshot')
+        break
+    }
+  }, [getFocusedWindow, toggleLauncher, closeWindow, cycleWindows, minimizeWindow, maximizeWindow, openApp])
+
+  const handleAppShortcut = useCallback((shortcutKey: string) => {
+    const appMap: Record<string, string> = {
+      'terminal': 'terminal',
+      'terminal-shift': 'terminal',
+      'files': 'files',
+      'files-shift': 'files',
+      'browser': 'browser',
+      'settings': 'settings',
+      'settings-shift': 'settings',
+      'calculator': 'calculator',
+      'text-editor': 'text-editor',
+      'paint': 'paint',
+      'image-viewer': 'image-viewer',
+      'help': 'help',
+      'notes-shift': 'notes',
+      'app-1': 'terminal',
+      'app-2': 'files',
+      'app-3': 'browser',
+    }
+    const appId = appMap[shortcutKey]
+    if (appId) openApp(appId)
+  }, [openApp])
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey
@@ -57,127 +148,41 @@ const App = memo(function App() {
         return
       }
 
-      if (isMod && isShift && key === 'l') {
-        e.preventDefault()
-        toggleLauncher()
-        return
-      }
-
-      if (isMod && e.key === 'w') {
-        e.preventDefault()
-        const focusedWindow = getFocusedWindow()
-        if (focusedWindow) closeWindow(focusedWindow.id)
-        return
-      }
-
-      if (isMod && isAlt && e.key === 'Tab') {
-        e.preventDefault()
-        cycleWindows()
-        return
-      }
-
-      if (isMod && e.key === 'm') {
-        e.preventDefault()
-        const focusedWindow = getFocusedWindow()
-        if (focusedWindow) minimizeWindow(focusedWindow.id)
-        return
-      }
-
-      if ((isMod && isShift && e.key === 'm') || e.key === 'F11') {
-        e.preventDefault()
-        const focusedWindow = getFocusedWindow()
-        if (focusedWindow) maximizeWindow(focusedWindow.id)
-        return
-      }
-
-      if (isMod && isAlt && key === 'f4') {
-        e.preventDefault()
-        const focusedWindow = getFocusedWindow()
-        if (focusedWindow) closeWindow(focusedWindow.id)
-        return
-      }
-
-      if (isMod) {
-        if (isShift) {
-          switch (key) {
-            case 's':
-              e.preventDefault()
-              openApp('settings')
-              return
-            case 'f':
-              e.preventDefault()
-              openApp('files')
-              return
-            case 't':
-              e.preventDefault()
-              openApp('terminal')
-              return
-            case 'n':
-              e.preventDefault()
-              openApp('notes')
-              return
-          }
-        } else {
-          switch (key) {
-            case 'n':
-              e.preventDefault()
-              openApp('terminal')
-              return
-            case 'e':
-              e.preventDefault()
-              openApp('files')
-              return
-            case 'b':
-              e.preventDefault()
-              openApp('browser')
-              return
-            case ',':
-              e.preventDefault()
-              openApp('settings')
-              return
-            case '1':
-              e.preventDefault()
-              openApp('terminal')
-              return
-            case '2':
-              e.preventDefault()
-              openApp('files')
-              return
-            case '3':
-              e.preventDefault()
-              openApp('browser')
-              return
-            case 'a':
-              e.preventDefault()
-              openApp('calculator')
-              return
-            case 't':
-              e.preventDefault()
-              openApp('text-editor')
-              return
-            case 'p':
-              e.preventDefault()
-              openApp('paint')
-              return
-            case 'i':
-              e.preventDefault()
-              openApp('image-viewer')
-              return
-            case 'h':
-              e.preventDefault()
-              openApp('help')
-              return
-          }
+      for (const [shortcut, config] of Object.entries(systemShortcuts)) {
+        const configMod = config.modifier?.includes('mod')
+        const configShift = config.modifier?.includes('Shift') || config.modifier === 'modShift'
+        const configAlt = config.modifier?.includes('Alt') || config.modifier === 'modAlt'
+        
+        if (configMod !== undefined) {
+          if (isMod !== configMod) continue
+          if (configShift !== isShift) continue
+          if (configAlt !== isAlt) continue
+        } else if (isMod || isShift || isAlt) {
+          continue
+        }
+        
+        if (Array.isArray(config.key) ? config.key.includes(key) : config.key.toLowerCase() === key) {
+          e.preventDefault()
+          handleSystemShortcut(shortcut)
+          return
         }
       }
 
-      if (e.key === 'PrintScreen') {
-        e.preventDefault()
-        openApp('screenshot')
-        return
+      if (isMod) {
+        for (const [shortcutKey, config] of Object.entries(appShortcuts)) {
+          const needShift = config.modifier === 'modShift' || config.modifier === 'modAltShift'
+          if (needShift !== isShift) continue
+          if (config.modifier === 'modAlt' && !isAlt) continue
+          
+          if (Array.isArray(config.key) ? config.key.includes(key) : config.key.toLowerCase() === key) {
+            e.preventDefault()
+            handleAppShortcut(shortcutKey)
+            return
+          }
+        }
       }
     },
-    [launcherOpen, toggleLauncher, getFocusedWindow, closeWindow, cycleWindows, minimizeWindow, maximizeWindow, openApp]
+    [launcherOpen, toggleLauncher, handleSystemShortcut, handleAppShortcut]
   )
 
   useEffect(() => {

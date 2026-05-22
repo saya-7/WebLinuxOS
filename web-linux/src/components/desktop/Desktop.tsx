@@ -13,6 +13,15 @@ const wallpapers = [
   'linear-gradient(135deg, #6a0572 0%, #ab83a1 100%)',
   'linear-gradient(135deg, #f12711 0%, #f5af19 100%)',
   'linear-gradient(135deg, #ffb7b2 0%, #e2f0cb 100%)',
+  'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+  'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+  'linear-gradient(135deg, #200122 0%, #6f0000 100%)',
+  'linear-gradient(135deg, #000000 0%, #434343 100%)',
+  'linear-gradient(135deg, #355c7d 0%, #c96b8a 50%, #f67280 100%)',
+  'linear-gradient(135deg, #654ea3 0%, #eaafc8 100%)',
+  'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
 ]
 
 interface MenuItem {
@@ -119,7 +128,13 @@ const Desktop = memo(function Desktop() {
       onContextMenu={handleContextMenu}
       onClick={handleDesktopClick}
       style={wallpaperStyle}
+      role="application"
+      aria-label="桌面环境"
+      tabIndex={-1}
     >
+      <div className="sr-only" role="status" aria-live="polite">
+        Web Linux 桌面环境 - 右键可打开上下文菜单
+      </div>
       {desktopIcons.map((icon) => (
         <div
           key={icon.id}
@@ -139,14 +154,20 @@ const Desktop = memo(function Desktop() {
               if (selectedIconId === icon.id) {
                 openApp(icon.appId)
                 setSelectedIconId(null)
+              } else {
+                setSelectedIconId(icon.id)
               }
+            }
+            if (e.key === 'Delete' && selectedIconId === icon.id) {
+              e.preventDefault()
             }
           }}
           tabIndex={0}
           role="button"
-          aria-label={`打开 ${icon.name}`}
+          aria-label={`${icon.name} - 双击打开`}
+          aria-pressed={selectedIconId === icon.id}
         >
-          <span className="desktop-icon-icon">{icon.icon}</span>
+          <span className="desktop-icon-icon" aria-hidden="true">{icon.icon}</span>
           <span className="desktop-icon-name">{icon.name}</span>
         </div>
       ))}

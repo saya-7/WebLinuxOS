@@ -176,18 +176,23 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
         display: win.minimized ? 'none' : 'flex',
       }}
       onMouseDown={handleWindowClick}
+      role="dialog"
+      aria-label={win.title}
+      aria-modal="false"
+      aria-describedby={`${win.id}-content`}
     >
       <div className="window-titlebar">
-        <div className="window-titlebar-drag" onMouseDown={handleDragStart} onDoubleClick={handleDoubleClickTitlebar}>
-          <span className="window-titlebar-icon">{app?.icon}</span>
+        <div className="window-titlebar-drag" onMouseDown={handleDragStart} onDoubleClick={handleDoubleClickTitlebar} role="toolbar" aria-label="窗口标题栏">
+          <span className="window-titlebar-icon" aria-hidden="true">{app?.icon}</span>
           <span className="window-titlebar-title">{win.title}</span>
         </div>
-        <div className="window-titlebar-buttons">
+        <div className="window-titlebar-buttons" role="toolbar" aria-label="窗口控制">
           <button
             className="window-titlebar-button"
             onMouseDown={(e) => e.stopPropagation()}
             onClick={handleMinimize}
-            aria-label="Minimize"
+            aria-label="最小化"
+            title="最小化"
           >
             &#x2014;
           </button>
@@ -195,7 +200,8 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
             className="window-titlebar-button"
             onMouseDown={(e) => e.stopPropagation()}
             onClick={() => maximizeWindow(win.id)}
-            aria-label={win.maximized ? 'Restore' : 'Maximize'}
+            aria-label={win.maximized ? '还原' : '最大化'}
+            title={win.maximized ? '还原' : '最大化'}
           >
             {win.maximized ? '❐' : '□'}
           </button>
@@ -203,13 +209,14 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
             className="window-titlebar-button close"
             onMouseDown={(e) => e.stopPropagation()}
             onClick={handleClose}
-            aria-label="Close"
+            aria-label="关闭"
+            title="关闭"
           >
             &#x2715;
           </button>
         </div>
       </div>
-      <div className="window-content">{children}</div>
+      <div className="window-content" id={`${win.id}-content`}>{children}</div>
       {!win.maximized && win.resizable && (
         <>
           <div
