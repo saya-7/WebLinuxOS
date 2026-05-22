@@ -2,8 +2,15 @@ import { Suspense, lazy, useEffect, memo, useMemo } from 'react'
 import { useStore } from '../../store'
 import Window from './Window'
 import ErrorBoundary from '../ErrorBoundary'
+import type { WindowState, AppDefinition } from '../../types'
 
-const componentCache: Record<string, React.LazyExoticComponent<React.ComponentType<Record<string, never>>>> = {}
+interface WindowComponent {
+  win: WindowState
+  Component: React.LazyExoticComponent<React.ComponentType>
+  app: AppDefinition
+}
+
+const componentCache: Record<string, React.LazyExoticComponent<React.ComponentType>> = {}
 
 function loadComponent(name: string) {
   if (!componentCache[name]) {
@@ -106,7 +113,7 @@ const WindowManager = memo(function WindowManager() {
       if (!app) return null
       const Component = loadComponent(app.component)
       return { win, Component, app }
-    }).filter(Boolean) as Array<{ win: typeof windows[0], Component: any, app: typeof apps[0] }>
+    }).filter(Boolean) as WindowComponent[]
   }, [windows, apps])
 
   return (
