@@ -1,34 +1,126 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+
+type Token = { type: 'number' | 'operator' | 'paren', value: string }
 
 export default function Calculator() {
   const [display, setDisplay] = useState('0')
   const [expression, setExpression] = useState('')
   const [resetFlag, setResetFlag] = useState(false)
 
-  function handleNumber(num: string) {
+  const safeCalculate = useCallback((expr: string): number => {
+    try {
+      const sanitized = expr
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/π/g, String(Math.PI))
+        .replace(/e(?![xp])/g, String(Math.E))
+
+      const tokens: Token[] = []
+      let current = ''
+      
+      for (let i = 0; i < sanitized.length; i++) {
+        const char = sanitized[i]
+        if (char.match(/[0-9.]/)) {
+          current += char
+        } else if (char.match(/[+\-*/()]/) || char === '*' || char === '/') {
+          if (current) {
+            tokens.push({ type: 'number', value: current })
+            current = ''
+          }
+          if (char === '*' && sanitized[i + 1] === '*') {
+            tokens.push({ type: 'operator', value: '**' })
+            i++
+          } else {
+            tokens.push({ type: 'operator', value: char })
+          }
+        }
+      }
+      if (current) {
+        tokens.push({ type: 'number', value: current })
+      }
+
+      let result = 0
+      let operator = '+'
+      let pendingValue: number | null = null
+      let pendingOp: string | null = null
+
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i]
+        if (token.type === 'number') {
+          const num = parseFloat(token.value)
+          if (pendingOp !== null && pendingValue !== null) {
+            if (pendingOp === '**') {
+              pendingValue = Math.pow(pendingValue, num)
+            } else if (pendingOp === '*' || pendingOp === '/') {
+              pendingValue = pendingOp === '*' ? pendingValue * num : pendingValue / num
+            }
+            pendingOp = null
+          } else if (pendingValue !== null) {
+            if (token.value.includes('**')) {
+              pendingValue = Math.pow(pendingValue, parseFloat(token.value.split('**')[1]))
+            } else {
+              if (operator === '+') result += pendingValue
+              else if (operator === '-') result -= pendingValue
+              pendingValue = num
+            }
+          } else {
+            if (operator === '+') result += num
+            else if (operator === '-') result -= num
+          }
+        } else if (token.type === 'operator') {
+          if (token.value === '**' || token.value === '*' || token.value === '/') {
+            if (pendingValue === null) {
+              pendingValue = result
+              result = 0
+              operator = '+'
+            }
+            pendingOp = token.value
+          } else {
+            if (pendingValue !== null && pendingOp !== null) {
+              if (operator === '+') result += pendingValue
+              else if (operator === '-') result -= pendingValue
+              pendingValue = null
+              pendingOp = null
+            }
+            operator = token.value
+          }
+        }
+      }
+      if (pendingValue !== null) {
+        if (operator === '+') result += pendingValue
+        else if (operator === '-') result -= pendingValue
+      }
+      
+      return result
+    } catch {
+      throw new Error('计算错误')
+    }
+  }, [])
+
+  const handleNumber = useCallback((num: string) => {
     if (resetFlag) {
       setDisplay(num)
       setResetFlag(false)
     } else {
       setDisplay((prev) => (prev === '0' ? num : prev + num))
     }
-  }
+  }, [resetFlag])
 
-  function handleOperator(op: string) {
+  const handleOperator = useCallback((op: string) => {
     setExpression((prev) => prev + display + op)
     setResetFlag(true)
-  }
+  }, [display])
 
-  function handleDecimal() {
+  const handleDecimal = useCallback(() => {
     if (resetFlag) {
       setDisplay('0.')
       setResetFlag(false)
     } else if (!display.includes('.')) {
       setDisplay((prev) => prev + '.')
     }
-  }
+  }, [resetFlag, display])
 
-  function handleEqual() {
+  const handleEqual = useCallback(() => {
     try {
       const fullExp = expression + display
       const sanitized = fullExp
@@ -36,8 +128,19 @@ export default function Calculator() {
         .replace(/÷/g, '/')
         .replace(/π/g, String(Math.PI))
         .replace(/e(?![xp])/g, String(Math.E))
-      const result = Function('"use strict"; return (' + sanitized + ')')()
-      setDisplay(String(result))
+      
+      let evalResult: number
+      try {
+        evalResult = Function('"use strict"; return (' + sanitized + ')')()
+      } catch {
+        evalResult = safeCalculate(fullExp)
+      }
+      
+      if (!isFinite(evalResult) || isNaN(evalResult)) {
+        throw new Error('无效结果')
+      }
+      
+      setDisplay(String(evalResult))
       setExpression('')
       setResetFlag(true)
     } catch {
@@ -45,24 +148,24 @@ export default function Calculator() {
       setExpression('')
       setResetFlag(true)
     }
-  }
+  }, [expression, display, safeCalculate])
 
-  function handleClear() {
+  const handleClear = useCallback(() => {
     setDisplay('0')
     setExpression('')
     setResetFlag(false)
-  }
+  }, [])
 
-  function handleClearEntry() {
+  const handleClearEntry = useCallback(() => {
     setDisplay('0')
     setResetFlag(false)
-  }
+  }, [])
 
-  function handleBackspace() {
+  const handleBackspace = useCallback(() => {
     setDisplay((prev) => (prev.length <= 1 || (prev.length === 2 && prev.startsWith('-')) ? '0' : prev.slice(0, -1)))
-  }
+  }, [])
 
-  function handlePercent() {
+  const handlePercent = useCallback(() => {
     try {
       const val = parseFloat(display) / 100
       setDisplay(String(val))
@@ -70,25 +173,27 @@ export default function Calculator() {
     } catch {
       setDisplay('Error')
     }
-  }
+  }, [display])
 
-  function handleSign() {
+  const handleSign = useCallback(() => {
     if (display !== '0') {
       setDisplay((prev) => (prev.startsWith('-') ? prev.slice(1) : '-' + prev))
     }
-  }
+  }, [display])
 
-  function handleUnary(fn: (x: number) => number) {
+  const handleUnary = useCallback((fn: (x: number) => number) => {
     try {
       const val = parseFloat(display)
-      setDisplay(String(fn(val)))
+      const result = fn(val)
+      if (!isFinite(result)) throw new Error()
+      setDisplay(String(result))
       setResetFlag(true)
     } catch {
       setDisplay('Error')
     }
-  }
+  }, [display])
 
-  function handleConstant(value: string) {
+  const handleConstant = useCallback((value: string) => {
     if (resetFlag) {
       setDisplay(value)
       setResetFlag(false)
@@ -97,9 +202,9 @@ export default function Calculator() {
     } else {
       setDisplay((prev) => prev + value)
     }
-  }
+  }, [resetFlag, display])
 
-  function handleOpenParen() {
+  const handleOpenParen = useCallback(() => {
     if (resetFlag) {
       setExpression((prev) => prev + '(')
       setDisplay('0')
@@ -110,12 +215,12 @@ export default function Calculator() {
       setExpression((prev) => prev + display + '(')
       setResetFlag(true)
     }
-  }
+  }, [resetFlag, display])
 
-  function handleCloseParen() {
+  const handleCloseParen = useCallback(() => {
     setExpression((prev) => prev + display + ')')
     setResetFlag(true)
-  }
+  }, [display])
 
   const btnStyle: React.CSSProperties = {
     padding: '10px 0',

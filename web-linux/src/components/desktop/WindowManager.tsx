@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, memo } from 'react'
+import { Suspense, lazy, useEffect, memo, useMemo } from 'react'
 import { useStore } from '../../store'
 import Window from './Window'
 import ErrorBoundary from '../ErrorBoundary'
@@ -61,6 +61,37 @@ function preloadComponents() {
   })
 }
 
+const LoadingFallback = memo(function LoadingFallback() {
+  return (
+    <div
+      style={{
+        padding: 40,
+        color: 'var(--text-secondary)',
+        textAlign: 'center',
+        fontSize: 14,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        flexDirection: 'column',
+        gap: 16,
+      }}
+    >
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          border: '3px solid var(--window-border)',
+          borderTopColor: 'var(--accent)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        }}
+      />
+      <span>加载中...</span>
+    </div>
+  )
+})
+
 const WindowManager = memo(function WindowManager() {
   const windows = useStore((s) => s.windows)
   const apps = useStore((s) => s.apps)
@@ -69,35 +100,26 @@ const WindowManager = memo(function WindowManager() {
     preloadComponents()
   }, [])
 
+  const memoizedWindows = useMemo(() => {
+    return windows.map((win) => {
+      const app = apps.find((a) => a.id === win.appId)
+      if (!app) return null
+      const Component = loadComponent(app.component)
+      return { win, Component, app }
+    }).filter(Boolean) as Array<{ win: typeof windows[0], Component: any, app: typeof apps[0] }>
+  }, [windows, apps])
+
   return (
     <>
-      {windows.map((win) => {
-        const app = apps.find((a) => a.id === win.appId)
-        if (!app) return null
-        const Component = loadComponent(app.component)
-        return (
-          <Window key={win.id} window={win}>
-            <ErrorBoundary>
-              <Suspense
-                fallback={
-                  <div
-                    style={{
-                      padding: 40,
-                      color: 'var(--text-secondary)',
-                      textAlign: 'center',
-                      fontSize: 14,
-                    }}
-                  >
-                    加载中...
-                  </div>
-                }
-              >
-                <Component />
-              </Suspense>
-            </ErrorBoundary>
-          </Window>
-        )
-      })}
+      {memoizedWindows.map(({ win, Component, app }) => (
+        <Window key={win.id} window={win}>
+          <ErrorBoundary appName={app.name}>
+            <Suspense fallback={<LoadingFallback />}>
+              <Component />
+            </Suspense>
+          </ErrorBoundary>
+        </Window>
+      ))}
     </>
   )
 })

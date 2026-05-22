@@ -4,6 +4,7 @@ import type { ErrorInfo, ReactNode } from 'react'
 interface Props {
   children: ReactNode
   fallback?: ReactNode
+  appName?: string
 }
 
 interface State {
@@ -11,12 +12,13 @@ interface State {
   error?: Error
   errorInfo?: ErrorInfo
   errorCount: number
+  lastErrorTime: number
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { hasError: false, errorCount: 0 }
+    this.state = { hasError: false, errorCount: 0, lastErrorTime: 0 }
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -25,10 +27,13 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by ErrorBoundary:', error, errorInfo)
+    const now = Date.now()
+    const isRecentError = now - this.state.lastErrorTime < 5000
     this.setState((prevState) => ({
       error,
       errorInfo,
-      errorCount: prevState.errorCount + 1
+      errorCount: isRecentError ? prevState.errorCount + 1 : 1,
+      lastErrorTime: now,
     }))
   }
 
@@ -41,6 +46,9 @@ class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback
       }
+      
+      const appName = this.props.appName || '应用'
+      const isFrequentError = this.state.errorCount > 2
       
       return (
         <div
@@ -57,9 +65,11 @@ class ErrorBoundary extends Component<Props, State> {
           role="alert"
           aria-live="assertive"
         >
-          <span style={{ fontSize: '64px', marginBottom: '20px' }} aria-hidden="true">⚠️</span>
+          <span style={{ fontSize: '64px', marginBottom: '20px' }} aria-hidden="true">
+            {isFrequentError ? '🚨' : '⚠️'}
+          </span>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '12px', fontSize: '18px', fontWeight: 600 }}>
-            应用加载出错
+            {isFrequentError ? `${appName}遇到了一些问题` : `${appName}加载出错`}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', textAlign: 'center', maxWidth: '400px' }}>
             {this.state.error?.message || '发生了一个未知错误'}
@@ -69,7 +79,7 @@ class ErrorBoundary extends Component<Props, State> {
               错误已连续发生 {this.state.errorCount} 次
             </p>
           )}
-          <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               onClick={this.handleReload}
               style={{
@@ -111,6 +121,16 @@ class ErrorBoundary extends Component<Props, State> {
               重新加载页面
             </button>
           </div>
+          {isFrequentError && (
+            <p style={{ 
+              color: 'var(--text-secondary)', 
+              fontSize: '12px', 
+              marginTop: '16px',
+              textAlign: 'center'
+            }}>
+              如果问题持续存在，请尝试刷新整个页面
+            </p>
+          )}
         </div>
       )
     }
