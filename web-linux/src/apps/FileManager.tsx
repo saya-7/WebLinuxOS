@@ -313,7 +313,7 @@ export default function FileManager() {
           className="app-context-menu"
           style={{ position: 'fixed', left: contextMenu.x, top: contextMenu.y }}
         >
-          <div className="app-context-menu-item" onClick={() => { handleFileDoubleClick(findNodeById(files, contextMenu.fileId)!); closeContextMenu() }}>
+          <div className="app-context-menu-item" onClick={() => { const node = findNodeById(files, contextMenu.fileId); if (node) handleFileDoubleClick(node); closeContextMenu(); }}>
             📂 打开
           </div>
           <div className="app-context-menu-item" onClick={() => handleDelete(contextMenu.fileId)}>

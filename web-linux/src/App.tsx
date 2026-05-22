@@ -138,6 +138,15 @@ const App = memo(function App() {
         return
       }
 
+      if (isMod && isShift && e.key === 'm') {
+        e.preventDefault()
+        const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
+        if (lastFocusedWindow) {
+          maximizeWindow(lastFocusedWindow.id)
+        }
+        return
+      }
+
       if (e.key === 'F11') {
         e.preventDefault()
         const lastFocusedWindow = state.windows.filter(w => w.focused)[0]
@@ -153,7 +162,11 @@ const App = memo(function App() {
         return
       }
 
-      // Ctrl+T 快捷键已在 Ctrl+Shift+T 中用于打开终端，避免冲突
+      if (isMod && e.key === 't') {
+        e.preventDefault()
+        openApp('text-editor')
+        return
+      }
 
       if (e.key === 'PrintScreen') {
         e.preventDefault()

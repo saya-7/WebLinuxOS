@@ -20,22 +20,22 @@ function listDir(files: FileNode[], path: string): string {
 }
 
 const ANSI_COLORS: Record<string, string> = {
-    '34': '#0066cc',
-    '32': '#00aa00',
-    '31': '#cc0000',
-    '33': '#aaaa00',
-    '36': '#00aaaa',
-    '35': '#aa00aa',
-  }
+  '34': '#0066cc',
+  '32': '#00aa00',
+  '31': '#cc0000',
+  '33': '#aaaa00',
+  '36': '#00aaaa',
+  '35': '#aa00aa',
+}
 
-  const ANSI_COLORS_DARK: Record<string, string> = {
-    '34': '#569cd6',
-    '32': '#6a9955',
-    '31': '#f44747',
-    '33': '#dcdcaa',
-    '36': '#4ec9b0',
-    '35': '#c586c0',
-  }
+const ANSI_COLORS_DARK: Record<string, string> = {
+  '34': '#569cd6',
+  '32': '#6a9955',
+  '31': '#f44747',
+  '33': '#dcdcaa',
+  '36': '#4ec9b0',
+  '35': '#c586c0',
+}
 
 function processOutput(text: string, theme: 'dark' | 'light'): React.ReactNode[] {
   const escapeChar = String.fromCharCode(27)
@@ -121,6 +121,7 @@ export default function Terminal() {
   Ctrl+Shift+S - 打开设置
   Ctrl+Shift+F - 打开文件管理器
   Ctrl+Shift+T - 打开终端
+  Ctrl+Shift+M - 最大化/还原窗口
   Ctrl+N - 新建终端
   Ctrl+W - 关闭窗口
   Ctrl+M - 最小化窗口
