@@ -127,6 +127,8 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     maximizeWindow(win.id)
   }, [win.id, maximizeWindow])
 
+  const [isMinimizing, setIsMinimizing] = useState(false)
+
   const handleClose = useCallback(() => {
     setIsClosing(true)
     setTimeout(() => {
@@ -134,9 +136,17 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     }, 150)
   }, [win.id, closeWindow])
 
+  const handleMinimize = useCallback(() => {
+    setIsMinimizing(true)
+    setTimeout(() => {
+      minimizeWindow(win.id)
+      setIsMinimizing(false)
+    }, 150)
+  }, [win.id, minimizeWindow])
+
   return (
     <div
-      className={`window ${win.focused ? 'focused' : ''} ${win.maximized ? 'maximized' : ''} ${isClosing ? 'closing' : ''}`}
+      className={`window ${win.focused ? 'focused' : ''} ${win.maximized ? 'maximized' : ''} ${isClosing ? 'closing' : ''} ${isMinimizing ? 'minimizing' : ''}`}
       style={{
         left: win.maximized ? 0 : win.x,
         top: win.maximized ? 0 : win.y,
@@ -156,7 +166,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
           <button
             className="window-titlebar-button"
             onMouseDown={(e) => e.stopPropagation()}
-            onClick={() => minimizeWindow(win.id)}
+            onClick={handleMinimize}
             aria-label="Minimize"
           >
             &#x2014;

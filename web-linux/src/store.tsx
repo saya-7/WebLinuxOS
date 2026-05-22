@@ -147,6 +147,8 @@ interface Store {
   renameFile: (id: string, name: string) => void
   restoreWindow: (id: string) => void
   openFileWith: (fileId: string, appId: string) => void
+  copyFile: (sourceId: string, targetParentId: string) => void
+  moveFile: (sourceId: string, targetParentId: string) => void
 }
 
 let windowIdCounter = 0
@@ -315,6 +317,74 @@ export const useStore = create<Store>((set, get) => ({
       }, 100)
     }
   },
+
+  copyFile: (sourceId, targetParentId) => {
+    const state = get()
+    const sourceNode = findNodeById(state.files, sourceId)
+    const targetParent = findNodeById(state.files, targetParentId)
+    
+    if (!sourceNode || !targetParent || targetParent.type !== 'folder') {
+      return
+    }
+    
+    const id = `file-${Date.now()}-copy`
+    const newNode: FileNode = {
+      id,
+      name: sourceNode.name,
+      type: sourceNode.type,
+      parentId: targetParentId,
+      content: sourceNode.content,
+      children: sourceNode.children ? sourceNode.children.map(child => ({ ...child })) : undefined,
+    }
+    
+    set((s) => ({
+      files: addNodeToTree(s.files, targetParentId, newNode),
+    }))
+  },
+
+  moveFile: (sourceId, targetParentId) => {
+    const state = get()
+    const sourceNode = findNodeById(state.files, sourceId)
+    const targetParent = findNodeById(state.files, targetParentId)
+    
+    if (!sourceNode || !targetParent || targetParent.type !== 'folder') {
+      return
+    }
+    
+    if (sourceNode.parentId === targetParentId) {
+      return
+    }
+    
+    set((s) => {
+      const updated = removeNodeFromTree(s.files, sourceId)
+      const movedNode = findNodeById(state.files, sourceId)
+      if (movedNode) {
+        const nodeWithNewParent = { ...movedNode, parentId: targetParentId }
+        return { files: addNodeToTree(updated, targetParentId, nodeWithNewParent) }
+      }
+      return { files: updated }
+    })
+  },
 }))
+
+function addNodeToTree(nodes: FileNode[], parentId: string, newNode: FileNode): FileNode[] {
+  return nodes.map((node) => {
+    if (node.id === parentId && node.children !== undefined) {
+      return { ...node, children: [...node.children, newNode] }
+    }
+    if (node.children) {
+      return { ...node, children: addNodeToTree(node.children, parentId, newNode) }
+    }
+    return node
+  })
+}
+
+function removeNodeFromTree(nodes: FileNode[], nodeId: string): FileNode[] {
+  return nodes
+    .filter((n) => n.id !== nodeId)
+    .map((n) =>
+      n.children ? { ...n, children: removeNodeFromTree(n.children, nodeId) } : n
+    )
+}
 
 export { findNodeById, findParentNode, findNodeByPath, resolvePath }

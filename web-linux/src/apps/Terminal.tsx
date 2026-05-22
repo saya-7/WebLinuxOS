@@ -66,6 +66,8 @@ export default function Terminal() {
   const files = useStore((s) => s.files)
   const addFile = useStore((s) => s.addFile)
   const deleteFile = useStore((s) => s.deleteFile)
+  const copyFile = useStore((s) => s.copyFile)
+  const moveFile = useStore((s) => s.moveFile)
   const theme = useStore((s) => s.theme)
 
   const [cwd, setCwd] = useState('/home/user')
@@ -112,7 +114,7 @@ export default function Terminal() {
       case '?':
         output = `可用命令:
   文件操作: ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree, wc
-  信息查看: whoami, hostname, date, uname, uptime, cal, free, df, ps, top
+  信息查看: whoami, hostname, date, uname, uptime, cal, free, df, ps, top, dashboard
   网络工具: ping, ifconfig, curl
   系统工具: clear, help, history, neofetch, alias, type, man, exit
   工具命令: echo, find, grep, env, export, pwd
@@ -283,12 +285,90 @@ export default function Terminal() {
         }
         break
       }
-      case 'cp':
-        output = 'cp: 已模拟复制操作（实际复制需要完整实现）'
+      case 'cp': {
+        if (args.length < 2) {
+          output = 'cp: 缺少操作数\n用法: cp 源文件 目标路径'
+        } else {
+          const source = resolvePath(cwd, args[0])
+          const target = resolvePath(cwd, args[1])
+          const sourceNode = findNodeByPath(files, source)
+          const targetNode = findNodeByPath(files, target)
+          
+          if (!sourceNode) {
+            output = `cp: 无法访问'${args[0]}': 没有那个文件或目录`
+          } else if (sourceNode.type === 'folder' && targetNode?.type === 'folder') {
+            copyFile(sourceNode.id, targetNode.id)
+            output = ''
+          } else if (sourceNode.type === 'file' && targetNode?.type === 'folder') {
+            copyFile(sourceNode.id, targetNode.id)
+            output = ''
+          } else if (sourceNode.type === 'file' && !targetNode) {
+            const parts = target.split('/').filter(Boolean)
+            const parentPath = '/' + parts.slice(0, -1).join('/') || '/'
+            const fileName = parts[parts.length - 1]
+            const parentNode = findNodeByPath(files, parentPath)
+            if (parentNode) {
+              copyFile(sourceNode.id, parentNode.id)
+              setTimeout(() => {
+                const state = useStore.getState()
+                const newFile = findNodeByPath(state.files, target)
+                if (newFile) {
+                  const state2 = useStore.getState()
+                  state2.renameFile(newFile.id, fileName)
+                }
+              }, 50)
+              output = ''
+            } else {
+              output = `cp: 无法创建'${args[1]}': 没有那个文件或目录`
+            }
+          } else {
+            output = `cp: 无法复制'${args[0]}': 无效的目标`
+          }
+        }
         break
-      case 'mv':
-        output = 'mv: 已模拟移动操作（实际移动需要完整实现）'
+      }
+      case 'mv': {
+        if (args.length < 2) {
+          output = 'mv: 缺少操作数\n用法: mv 源文件 目标路径'
+        } else {
+          const source = resolvePath(cwd, args[0])
+          const target = resolvePath(cwd, args[1])
+          const sourceNode = findNodeByPath(files, source)
+          const targetNode = findNodeByPath(files, target)
+          
+          if (!sourceNode) {
+            output = `mv: 无法访问'${args[0]}': 没有那个文件或目录`
+          } else if (sourceNode.type === 'folder' && targetNode?.type === 'folder') {
+            moveFile(sourceNode.id, targetNode.id)
+            output = ''
+          } else if (sourceNode.type === 'file' && targetNode?.type === 'folder') {
+            moveFile(sourceNode.id, targetNode.id)
+            output = ''
+          } else if (sourceNode.type === 'file' && !targetNode) {
+            const parts = target.split('/').filter(Boolean)
+            const parentPath = '/' + parts.slice(0, -1).join('/') || '/'
+            const fileName = parts[parts.length - 1]
+            const parentNode = findNodeByPath(files, parentPath)
+            if (parentNode) {
+              moveFile(sourceNode.id, parentNode.id)
+              setTimeout(() => {
+                const state = useStore.getState()
+                const movedFile = findNodeByPath(state.files, target)
+                if (movedFile) {
+                  const state2 = useStore.getState()
+                  state2.renameFile(movedFile.id, fileName)
+                }
+              }, 50)
+              output = ''
+            } else {
+              output = `mv: 无法移动'${args[1]}': 没有那个文件或目录`
+            }
+          } else {
+            output = `mv: 无法移动'${args[0]}': 无效的目标`
+          }
+        }
         break
+      }
       case 'tree': {
         const target = args[0] ? resolvePath(cwd, args[0]) : cwd
         const node = findNodeByPath(files, target)
@@ -377,6 +457,26 @@ export default function Terminal() {
         } else {
           output = `alias ${args[0]}='${args.slice(1).join(' ')}'`
         }
+        break
+      case 'dashboard':
+        output = [
+          `╔══════════════════════════════════════════════════════════╗`,
+          `║           Web Linux System Dashboard                    ║`,
+          `╠══════════════════════════════════════════════════════════╣`,
+          `║  主机名: ${hostname.padEnd(42)}║`,
+          `║  用户名: ${username.padEnd(42)}║`,
+          `║  当前时间: ${new Date().toLocaleString('zh-CN').padEnd(35)}║`,
+          `║  系统运行时间: ${Math.floor(Math.random() * 24)} 小时 ${Math.floor(Math.random() * 60)} 分钟${' '.repeat(23)}║`,
+          `╠══════════════════════════════════════════════════════════╣`,
+          `║  CPU: WebAssembly x86_64 (模拟)                         ║`,
+          `║  内存: ${Math.floor(Math.random() * 4000 + 4000)}MB / ${Math.floor(Math.random() * 2000 + 6000)}MB${' '.repeat(25)}║`,
+          `║  磁盘: ${Math.floor(Math.random() * 30 + 10)}% 使用中${' '.repeat(31)}║`,
+          `║  负载: ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}${' '.repeat(29)}║`,
+          `╠══════════════════════════════════════════════════════════╣`,
+          `║  活动窗口: ${useStore.getState().windows.length} 个${' '.repeat(32)}║`,
+          `║  主题: ${theme === 'dark' ? '深色' : '浅色'.padEnd(42)}║`,
+          `╚══════════════════════════════════════════════════════════╝`,
+        ].join('\n')
         break
       case 'type': {
         if (args.length === 0) {
@@ -492,7 +592,7 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
     }
 
     setHistory((prev) => [...prev, { input: trimmed, output }])
-  }, [cwd, files, addFile, deleteFile, cmdHistory, theme, username, hostname, searchHistory])
+  }, [cwd, files, addFile, deleteFile, copyFile, moveFile, cmdHistory, theme, username, hostname, searchHistory])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.ctrlKey && e.key === 'c') {

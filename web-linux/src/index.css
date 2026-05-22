@@ -92,6 +92,17 @@
   }
 }
 
+@keyframes windowMinimize {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+}
+
 @keyframes launcherOpen {
   from {
     opacity: 0;
@@ -223,6 +234,10 @@ body {
 
 .window.closing {
   animation: windowClose 0.15s ease-in forwards;
+}
+
+.window.minimizing {
+  animation: windowMinimize 0.15s ease-in forwards;
 }
 
 .window.focused {
