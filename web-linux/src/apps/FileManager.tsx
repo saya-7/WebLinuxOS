@@ -162,15 +162,15 @@ export default function FileManager() {
     setContextMenu({ visible: true, x, y, fileId })
   }, [])
 
-  function closeContextMenu() {
+  const closeContextMenu = useCallback(() => {
     setContextMenu({ visible: false, x: 0, y: 0, fileId: '' })
-  }
+  }, [])
 
-  function handleDelete(fileId: string) {
+  const handleDelete = useCallback((fileId: string) => {
     deleteFile(fileId)
     if (selectedFileId === fileId) setSelectedFileId(null)
     closeContextMenu()
-  }
+  }, [deleteFile, selectedFileId, closeContextMenu])
 
   function handleRenameStart(fileId: string) {
     const node = findNodeById(files, fileId)
@@ -215,13 +215,13 @@ export default function FileManager() {
     setNewItemName('')
   }
 
-  function goToParent() {
+  const goToParent = useCallback(() => {
     if (currentPath.length > 1) {
       const newPath = currentPath.slice(0, -1)
       setCurrentPath(newPath)
       setExpandedFolders((prev) => new Set([...prev, newPath[newPath.length - 1]]))
     }
-  }
+  }, [currentPath])
 
   function handleRefresh() {
     setSelectedFileId(null)
@@ -293,7 +293,7 @@ export default function FileManager() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedFileId, searchQuery, files, goToParent, handleFileDoubleClick, handleDelete])
+  }, [selectedFileId, searchQuery, files, goToParent, handleFileDoubleClick, handleDelete, closeContextMenu])
 
   const treeContent = useMemo(() => {
     return files.map((node) => (

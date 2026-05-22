@@ -629,7 +629,7 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
     }
 
     setHistory((prev) => [...prev, { input: trimmed, output }])
-  }, [cwd, files, addFile, deleteFile, copyFile, moveFile, cmdHistory, theme, username, hostname, searchHistory])
+  }, [cwd, files, addFile, deleteFile, copyFile, moveFile, cmdHistory, theme, username, hostname, searchHistory, closeWindowRef, filesRef, getWindowsRef, renameFileRef])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.ctrlKey && e.key === 'c') {

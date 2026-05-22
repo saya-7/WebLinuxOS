@@ -389,7 +389,6 @@ export const useStore = create<Store>((set, get) => ({
       const node = findInTree(s.files, id)
       if (!node) return s
       
-      const previousContent = node.content
       const newHistory = [
         ...s.fileOperationHistory.slice(0, s.historyIndex + 1),
         { 
