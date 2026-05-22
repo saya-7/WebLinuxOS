@@ -70,13 +70,8 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     if (!dragging && !resizing) return
 
     let rafId: number | null = null
-    let lastUpdateTime = 0
 
     const handleMouseMove = (e: MouseEvent) => {
-      const now = performance.now()
-      if (now - lastUpdateTime < 16) return
-      lastUpdateTime = now
-
       if (rafId) {
         cancelAnimationFrame(rafId)
       }
@@ -99,10 +94,10 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
           const newY = ref.startWindowY
 
           if (resizing === 'right' || resizing === 'corner') {
-            newWidth = Math.max(win.minWidth, ref.startWidth + dx)
+            newWidth = Math.max(win.minWidth, Math.min(ref.startWidth + dx, win.maxWidth || window.innerWidth))
           }
           if (resizing === 'left') {
-            newWidth = Math.max(win.minWidth, ref.startWidth - dx)
+            newWidth = Math.max(win.minWidth, Math.min(ref.startWidth - dx, win.maxWidth || window.innerWidth))
             if (newWidth === win.minWidth && dx > 0) {
               newX = ref.startWindowX + ref.startWidth - win.minWidth
             } else {
@@ -110,7 +105,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
             }
           }
           if (resizing === 'bottom' || resizing === 'corner') {
-            newHeight = Math.max(win.minHeight, ref.startHeight + dy)
+            newHeight = Math.max(win.minHeight, Math.min(ref.startHeight + dy, win.maxHeight || window.innerHeight))
           }
 
           updateWindowPosition(win.id, newX, newY)
@@ -137,7 +132,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [dragging, resizing, win.id, win.minWidth, win.minHeight, updateWindowPosition, updateWindowSize])
+  }, [dragging, resizing, win.id, win.minWidth, win.minHeight, win.maxWidth, win.maxHeight, updateWindowPosition, updateWindowSize])
 
   const handleWindowClick = useCallback(() => {
     focusWindow(win.id)

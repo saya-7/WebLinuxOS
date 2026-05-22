@@ -24,11 +24,17 @@ export interface WindowState {
   height: number
   minWidth: number
   minHeight: number
+  maxWidth?: number
+  maxHeight?: number
   minimized: boolean
   maximized: boolean
   focused: boolean
   zIndex: number
   resizable: boolean
+  prevX?: number
+  prevY?: number
+  prevWidth?: number
+  prevHeight?: number
 }
 
 export interface DesktopIcon {

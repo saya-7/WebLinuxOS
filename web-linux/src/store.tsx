@@ -288,7 +288,18 @@ export const useStore = create<Store>((set, get) => ({
   maximizeWindow: (id) =>
     set((s) => ({
       windows: s.windows.map((w) =>
-        w.id === id ? { ...w, maximized: !w.maximized } : w
+        w.id === id ? {
+          ...w,
+          maximized: !w.maximized,
+          prevX: w.maximized ? w.prevX ?? w.x : w.x,
+          prevY: w.maximized ? w.prevY ?? w.y : w.y,
+          prevWidth: w.maximized ? w.prevWidth ?? w.width : w.width,
+          prevHeight: w.maximized ? w.prevHeight ?? w.height : w.height,
+          x: w.maximized ? (w.prevX ?? w.x) : 0,
+          y: w.maximized ? (w.prevY ?? w.y) : 0,
+          width: w.maximized ? (w.prevWidth ?? w.width) : window.innerWidth,
+          height: w.maximized ? (w.prevHeight ?? w.height) : window.innerHeight - 40,
+        } : w
       ),
     })),
 

@@ -116,17 +116,11 @@ export default function About() {
   ]
 
   const contributors = [
-    { name: '张伟', role: '核心开发者', avatar: '👨‍💻' },
-    { name: '李娜', role: 'UI 设计师', avatar: '👩‍🎨' },
-    { name: '王强', role: '后端工程师', avatar: '👨‍🔧' },
-    { name: '刘洋', role: '前端工程师', avatar: '👩‍💻' },
-    { name: '陈明', role: '测试工程师', avatar: '🧑‍🔬' },
-    { name: '赵雪', role: '文档编写', avatar: '👩‍🏫' },
-    { name: '孙磊', role: 'DevOps', avatar: '🧑‍🚀' },
-    { name: '周芳', role: '社区管理', avatar: '👩‍💼' },
+    { name: 'saya-ch', role: '项目创始人 & 开发者', avatar: '👨‍💻' },
   ]
 
   const changelog = [
+    { version: '2.1.0', date: '2026-05-22', changes: ['性能优化：改进窗口拖拽和调整大小', '添加最大化窗口尺寸记忆功能', '增强错误边界处理', '优化resize边界检查'] },
     { version: '2.0.0', date: '2025-05-15', changes: ['全新界面设计', '新增 20+ 应用', '性能优化 50%', '支持多窗口拖拽'] },
     { version: '1.5.0', date: '2025-03-01', changes: ['添加文件管理器', '新增终端模拟器', '修复窗口重叠问题'] },
     { version: '1.2.0', date: '2025-01-10', changes: ['添加系统设置', '新增主题切换', '优化内存使用'] },
