@@ -12,10 +12,29 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: isGitHubPages ? false : true,
       publicDir: 'public',
       sourcemap: false,
-      target: 'esnext'
+      target: 'esnext',
+      minify: 'terser',
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            utils: ['zustand']
+          }
+        }
+      }
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'zustand']
+    },
+    server: {
+      port: 5173,
+      open: false,
+      host: true
+    },
+    preview: {
+      port: 4173,
+      open: false
     }
   }
 })

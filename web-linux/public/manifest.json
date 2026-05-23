@@ -1,7 +1,7 @@
 {
-  "name": "WebLinuxOS",
+  "name": "WebLinuxOS - Web Linux桌面环境",
   "short_name": "WebLinux",
-  "description": "一个完全运行在浏览器中的功能性Linux桌面环境",
+  "description": "一个完全运行在浏览器中的功能性Linux桌面环境，包含56个应用程序、完整的窗口管理系统、虚拟文件系统和终端仿真器",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1a1a2e",
@@ -11,9 +11,13 @@
     {
       "src": "./favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "categories": ["utilities", "productivity"],
-  "lang": "zh-CN"
+  "lang": "zh-CN",
+  "scope": "/WebLinuxOS/",
+  "prefer_related_applications": false,
+  "handle_links": "preferred"
 }

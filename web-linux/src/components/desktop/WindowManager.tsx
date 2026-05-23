@@ -56,6 +56,8 @@ function loadComponent(name: string) {
 }
 
 function preloadComponents() {
+  if (typeof window === 'undefined') return
+  
   const criticalComponents = [
     'Terminal', 'FileManager', 'Calculator', 'Settings',
     'Notepad', 'Calendar', 'About'
@@ -66,7 +68,7 @@ function preloadComponents() {
     loadComponent(criticalComponents[index])
     if (index < criticalComponents.length - 1) {
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => loadNext(index + 1))
+        window.requestIdleCallback(() => loadNext(index + 1))
       } else {
         setTimeout(() => loadNext(index + 1), 150)
       }

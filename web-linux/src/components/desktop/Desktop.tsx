@@ -127,7 +127,8 @@ const Desktop = memo(function Desktop() {
     { label: '打开计算器', icon: '🔢', action: () => openApp('calculator') },
     { label: '打开记事本', icon: '📝', action: () => openApp('notepad') },
     { type: 'separator' },
-    { label: '关于系统', icon: 'ℹ️', action: () => openApp('about') },
+    { label: '系统信息', icon: 'ℹ️', action: () => openApp('about') },
+    { label: '帮助', icon: '❓', action: () => openApp('help') },
   ]
 
   const wallpaperStyle = wallpaper

@@ -20,7 +20,10 @@ const COMMANDS = [
   'neofetch', 'ls', 'cd', 'cat', 'echo', 'mkdir', 'touch', 'rm', 'cp', 'mv',
   'tree', 'wc', 'which', 'uptime', 'cal', 'env', 'export', 'alias', 'type',
   'man', 'find', 'grep', 'ps', 'top', 'df', 'free', 'history', 'ping', 'ifconfig',
-  'curl', 'exit', 'dashboard'
+  'curl', 'exit', 'dashboard', 'git', 'npm', 'node', 'python', 'python3',
+  'docker', 'kubectl', 'ssh', 'scp', 'rsync', 'tar', 'zip', 'unzip', 'diff',
+  'sort', 'uniq', 'head', 'tail', 'less', 'more', 'xargs', 'sed', 'awk',
+  'systemctl', 'journalctl', 'dmesg', 'lsblk', 'lsof', 'netstat', 'ss'
 ]
 
 function listDir(files: FileNode[], path: string): string {
@@ -687,6 +690,197 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
 </body>
 </html>`
         }
+        break
+      case 'git':
+        if (args[0] === 'status') {
+          output = `On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean`
+        } else if (args[0] === 'log') {
+          output = `commit a1b2c3d4e5f6g7h8i9j0
+Author: developer <dev@example.com>
+Date:   ${new Date().toDateString()}
+
+    Initial commit`
+        } else if (args[0] === 'diff') {
+          output = 'diff --git a/src/index.ts b/src/index.ts\nindex 1234567..abcdefg 100644\n--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,3 +1,4 @@\n console.log("Hello");\n+console.log("World");'
+        } else {
+          output = `git: 'usage: git [--version] [--help] [-C <path>] [-c name=value]'
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+           [-p | --paginate | -P | --no-pager] [--do-not-pager]
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+           <command> [<args>]`
+        }
+        break
+      case 'npm':
+        if (args[0] === 'version') {
+          output = '10.2.4'
+        } else if (args[0] === 'list') {
+          output = `weblinux@1.0.0
+├── react@19.2.6
+├── react-dom@19.2.6
+└── zustand@5.0.13`
+        } else if (args[0] === 'run') {
+          output = `Lifecycle scripts included in package.json:
+
+available via 'npm run':
+  dev         vite
+  build       tsc -b && vite build
+  lint        eslint .
+  preview     vite preview`
+        } else {
+          output = `npm: command not found (模拟环境)`
+        }
+        break
+      case 'node':
+        if (args[0] === '--version') {
+          output = 'v20.10.0'
+        } else if (args[0] === '-v') {
+          output = 'v20.10.0'
+        } else {
+          output = `> console.log('Hello from Node.js!');
+Hello from Node.js!`
+        }
+        break
+      case 'python':
+      case 'python3':
+        if (args[0] === '--version') {
+          output = 'Python 3.11.4'
+        } else if (args[0] === '-V') {
+          output = 'Python 3.11.4'
+        } else {
+          output = `Python 3.11.4 (tags/v3.11.4:d23a85b, Jun  6 2023, 00:00:00) [MSC v.1928 64 bit (AMD64)] on win32`
+        }
+        break
+      case 'docker':
+        if (args[0] === 'ps') {
+          output = `CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS    NAMES`
+        } else if (args[0] === 'images') {
+          output = `REPOSITORY   TAG       IMAGE ID      CREATED      SIZE
+hello-world   latest    fce289e991eb  2 years ago   1.84kB`
+        } else if (args[0] === 'info') {
+          output = `Client:
+ Version:    24.0.7
+
+Server:
+ Version:    24.0.7`
+        } else {
+          output = `docker: command not found (需要Docker环境)`
+        }
+        break
+      case 'kubectl':
+        output = `kubectl: command not found (需要Kubernetes环境)`
+        break
+      case 'systemctl':
+        if (args[1] === 'status') {
+          output = `● ssh.service - OpenSSH server daemon
+   Loaded: loaded (/usr/lib/systemd/system/ssh.service; enabled)
+   Active: active (running) since ${new Date().toDateString()}; 2 weeks ago`
+        } else if (args[1] === 'start') {
+          output = `Starting ${args[0]}...`
+        } else if (args[1] === 'stop') {
+          output = `Stopping ${args[0]}...`
+        } else {
+          output = `systemctl: 请指定服务名称和操作
+用法: systemctl [COMMAND] [NAME]`
+        }
+        break
+      case 'journalctl':
+        if (args.includes('-xe')) {
+          output = `-- Journal begins at ${new Date().toDateString()}, ends at ${new Date().toDateString()} --
+${new Date().toISOString()} hostname systemd[1]: Started Session ${Math.floor(Math.random() * 100)} of user user.`
+        } else {
+          output = `journalctl: 显示日志条目
+用法: journalctl [OPTIONS...]
+  -e          跳到日志末尾
+  -f          跟踪日志
+  -n [lines]  显示最近行数`
+        }
+        break
+      case 'dmesg':
+        output = `[    0.000000] Linux version 6.1.0-web (root@weblinux)
+[    0.000001] Command line: BOOT_IMAGE=/boot/vmlinuz
+[    0.000002] ACPI: RSDP 0x00000000000F05B0 000024 (v02 WEBLIN)
+[    0.000003] CPU: WebAssembly x86_64
+[    0.000004] Memory: 8192MB available`
+        break
+      case 'lsblk':
+        output = `NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+sda      8:0    0    50G  0 disk 
+├─sda1   8:1    0    49G  0 part /
+└─sda2   8:2    0     1G  0 part [SWAP]
+sr0     11:0    1  1024M  0 rom`
+        break
+      case 'lsof':
+        output = `COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+bash     1000   user  cwd    DIR  253,1     4096  1024 /home/user
+bash     1000   user    0u   CHR  136,0      0t0     3 /dev/pts/0`
+        break
+      case 'netstat':
+        output = `Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN`
+        break
+      case 'ss':
+        output = `Netid State Recv-Q Send-Q Local Address:Port Peer Address:Port Process
+tcp LISTEN 0 128 *:80 *:* users:(("nginx",pid=1234,fd=6))
+tcp LISTEN 0 128 *:22 *:* users:(("sshd",pid=567,fd=3))`
+        break
+      case 'tar':
+        output = `tar: 这似乎是一个归档文件 (使用 -xvf 解压)`
+        break
+      case 'zip':
+        output = `zip: 压缩文件 (usage: zip archive.zip file1 file2)`
+        break
+      case 'unzip':
+        output = `Archive:  test.zip
+  inflating: test.txt`
+        break
+      case 'sort':
+        output = args.length > 0 ? args.join('\n').split('\n').sort().join('\n') : '1\n3\n2\n5\n4'
+        break
+      case 'uniq':
+        output = 'line1\nline2\nline1'
+        break
+      case 'head':
+        output = args.length > 0 ? `Line 1\nLine 2\nLine 3\n...` : 'head: 用法: head [OPTIONS] [FILE]'
+        break
+      case 'tail':
+        output = args.length > 0 ? `...Line 97\nLine 98\nLine 99\nLine 100` : 'tail: 用法: tail [OPTIONS] [FILE]'
+        break
+      case 'less':
+        output = 'less: 分页查看器 (在模拟环境中不可用)'
+        break
+      case 'more':
+        output = 'more: 分页查看器 (在模拟环境中不可用)'
+        break
+      case 'xargs':
+        output = 'xargs: 命令构造器 (usage: xargs [command])'
+        break
+      case 'sed':
+        output = 'sed: 流编辑器 (usage: sed [options] script file)'
+        break
+      case 'awk':
+        output = 'awk: 模式扫描和处理语言 (usage: awk [options] script file)'
+        break
+      case 'ssh':
+        output = `ssh: 连接远程主机
+usage: ssh [-46AaCfGgKkMNnqsTtVvXxYy] [-b bind_address] [-c cipher_spec]
+           [-D [bind_address:]port] [-E log_file] [-e escape_char]
+           host [command]`
+        break
+      case 'scp':
+        output = `scp: 安全复制文件
+usage: scp [-346BCpqrTv] [-c cipher] [-F ssh_config] [-i identity_file]
+           [-l limit] [-o ssh_option] [-P port] [-S program]
+           [[user@]host1:]file1 ... [[user@]host2:]file2`
+        break
+      case 'rsync':
+        output = `rsync: 远程文件同步工具
+usage: rsync [OPTION]... SRC [SRC]... DEST
+       rsync [OPTION]... SRC [SRC]... [USER@]HOST:DEST`
         break
       case 'exit':
       case 'quit':

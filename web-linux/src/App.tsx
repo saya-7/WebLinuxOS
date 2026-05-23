@@ -139,6 +139,40 @@ const App = memo(function App() {
         return
       }
 
+      if (e.ctrlKey && e.shiftKey && e.key === 'ArrowUp') {
+        e.preventDefault()
+        const focusedWindow = getFocusedWindow()
+        if (focusedWindow) {
+          const windows = useStore.getState().windows
+          const otherWindow = windows.find(w => !w.focused && w.appId === focusedWindow.appId)
+          if (otherWindow) focusWindow(otherWindow.id)
+        }
+        return
+      }
+
+      if (e.ctrlKey && e.shiftKey && e.key === 'ArrowDown') {
+        e.preventDefault()
+        const focusedWindow = getFocusedWindow()
+        if (focusedWindow) {
+          const windows = useStore.getState().windows
+          const otherWindow = windows.find(w => !w.focused && w.appId === focusedWindow.appId)
+          if (otherWindow) focusWindow(otherWindow.id)
+        }
+        return
+      }
+
+      if (e.altKey && e.key === 'Tab') {
+        e.preventDefault()
+        cycleWindows(false)
+        return
+      }
+
+      if (e.altKey && e.shiftKey && e.key === 'Tab') {
+        e.preventDefault()
+        cycleWindows(true)
+        return
+      }
+
       for (const { config, action } of Object.values(systemShortcuts)) {
         if (matchesShortcut(config, isMod, isShift, isAlt, key)) {
           e.preventDefault()
@@ -157,7 +191,7 @@ const App = memo(function App() {
         }
       }
     },
-    [launcherOpen, toggleLauncher, handleSystemShortcut, openApp]
+    [launcherOpen, toggleLauncher, handleSystemShortcut, openApp, getFocusedWindow, focusWindow, cycleWindows]
   )
 
   useEffect(() => {
