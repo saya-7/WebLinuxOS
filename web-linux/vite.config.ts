@@ -14,15 +14,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       target: 'esnext',
       minify: 'terser',
-      cssMinify: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            utils: ['zustand']
-          }
-        }
-      }
+      cssMinify: true
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'zustand']

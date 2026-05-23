@@ -89,30 +89,7 @@ function removeFromTree(nodes: FileNode[], id: string): FileNode[] {
     })
 }
 
-function removeFromTreeOptimized(nodes: FileNode[], id: string): FileNode[] {
-  const result: FileNode[] = []
-  
-  function traverse(nodeList: FileNode[]): void {
-    for (const node of nodeList) {
-      if (node.id !== id) {
-        if (node.children) {
-          const newChildren = []
-          for (const child of node.children) {
-            if (child.id !== id) {
-              newChildren.push(child)
-            }
-          }
-          result.push({ ...node, children: removeFromTreeOptimized(newChildren, id) })
-        } else {
-          result.push(node)
-        }
-      }
-    }
-  }
-  
-  traverse(nodes)
-  return result
-}
+
 
 function updateInTree(nodes: FileNode[], id: string, updater: (node: FileNode) => FileNode): FileNode[] {
   return nodes.map(node => {

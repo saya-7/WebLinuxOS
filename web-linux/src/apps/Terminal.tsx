@@ -23,7 +23,7 @@ const COMMANDS = [
   'curl', 'exit', 'dashboard', 'git', 'npm', 'node', 'python', 'python3',
   'docker', 'kubectl', 'ssh', 'scp', 'rsync', 'tar', 'zip', 'unzip', 'diff',
   'sort', 'uniq', 'head', 'tail', 'less', 'more', 'xargs', 'sed', 'awk',
-  'systemctl', 'journalctl', 'dmesg', 'lsblk', 'lsof', 'netstat', 'ss'
+  'systemctl', 'journalctl', 'dmesg', 'lsblk', 'lsof', 'netstat', 'ss', 'weather'
 ]
 
 function listDir(files: FileNode[], path: string): string {
@@ -197,7 +197,7 @@ export default function Terminal() {
       case '?':
         output = `可用命令:
   文件操作: ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree, wc
-  信息查看: whoami, hostname, date, uname, uptime, cal, free, df, ps, top, dashboard, neofetch
+  信息查看: whoami, hostname, date, uname, uptime, cal, free, df, ps, top, dashboard, neofetch, weather
   网络工具: ping, ifconfig, curl
   系统工具: clear, help, history, alias, type, man, exit, cls, reset
   工具命令: echo, find, grep, env, export
@@ -508,11 +508,39 @@ export default function Terminal() {
         }
         break
       }
+      case 'weather': {
+        const weatherConditions = ['晴朗', '多云', '小雨', '晴间多云', '雷阵雨', '小到中雨', '中到大雨', '晴到多云', '阴天', '雷阵雨伴有冰雹']
+        const windDirections = ['东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风', '北风']
+        const icons = ['☀️', '⛅', '🌧️', '🌤️', '⛈️', '🌦️', '🌧️', '🌤️', '☁️', '⛈️']
+        const temp = Math.floor(Math.random() * 30 + 10)
+        const condition = weatherConditions[Math.floor(Math.random() * weatherConditions.length)]
+        const icon = icons[weatherConditions.indexOf(condition)]
+        const windDir = windDirections[Math.floor(Math.random() * windDirections.length)]
+        const windSpeed = Math.floor(Math.random() * 15 + 1)
+        const humidity = Math.floor(Math.random() * 40 + 40)
+        const pressure = Math.floor(Math.random() * 40 + 1000)
+
+        const location = args.length > 0 ? args.join(' ') : '本地'
+
+        output = [
+          `${icon}  ${location} 天气预报`,
+          `╔══════════════════════════════════════════╗`,
+          `║  天气: ${condition.padEnd(22)}║`,
+          `║  温度: ${temp}°C${' '.repeat(18)}║`,
+          `║  风向: ${windDir} ${windSpeed}级${' '.repeat(15)}║`,
+          `║  湿度: ${humidity}%${' '.repeat(20)}║`,
+          `║  气压: ${pressure}hPa${' '.repeat(16)}║`,
+          `╚══════════════════════════════════════════╝`,
+          '',
+          '小贴士: 出门记得看天气预报哦!',
+        ].join('\n')
+        break
+      }
       case 'which': {
         if (args.length === 0) {
           output = 'which: 缺少操作数'
         } else {
-          const commands = ['ls', 'cd', 'pwd', 'cat', 'echo', 'help', 'date', 'whoami', 'uname', 'mkdir', 'touch', 'rm', 'cp', 'mv', 'find', 'grep', 'ps', 'top', 'df', 'free', 'history', 'neofetch', 'tree', 'wc', 'ping', 'uptime', 'cal', 'clear']
+          const commands = ['ls', 'cd', 'weather', 'pwd', 'cat', 'echo', 'help', 'date', 'whoami', 'uname', 'mkdir', 'touch', 'rm', 'cp', 'mv', 'find', 'grep', 'ps', 'top', 'df', 'free', 'history', 'neofetch', 'tree', 'wc', 'ping', 'uptime', 'cal', 'clear']
           if (commands.includes(args[0])) {
             output = `/usr/bin/${args[0]}`
           } else {
