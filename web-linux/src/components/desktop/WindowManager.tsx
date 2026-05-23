@@ -123,6 +123,18 @@ const WindowManager = memo(function WindowManager() {
     }).filter(Boolean) as WindowComponent[]
   }, [windows, apps])
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        document.body.style.setProperty('overflow', 'hidden')
+      } else {
+        document.body.style.removeProperty('overflow')
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
   return (
     <>
       {memoizedWindows.map(({ win, Component, app }) => (

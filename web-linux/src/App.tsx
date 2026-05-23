@@ -34,13 +34,21 @@ const appShortcuts: Record<string, ShortcutKey> = {
   'app-1': { modifier: 'mod', key: '1' },
   'app-2': { modifier: 'mod', key: '2' },
   'app-3': { modifier: 'mod', key: '3' },
+  'calendar': { modifier: 'mod', key: 'c' },
+  'music': { modifier: 'mod', key: 'm' },
+  'code': { modifier: 'mod', key: 'k' },
+  'system-monitor': { modifier: 'mod', key: 'd' },
 }
 
 const systemShortcuts: Record<string, SystemShortcut> = {
   'launcher': { modifier: 'modShift', key: 'l' },
   'cycle-windows': { modifier: 'modAlt', key: 'Tab' },
+  'cycle-windows-reverse': { modifier: 'modAltShift', key: 'Tab' },
   'maximize-f11': { key: 'F11' },
   'screenshot': { key: 'PrintScreen' },
+  'close-window': { modifier: 'mod', key: 'w' },
+  'minimize-window': { modifier: 'mod', key: 'm' },
+  'new-terminal': { modifier: 'modShift', key: 'n' },
 }
 
 const App = memo(function App() {
@@ -49,6 +57,8 @@ const App = memo(function App() {
   const toggleLauncher = useStore((s) => s.toggleLauncher)
   const focusWindow = useStore((s) => s.focusWindow)
   const maximizeWindow = useStore((s) => s.maximizeWindow)
+  const minimizeWindow = useStore((s) => s.minimizeWindow)
+  const closeWindow = useStore((s) => s.closeWindow)
   const theme = useStore((s) => s.theme)
   const windows = useStore((s) => s.windows)
   const launcherOpen = useStore((s) => s.launcherOpen)
@@ -69,11 +79,12 @@ const App = memo(function App() {
     return windows.find((w) => w.focused)
   }, [windows])
 
-  const cycleWindows = useCallback(() => {
+  const cycleWindows = useCallback((reverse = false) => {
     if (windows.length <= 1) return
     const sortedWindows = [...windows].sort((a, b) => b.zIndex - a.zIndex)
     const currentIndex = sortedWindows.findIndex((w) => w.focused)
-    const nextIndex = (currentIndex + 1) % sortedWindows.length
+    const direction = reverse ? -1 : 1
+    const nextIndex = (currentIndex + direction + sortedWindows.length) % sortedWindows.length
     focusWindow(sortedWindows[nextIndex].id)
   }, [windows, focusWindow])
 
@@ -86,14 +97,26 @@ const App = memo(function App() {
       case 'cycle-windows':
         cycleWindows()
         break
+      case 'cycle-windows-reverse':
+        cycleWindows(true)
+        break
       case 'maximize-f11':
         if (focusedWindow) maximizeWindow(focusedWindow.id)
         break
       case 'screenshot':
         openApp('screenshot')
         break
+      case 'close-window':
+        if (focusedWindow) closeWindow(focusedWindow.id)
+        break
+      case 'minimize-window':
+        if (focusedWindow) minimizeWindow(focusedWindow.id)
+        break
+      case 'new-terminal':
+        openApp('terminal')
+        break
     }
-  }, [getFocusedWindow, toggleLauncher, cycleWindows, maximizeWindow, openApp])
+  }, [getFocusedWindow, toggleLauncher, cycleWindows, maximizeWindow, minimizeWindow, closeWindow, openApp])
 
   const handleAppShortcut = useCallback((shortcutKey: string) => {
     const appMap: Record<string, string> = {
@@ -113,6 +136,10 @@ const App = memo(function App() {
       'app-1': 'terminal',
       'app-2': 'files',
       'app-3': 'browser',
+      'calendar': 'calendar',
+      'music': 'music-player',
+      'code': 'code-editor',
+      'system-monitor': 'system-monitor',
     }
     const appId = appMap[shortcutKey]
     if (appId) openApp(appId)

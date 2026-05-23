@@ -14,7 +14,8 @@
     "deploy": "npm run build:github",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "preinstall": "npx only-allow npm"
   },
   "dependencies": {
     "react": "^19.2.6",
