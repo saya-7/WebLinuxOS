@@ -92,11 +92,26 @@ export default function Terminal() {
   const [cwd, setCwd] = useState('/home/user')
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<HistoryEntry[]>([
-    { input: '', output: 'Web Linux 终端 v1.2\n输入 "help" 查看可用命令' },
+    { input: '', output: 'Web Linux 终端 v1.3\n输入 "help" 查看可用命令' },
   ])
-  const [cmdHistory, setCmdHistory] = useState<string[]>([])
+  const [cmdHistory, setCmdHistory] = useState<string[]>(() => {
+    const saved = localStorage.getItem('weblinux-cmd-history')
+    return saved ? JSON.parse(saved) : []
+  })
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 })
+  const [aliases, setAliases] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('weblinux-aliases')
+    return saved ? JSON.parse(saved) : {
+      ll: 'ls -la',
+      la: 'ls -a',
+      '..': 'cd ..',
+      '...': 'cd ../..',
+      home: 'cd ~',
+      cls: 'clear',
+      q: 'exit',
+    }
+  })
 
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -118,6 +133,18 @@ export default function Terminal() {
     const focusInput = () => inputRef.current?.focus()
     setTimeout(focusInput, 100)
   }, [])
+
+  // 保存命令历史到localStorage
+  useEffect(() => {
+    if (cmdHistory.length > 0) {
+      localStorage.setItem('weblinux-cmd-history', JSON.stringify(cmdHistory.slice(-100)))
+    }
+  }, [cmdHistory])
+
+  // 保存别名到localStorage
+  useEffect(() => {
+    localStorage.setItem('weblinux-aliases', JSON.stringify(aliases))
+  }, [aliases])
 
   const username = 'user'
   const hostname = 'web-linux'
@@ -147,7 +174,13 @@ export default function Terminal() {
   }, [files, cwd])
 
   const executeCommand = useCallback((cmd: string) => {
-    const trimmed = cmd.trim()
+    let trimmed = cmd.trim()
+    
+    const aliasMatch = trimmed.match(/^(\S+)/)
+    if (aliasMatch && aliases[aliasMatch[1]]) {
+      trimmed = trimmed.replace(/^\S+/, aliases[aliasMatch[1]])
+    }
+    
     const parts = trimmed.split(/\s+/)
     const command = parts[0].toLowerCase()
     const args = parts.slice(1)
@@ -514,13 +547,27 @@ export default function Terminal() {
         }
         break
       }
-      case 'alias':
+      case 'alias': {
         if (args.length === 0) {
-          output = '未定义别名'
+          if (Object.keys(aliases).length === 0) {
+            output = '未定义别名\n使用: alias 别名=命令'
+          } else {
+            output = Object.entries(aliases)
+              .map(([key, value]) => `alias ${key}='${value}'`)
+              .join('\n')
+          }
         } else {
-          output = `alias ${args[0]}='${args.slice(1).join(' ')}'`
+          const aliasName = args[0]
+          const aliasValue = args.slice(1).join(' ')
+          if (aliasValue) {
+            setAliases(prev => ({ ...prev, [aliasName]: aliasValue }))
+            output = `alias ${aliasName}='${aliasValue}'`
+          } else {
+            output = `${aliasName}='${aliases[aliasName] || ''}'`
+          }
         }
         break
+      }
       case 'dashboard': {
         const activeWindows = getWindowsRef.current.length
         const themeLabel = theme === 'dark' ? '深色' : '浅色'
@@ -658,7 +705,7 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
     }
 
     setHistory((prev) => [...prev, { input: trimmed, output }])
-  }, [cwd, files, addFile, deleteFile, copyFile, moveFile, cmdHistory, theme, username, hostname, searchHistory, closeWindowRef, filesRef, getWindowsRef, renameFileRef])
+  }, [cwd, files, addFile, deleteFile, copyFile, moveFile, cmdHistory, theme, username, hostname, searchHistory, closeWindowRef, filesRef, getWindowsRef, renameFileRef, aliases, setAliases])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.ctrlKey && e.key === 'c') {
@@ -702,7 +749,7 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
 
     if (e.ctrlKey && e.key === 'd') {
       e.preventDefault()
-      const activeWindows = getWindows
+      const activeWindows = getWindowsRef.current
       const currentWin = activeWindows.find((w: WindowState) => w.appId === 'terminal' && w.focused)
       if (currentWin) closeWindow(currentWin.id)
       return

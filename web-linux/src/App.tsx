@@ -7,48 +7,45 @@ import Taskbar from './components/desktop/Taskbar'
 import StartMenu from './components/desktop/StartMenu'
 import ErrorBoundary from './components/ErrorBoundary'
 
-interface ShortcutKey {
-  modifier?: 'mod' | 'modShift' | 'modAlt' | 'modAltShift'
+interface ShortcutConfig {
+  mod?: boolean
+  shift?: boolean
+  alt?: boolean
   key: string | string[]
 }
 
-interface SystemShortcut {
-  modifier?: string
-  key: string
+const appShortcuts: Record<string, { config: ShortcutConfig; appId: string }> = {
+  'terminal-n': { config: { mod: true, key: 'n' }, appId: 'terminal' },
+  'files-e': { config: { mod: true, key: 'e' }, appId: 'files' },
+  'browser-b': { config: { mod: true, key: 'b' }, appId: 'browser' },
+  'settings-comma': { config: { mod: true, key: ',' }, appId: 'settings' },
+  'calculator-a': { config: { mod: true, key: 'a' }, appId: 'calculator' },
+  'text-editor-t': { config: { mod: true, key: 't' }, appId: 'text-editor' },
+  'paint-p': { config: { mod: true, key: 'p' }, appId: 'paint' },
+  'image-viewer-i': { config: { mod: true, key: 'i' }, appId: 'image-viewer' },
+  'help-h': { config: { mod: true, key: 'h' }, appId: 'help' },
+  'terminal-shift-t': { config: { mod: true, shift: true, key: 't' }, appId: 'terminal' },
+  'files-shift-f': { config: { mod: true, shift: true, key: 'f' }, appId: 'files' },
+  'settings-shift-s': { config: { mod: true, shift: true, key: 's' }, appId: 'settings' },
+  'notes-shift-n': { config: { mod: true, shift: true, key: 'n' }, appId: 'notes' },
+  'calendar-c': { config: { mod: true, key: 'c' }, appId: 'calendar' },
+  'music-m': { config: { mod: true, key: 'm' }, appId: 'music-player' },
+  'code-k': { config: { mod: true, key: 'k' }, appId: 'code-editor' },
+  'system-monitor-d': { config: { mod: true, key: 'd' }, appId: 'system-monitor' },
+  'app-1': { config: { mod: true, key: '1' }, appId: 'terminal' },
+  'app-2': { config: { mod: true, key: '2' }, appId: 'files' },
+  'app-3': { config: { mod: true, key: '3' }, appId: 'browser' },
 }
 
-const appShortcuts: Record<string, ShortcutKey> = {
-  'terminal': { modifier: 'mod', key: 'n' },
-  'files': { modifier: 'mod', key: 'e' },
-  'browser': { modifier: 'mod', key: 'b' },
-  'settings': { modifier: 'mod', key: ',' },
-  'calculator': { modifier: 'mod', key: 'a' },
-  'text-editor': { modifier: 'mod', key: 't' },
-  'paint': { modifier: 'mod', key: 'p' },
-  'image-viewer': { modifier: 'mod', key: 'i' },
-  'help': { modifier: 'mod', key: 'h' },
-  'terminal-shift': { modifier: 'modShift', key: 't' },
-  'files-shift': { modifier: 'modShift', key: 'f' },
-  'settings-shift': { modifier: 'modShift', key: 's' },
-  'notes-shift': { modifier: 'modShift', key: 'n' },
-  'app-1': { modifier: 'mod', key: '1' },
-  'app-2': { modifier: 'mod', key: '2' },
-  'app-3': { modifier: 'mod', key: '3' },
-  'calendar': { modifier: 'mod', key: 'c' },
-  'music': { modifier: 'mod', key: 'm' },
-  'code': { modifier: 'mod', key: 'k' },
-  'system-monitor': { modifier: 'mod', key: 'd' },
-}
-
-const systemShortcuts: Record<string, SystemShortcut> = {
-  'launcher': { modifier: 'modShift', key: 'l' },
-  'cycle-windows': { modifier: 'modAlt', key: 'Tab' },
-  'cycle-windows-reverse': { modifier: 'modAltShift', key: 'Tab' },
-  'maximize-f11': { key: 'F11' },
-  'screenshot': { key: 'PrintScreen' },
-  'close-window': { modifier: 'mod', key: 'w' },
-  'minimize-window': { modifier: 'mod', key: 'm' },
-  'new-terminal': { modifier: 'modShift', key: 'n' },
+const systemShortcuts: Record<string, { config: ShortcutConfig; action: string }> = {
+  'launcher': { config: { mod: true, shift: true, key: 'l' }, action: 'launcher' },
+  'cycle-windows': { config: { mod: true, alt: true, key: 'Tab' }, action: 'cycle-windows' },
+  'cycle-windows-reverse': { config: { mod: true, alt: true, shift: true, key: 'Tab' }, action: 'cycle-windows-reverse' },
+  'maximize-f11': { config: { key: 'F11' }, action: 'maximize-f11' },
+  'screenshot': { config: { key: 'PrintScreen' }, action: 'screenshot' },
+  'close-window': { config: { mod: true, key: 'w' }, action: 'close-window' },
+  'minimize-window': { config: { mod: true, key: 'm' }, action: 'minimize-window' },
+  'new-terminal': { config: { mod: true, shift: true, key: 'n' }, action: 'new-terminal' },
 }
 
 const App = memo(function App() {
@@ -88,9 +85,9 @@ const App = memo(function App() {
     focusWindow(sortedWindows[nextIndex].id)
   }, [windows, focusWindow])
 
-  const handleSystemShortcut = useCallback((shortcut: string) => {
+  const handleSystemShortcut = useCallback((action: string) => {
     const focusedWindow = getFocusedWindow()
-    switch (shortcut) {
+    switch (action) {
       case 'launcher':
         toggleLauncher()
         break
@@ -118,32 +115,14 @@ const App = memo(function App() {
     }
   }, [getFocusedWindow, toggleLauncher, cycleWindows, maximizeWindow, minimizeWindow, closeWindow, openApp])
 
-  const handleAppShortcut = useCallback((shortcutKey: string) => {
-    const appMap: Record<string, string> = {
-      'terminal': 'terminal',
-      'terminal-shift': 'terminal',
-      'files': 'files',
-      'files-shift': 'files',
-      'browser': 'browser',
-      'settings': 'settings',
-      'settings-shift': 'settings',
-      'calculator': 'calculator',
-      'text-editor': 'text-editor',
-      'paint': 'paint',
-      'image-viewer': 'image-viewer',
-      'help': 'help',
-      'notes-shift': 'notes',
-      'app-1': 'terminal',
-      'app-2': 'files',
-      'app-3': 'browser',
-      'calendar': 'calendar',
-      'music': 'music-player',
-      'code': 'code-editor',
-      'system-monitor': 'system-monitor',
-    }
-    const appId = appMap[shortcutKey]
-    if (appId) openApp(appId)
-  }, [openApp])
+  const matchesShortcut = (config: ShortcutConfig, isMod: boolean, isShift: boolean, isAlt: boolean, key: string): boolean => {
+    if (config.mod !== undefined && config.mod !== isMod) return false
+    if (config.shift !== undefined && config.shift !== isShift) return false
+    if (config.alt !== undefined && config.alt !== isAlt) return false
+    
+    const shortcutKey = Array.isArray(config.key) ? config.key : [config.key]
+    return shortcutKey.some(k => k.toLowerCase() === key)
+  }
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -160,41 +139,25 @@ const App = memo(function App() {
         return
       }
 
-      for (const [shortcut, config] of Object.entries(systemShortcuts)) {
-        const configMod = config.modifier?.includes('mod')
-        const configShift = config.modifier?.includes('Shift') || config.modifier === 'modShift'
-        const configAlt = config.modifier?.includes('Alt') || config.modifier === 'modAlt'
-        
-        if (configMod !== undefined) {
-          if (isMod !== configMod) continue
-          if (configShift !== isShift) continue
-          if (configAlt !== isAlt) continue
-        } else if (isMod || isShift || isAlt) {
-          continue
-        }
-        
-        if (Array.isArray(config.key) ? config.key.includes(key) : config.key.toLowerCase() === key) {
+      for (const { config, action } of Object.values(systemShortcuts)) {
+        if (matchesShortcut(config, isMod, isShift, isAlt, key)) {
           e.preventDefault()
-          handleSystemShortcut(shortcut)
+          handleSystemShortcut(action)
           return
         }
       }
 
       if (isMod) {
-        for (const [shortcutKey, config] of Object.entries(appShortcuts)) {
-          const needShift = config.modifier === 'modShift' || config.modifier === 'modAltShift'
-          if (needShift !== isShift) continue
-          if (config.modifier === 'modAlt' && !isAlt) continue
-          
-          if (Array.isArray(config.key) ? config.key.includes(key) : config.key.toLowerCase() === key) {
+        for (const { config, appId } of Object.values(appShortcuts)) {
+          if (matchesShortcut(config, isMod, isShift, isAlt, key)) {
             e.preventDefault()
-            handleAppShortcut(shortcutKey)
+            openApp(appId)
             return
           }
         }
       }
     },
-    [launcherOpen, toggleLauncher, handleSystemShortcut, handleAppShortcut]
+    [launcherOpen, toggleLauncher, handleSystemShortcut, openApp]
   )
 
   useEffect(() => {

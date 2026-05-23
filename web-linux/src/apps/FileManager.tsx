@@ -6,11 +6,64 @@ function formatSize(size: number | undefined): string {
   if (!size) return '0 B'
   if (size < 1024) return `${size} B`
   if (size < 1048576) return `${(size / 1024).toFixed(1)} KB`
-  return `${(size / 1048576).toFixed(1)} MB`
+  if (size < 1073741824) return `${(size / 1048576).toFixed(1)} MB`
+  return `${(size / 1073741824).toFixed(1)} GB`
 }
 
-function getFileIcon(type: 'file' | 'folder'): string {
-  return type === 'folder' ? '📁' : '📄'
+const fileTypeIcons: Record<string, string> = {
+  'txt': '📝',
+  'md': '📘',
+  'json': '📋',
+  'js': '📄',
+  'ts': '📄',
+  'tsx': '📄',
+  'jsx': '📄',
+  'html': '🌐',
+  'css': '🎨',
+  'py': '🐍',
+  'java': '☕',
+  'cpp': '⚙️',
+  'c': '⚙️',
+  'go': '🐹',
+  'rs': '🦀',
+  'php': '🐘',
+  'rb': '💎',
+  'xml': '📰',
+  'yml': '📋',
+  'yaml': '📋',
+  'sh': '🖥️',
+  'sql': '🗄️',
+  'pdf': '📕',
+  'doc': '📗',
+  'docx': '📗',
+  'xls': '📗',
+  'xlsx': '📗',
+  'ppt': '📙',
+  'pptx': '📙',
+  'zip': '📦',
+  'rar': '📦',
+  '7z': '📦',
+  'tar': '📦',
+  'gz': '📦',
+  'jpg': '🖼️',
+  'jpeg': '🖼️',
+  'png': '🖼️',
+  'gif': '🖼️',
+  'svg': '🖼️',
+  'webp': '🖼️',
+  'mp4': '🎬',
+  'mkv': '🎬',
+  'avi': '🎬',
+  'mov': '🎬',
+  'mp3': '🎵',
+  'wav': '🎵',
+  'flac': '🎵',
+}
+
+function getFileIcon(name: string, type: 'file' | 'folder'): string {
+  if (type === 'folder') return '📁'
+  const ext = name.split('.').pop()?.toLowerCase()
+  return fileTypeIcons[ext || ''] || '📄'
 }
 
 interface TreeItemProps {
@@ -411,7 +464,7 @@ export default function FileManager() {
                   onContextMenu={(e) => handleContextMenu(e, file.id)}
                 >
                   <span className="app-file-col-name">
-                    <span className="app-file-icon">{getFileIcon(file.type)}</span>
+                    <span className="app-file-icon">{getFileIcon(file.name, file.type)}</span>
                     {file.name}
                   </span>
                   <span className="app-file-col-type">{file.type === 'folder' ? '文件夹' : '文本文件'}</span>
@@ -429,7 +482,7 @@ export default function FileManager() {
                   onContextMenu={(e) => handleContextMenu(e, file.id)}
                 >
                   <span className="app-file-col-name">
-                    <span className="app-file-icon">{getFileIcon(file.type)}</span>
+                    <span className="app-file-icon">{getFileIcon(file.name, file.type)}</span>
                     {renameTarget === file.id ? (
                       <input
                         autoFocus

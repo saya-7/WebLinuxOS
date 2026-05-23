@@ -54,32 +54,45 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     }, 200)
   }, [win.id, minimizeWindow])
 
-  // 添加键盘快捷键支持
-  useEffect(() => {
-    if (!win.focused) return;
-    
+  const handleKeyboardShortcuts = useCallback(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
-        e.preventDefault();
-        handleClose();
+      if (!win.focused) return
+      
+      const isMod = e.ctrlKey || e.metaKey
+      const isShift = e.shiftKey
+      
+      if (isMod && e.key === 'w') {
+        e.preventDefault()
+        handleClose()
+        return
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
-        e.preventDefault();
-        handleMinimize();
+      
+      if (isMod && e.key === 'm' && !isShift) {
+        e.preventDefault()
+        handleMinimize()
+        return
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'M') {
-        e.preventDefault();
-        maximizeWindow(win.id);
+      
+      if (isMod && isShift && e.key.toLowerCase() === 'm') {
+        e.preventDefault()
+        maximizeWindow(win.id)
+        return
       }
+      
       if (e.key === 'Escape' && win.maximized) {
-        e.preventDefault();
-        maximizeWindow(win.id);
+        e.preventDefault()
+        maximizeWindow(win.id)
       }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [win.focused, win.id, win.maximized, handleClose, handleMinimize, maximizeWindow]);
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [win.focused, win.id, win.maximized, handleClose, handleMinimize, maximizeWindow])
+
+  useEffect(() => {
+    const cleanup = handleKeyboardShortcuts()
+    return cleanup
+  }, [handleKeyboardShortcuts])
 
   const handleDragStart = useCallback(
     (e: React.MouseEvent) => {
