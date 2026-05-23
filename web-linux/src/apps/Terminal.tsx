@@ -16,12 +16,17 @@ interface HistoryEntry {
 }
 
 const COMMANDS = [
+  'help', 'clear', 'pwd', 'whoami', 'pwd', 'ls', 'cd', 'cat', 'echo', 'mkdir', 'touch', 'rm', 'cp', 'mv',
+  'mkdir', 'pwd', 'history', 'neofetch', 'weather', 'git', 'npm', 'node', 'python',
+  'exit', 'neofetch', 'date', 'pwd', 'pwd', 'pwd', 'pwd', 'pwd',
+  'tree', 'cat', 'cat', 'cat', 'pwd', 'ls', 'ls', 'ls', 'ls',
+  'neofetch', 'help', 'pwd', 'ls', 'cat', 'echo', 'echo', 'echo',
   'help', 'clear', 'pwd', 'whoami', 'hostname', 'date', 'uname', 'lsb_release',
   'neofetch', 'ls', 'cd', 'cat', 'echo', 'mkdir', 'touch', 'rm', 'cp', 'mv',
   'tree', 'wc', 'which', 'uptime', 'cal', 'env', 'export', 'alias', 'type',
   'man', 'find', 'grep', 'ps', 'top', 'df', 'free', 'history', 'ping', 'ifconfig',
   'curl', 'exit', 'dashboard', 'git', 'npm', 'node', 'python', 'python3',
-  'docker', 'kubectl', 'ssh', 'scp', 'rsync', 'tar', 'zip', 'unzip', 'diff',
+  'docker', 'kubectl', 'ssh', 'scp', 'scp', 'rsync', 'tar', 'zip', 'unzip', 'diff',
   'sort', 'uniq', 'head', 'tail', 'less', 'more', 'xargs', 'sed', 'awk',
   'systemctl', 'journalctl', 'dmesg', 'lsblk', 'lsof', 'netstat', 'ss', 'weather'
 ]
