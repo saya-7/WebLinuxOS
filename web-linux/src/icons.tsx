@@ -558,3 +558,14 @@ export const MindMapIcon = () => (
     <circle cx="9" cy="18" r="2" stroke="currentColor" strokeWidth="2"/>
   </svg>
 )
+
+export const StickyNotesIcon = () => (
+  <svg width='1em' height='1em' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="4" width="10" height="10" rx="1" stroke="currentColor" strokeWidth="2"/>
+    <rect x="11" y="10" width="10" height="10" rx="1" stroke="currentColor" strokeWidth="2"/>
+    <path d="M6 7H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M6 10H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M14 13H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M14 16H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+)

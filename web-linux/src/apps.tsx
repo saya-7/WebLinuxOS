@@ -10,11 +10,12 @@ import {
   BluetoothIcon, BatteryIcon, InfoIcon, HelpIcon, CommandIcon,
   PaletteIcon, MagnifierIcon, SnakeIcon, TetrisIcon, ChatIcon, BoardIcon,
   ClipboardIcon, LightningIcon, SearchIcon, PomodoroIcon, PetIcon,
-  WallpaperIcon, MindMapIcon
+  WallpaperIcon, MindMapIcon, StickyNotesIcon
 } from './icons'
 import type { AppDefinition } from './types'
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'sticky-notes-wall', name: '便签墙', icon: <StickyNotesIcon />, component: 'StickyNotesWall', category: 'office', defaultWidth: 800, defaultHeight: 600, minWidth: 500, minHeight: 400, resizable: true, multiple: false },
   { id: 'virtual-pet', name: '虚拟宠物', icon: <PetIcon />, component: 'VirtualPet', category: 'games', defaultWidth: 400, defaultHeight: 650, minWidth: 350, minHeight: 550, resizable: true, multiple: false },
   { id: 'wallpaper-gallery', name: '壁纸画廊', icon: <WallpaperIcon />, component: 'WallpaperGallery', category: 'utilities', defaultWidth: 700, defaultHeight: 600, minWidth: 500, minHeight: 450, resizable: true, multiple: false },
   { id: 'mind-map', name: '思维导图', icon: <MindMapIcon />, component: 'MindMap', category: 'office', defaultWidth: 900, defaultHeight: 650, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
