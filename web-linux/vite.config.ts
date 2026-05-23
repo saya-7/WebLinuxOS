@@ -12,7 +12,10 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: isGitHubPages ? false : true,
       publicDir: 'public',
       sourcemap: false,
-      target: 'esnext'
+      target: 'esnext',
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'zustand']
     }
   }
 })

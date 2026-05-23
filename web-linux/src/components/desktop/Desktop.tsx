@@ -119,9 +119,15 @@ const Desktop = memo(function Desktop() {
   const menuItems: MenuEntry[] = [
     { label: '打开终端', icon: '💻', action: () => openApp('terminal') },
     { label: '打开文件管理器', icon: '📁', action: () => openApp('files') },
+    { label: '打开浏览器', icon: '🌐', action: () => openApp('browser') },
     { type: 'separator' },
     { label: '更换壁纸', icon: '🖼️', action: handleWallpaperChange },
     { label: '显示设置', icon: '⚙️', action: () => openApp('settings') },
+    { type: 'separator' },
+    { label: '打开计算器', icon: '🔢', action: () => openApp('calculator') },
+    { label: '打开记事本', icon: '📝', action: () => openApp('notepad') },
+    { type: 'separator' },
+    { label: '关于系统', icon: 'ℹ️', action: () => openApp('about') },
   ]
 
   const wallpaperStyle = wallpaper

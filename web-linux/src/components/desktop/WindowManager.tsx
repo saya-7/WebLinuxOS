@@ -56,22 +56,19 @@ function loadComponent(name: string) {
 }
 
 function preloadComponents() {
-  const commonComponents = [
-    'Terminal', 'FileManager', 'TextEditor', 'Calculator', 'Settings',
-    'SystemMonitor', 'WebBrowser', 'CodeEditor', 'Notepad', 'Calendar',
-    'ImageViewer', 'MusicPlayer', 'Paint', 'Weather', 'Notes',
-    'TodoList', 'Contacts', 'Email', 'Help', 'About',
-    'Screenshot', 'ScreenRecorder', 'SoundRecorder', 'Camera'
+  const criticalComponents = [
+    'Terminal', 'FileManager', 'Calculator', 'Settings',
+    'Notepad', 'Calendar', 'About'
   ]
-  // 使用 requestIdleCallback 进行空闲时预加载
+  
   const loadNext = (index: number) => {
-    if (index >= commonComponents.length) return
-    loadComponent(commonComponents[index])
-    if (index < commonComponents.length - 1) {
+    if (index >= criticalComponents.length) return
+    loadComponent(criticalComponents[index])
+    if (index < criticalComponents.length - 1) {
       if ('requestIdleCallback' in window) {
         requestIdleCallback(() => loadNext(index + 1))
       } else {
-        setTimeout(() => loadNext(index + 1), 100)
+        setTimeout(() => loadNext(index + 1), 150)
       }
     }
   }

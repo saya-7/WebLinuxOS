@@ -38,12 +38,8 @@ const appShortcuts: Record<string, ShortcutKey> = {
 
 const systemShortcuts: Record<string, SystemShortcut> = {
   'launcher': { modifier: 'modShift', key: 'l' },
-  'close-window': { modifier: 'mod', key: 'w' },
   'cycle-windows': { modifier: 'modAlt', key: 'Tab' },
-  'minimize-window': { modifier: 'mod', key: 'm' },
-  'maximize-window': { modifier: 'modShift', key: 'm' },
   'maximize-f11': { key: 'F11' },
-  'close-alt-f4': { modifier: 'modAlt', key: 'f4' },
   'screenshot': { key: 'PrintScreen' },
 }
 
@@ -51,9 +47,7 @@ const App = memo(function App() {
   const registerApp = useStore((s) => s.registerApp)
   const openApp = useStore((s) => s.openApp)
   const toggleLauncher = useStore((s) => s.toggleLauncher)
-  const closeWindow = useStore((s) => s.closeWindow)
   const focusWindow = useStore((s) => s.focusWindow)
-  const minimizeWindow = useStore((s) => s.minimizeWindow)
   const maximizeWindow = useStore((s) => s.maximizeWindow)
   const theme = useStore((s) => s.theme)
   const windows = useStore((s) => s.windows)
@@ -89,27 +83,17 @@ const App = memo(function App() {
       case 'launcher':
         toggleLauncher()
         break
-      case 'close-window':
-        if (focusedWindow) closeWindow(focusedWindow.id)
-        break
       case 'cycle-windows':
         cycleWindows()
         break
-      case 'minimize-window':
-        if (focusedWindow) minimizeWindow(focusedWindow.id)
-        break
-      case 'maximize-window':
       case 'maximize-f11':
         if (focusedWindow) maximizeWindow(focusedWindow.id)
-        break
-      case 'close-alt-f4':
-        if (focusedWindow) closeWindow(focusedWindow.id)
         break
       case 'screenshot':
         openApp('screenshot')
         break
     }
-  }, [getFocusedWindow, toggleLauncher, closeWindow, cycleWindows, minimizeWindow, maximizeWindow, openApp])
+  }, [getFocusedWindow, toggleLauncher, cycleWindows, maximizeWindow, openApp])
 
   const handleAppShortcut = useCallback((shortcutKey: string) => {
     const appMap: Record<string, string> = {

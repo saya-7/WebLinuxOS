@@ -243,12 +243,16 @@ export const useStore = create<Store>((set, get) => ({
     }
     const id = `window-${++windowIdCounter}`
     const offset = (state.windows.filter((w) => w.appId === app.id).length % 8) * 30
+    const screenWidth = window.innerWidth
+    const screenHeight = window.innerHeight - 40
+    const x = Math.max(0, Math.min(100 + offset, screenWidth - app.defaultWidth))
+    const y = Math.max(0, Math.min(60 + offset, screenHeight - app.defaultHeight))
     const newWindow: WindowState = {
       id,
       appId: app.id,
       title: app.name,
-      x: 100 + offset,
-      y: 60 + offset,
+      x,
+      y,
       width: app.defaultWidth,
       height: app.defaultHeight,
       minWidth: app.minWidth,

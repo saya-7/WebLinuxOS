@@ -32,6 +32,12 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
   const app = apps.find((a) => a.id === win.appId)
 
   const [isMinimizing, setIsMinimizing] = useState(false)
+  const [isOpening, setIsOpening] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsOpening(false), 300)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleClose = useCallback(() => {
     setIsClosing(true)
@@ -208,7 +214,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
 
   return (
     <div
-      className={`window ${win.focused ? 'focused' : ''} ${win.maximized ? 'maximized' : ''} ${isClosing ? 'closing' : ''} ${isMinimizing ? 'minimizing' : ''}`}
+      className={`window ${win.focused ? 'focused' : ''} ${win.maximized ? 'maximized' : ''} ${isClosing ? 'closing' : ''} ${isMinimizing ? 'minimizing' : ''} ${isOpening ? 'opening' : ''}`}
       style={getWindowStyle()}
       onMouseDown={handleWindowClick}
       onMouseEnter={() => setIsHovered(true)}
