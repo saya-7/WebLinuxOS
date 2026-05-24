@@ -214,12 +214,16 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
       height: win.maximized ? '100%' : win.height,
       zIndex: win.zIndex,
       display: win.minimized ? 'none' : 'flex',
+      backdropFilter: 'blur(20px) saturate(180%)',
+      border: win.focused ? '1px solid rgba(139, 124, 240, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
     }
 
     if (win.focused && !win.maximized) {
       baseStyle.boxShadow = isHovered
-        ? '0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--accent), 0 12px 40px rgba(108, 92, 231, 0.25)'
-        : '0 4px 28px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--accent), 0 8px 32px rgba(108, 92, 231, 0.2)'
+        ? '0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 124, 240, 0.5), 0 16px 60px rgba(139, 124, 240, 0.3)'
+        : '0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 124, 240, 0.4), 0 12px 40px rgba(139, 124, 240, 0.25)'
+    } else if (!win.maximized) {
+      baseStyle.boxShadow = '0 6px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
     }
 
     return baseStyle

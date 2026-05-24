@@ -48,6 +48,29 @@ const Desktop = memo(function Desktop() {
   const [selectedIconId, setSelectedIconId] = useState<string | null>(null)
   const [showSplash, setShowSplash] = useState(true)
   const lastClickRef = useRef<{ id: string; time: number } | null>(null)
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; speed: number; color: string }>>([])
+
+  useEffect(() => {
+    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 1,
+      speed: Math.random() * 0.5 + 0.1,
+      color: Math.random() > 0.5 ? 'rgba(139, 124, 240, 0.4)' : 'rgba(0, 206, 201, 0.3)'
+    }))
+    setParticles(newParticles)
+    
+    const interval = setInterval(() => {
+      setParticles(prev => prev.map(p => ({
+        ...p,
+        y: p.y - p.speed < 0 ? 100 : p.y - p.speed,
+        x: p.x + Math.sin(Date.now() / 1000 + p.id) * 0.1
+      })))
+    }, 50)
+    
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -234,11 +257,44 @@ const Desktop = memo(function Desktop() {
       className="desktop"
       onContextMenu={handleContextMenu}
       onClick={handleDesktopClick}
-      style={wallpaperStyle}
+      style={{
+        ...wallpaperStyle,
+        background: wallpaper ? (wallpaper.startsWith('linear-gradient') ? wallpaper : undefined) : 
+          'radial-gradient(ellipse at 10% 20%, rgba(139, 124, 240, 0.15) 0%, transparent 50%), ' +
+          'radial-gradient(ellipse at 90% 80%, rgba(0, 206, 201, 0.12) 0%, transparent 50%), ' +
+          'linear-gradient(135deg, #0f0f23 0%, #1a1a35 50%, #0f0f23 100%)'
+      }}
       role="application"
       aria-label="桌面环境"
       tabIndex={-1}
     >
+      {/* Animated background overlay */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 100%)',
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Floating particles */}
+      {particles.map(p => (
+        <div
+          key={p.id}
+          style={{
+            position: 'absolute',
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            borderRadius: '50%',
+            background: p.color,
+            boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
+            pointerEvents: 'none',
+            transition: 'left 0.05s linear'
+          }}
+        />
+      ))}
+      
       <div className="sr-only" role="status" aria-live="polite">
         Web Linux 桌面环境 - 右键可打开上下文菜单
       </div>

@@ -5,36 +5,36 @@
 }
 
 :root {
-  --desktop-bg: #1a1a2e;
-  --window-bg: #252536;
-  --window-border: #3a3a5c;
-  --titlebar-bg: #2a2a3e;
-  --titlebar-active-bg: #3a3a5c;
-  --titlebar-text: #c8c8d4;
-  --titlebar-button-hover: rgba(255, 255, 255, 0.08);
-  --titlebar-close-hover: #e81123;
-  --taskbar-bg: #16162a;
-  --taskbar-border: #2e2e4a;
+  --desktop-bg: #0f0f23;
+  --window-bg: rgba(24, 24, 44, 0.85);
+  --window-border: rgba(108, 92, 231, 0.3);
+  --titlebar-bg: rgba(30, 30, 54, 0.9);
+  --titlebar-active-bg: rgba(42, 42, 70, 0.95);
+  --titlebar-text: #e0e0ff;
+  --titlebar-button-hover: rgba(108, 92, 231, 0.15);
+  --titlebar-close-hover: rgba(232, 17, 35, 0.4);
+  --taskbar-bg: rgba(12, 12, 28, 0.85);
+  --taskbar-border: rgba(108, 92, 231, 0.25);
   --taskbar-button-bg: transparent;
-  --taskbar-button-hover: rgba(255, 255, 255, 0.06);
-  --taskbar-button-active: rgba(255, 255, 255, 0.1);
-  --launcher-bg: #1e1e32;
-  --launcher-border: #3a3a5c;
-  --launcher-category-hover: rgba(255, 255, 255, 0.04);
-  --launcher-category-active: rgba(255, 255, 255, 0.08);
-  --context-menu-bg: #282840;
-  --context-menu-hover: rgba(255, 255, 255, 0.08);
-  --text-primary: #e0e0e8;
-  --text-secondary: #9090a4;
-  --accent: #6c5ce7;
-  --accent-hover: #7c6df7;
-  --accent-bg: rgba(108, 92, 231, 0.15);
-  --desktop-icon-text: #e0e0e8;
-  --desktop-icon-selected: rgba(108, 92, 231, 0.25);
-  --desktop-icon-selected-border: rgba(108, 92, 231, 0.5);
+  --taskbar-button-hover: rgba(108, 92, 231, 0.12);
+  --taskbar-button-active: rgba(108, 92, 231, 0.25);
+  --launcher-bg: rgba(20, 20, 40, 0.95);
+  --launcher-border: rgba(108, 92, 231, 0.3);
+  --launcher-category-hover: rgba(108, 92, 231, 0.1);
+  --launcher-category-active: rgba(108, 92, 231, 0.2);
+  --context-menu-bg: rgba(35, 35, 58, 0.98);
+  --context-menu-hover: rgba(108, 92, 231, 0.18);
+  --text-primary: #e8e8ff;
+  --text-secondary: #a0a0cf;
+  --accent: #8b7cf0;
+  --accent-hover: #a59dfa;
+  --accent-bg: rgba(139, 124, 240, 0.2);
+  --desktop-icon-text: #e0e0ff;
+  --desktop-icon-selected: rgba(139, 124, 240, 0.3);
+  --desktop-icon-selected-border: rgba(139, 124, 240, 0.6);
   --scrollbar-bg: transparent;
-  --scrollbar-thumb: #3a3a5c;
-  --scrollbar-thumb-hover: #4a4a7a;
+  --scrollbar-thumb: rgba(108, 92, 231, 0.35);
+  --scrollbar-thumb-hover: rgba(108, 92, 231, 0.5);
 }
 
 :root.light {
