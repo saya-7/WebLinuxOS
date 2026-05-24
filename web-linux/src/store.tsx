@@ -570,7 +570,7 @@ export const useStore = create<Store>((set, get) => ({
 
   updateFileContent: (id, content) =>
     set((s) => {
-      const node = findInTree(s.files, id)
+      const node = findNodeById(s.files, id)
       if (!node) return s
       
       const newHistory = [
@@ -634,8 +634,8 @@ export const useStore = create<Store>((set, get) => ({
 
   copyFile: (sourceId, targetParentId) => {
     const state = get()
-    const sourceNode = findInTree(state.files, sourceId)
-    const targetParent = findInTree(state.files, targetParentId)
+    const sourceNode = findNodeById(state.files, sourceId)
+    const targetParent = findNodeById(state.files, targetParentId)
     
     if (!sourceNode || !targetParent || targetParent.type !== 'folder') {
       return

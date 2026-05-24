@@ -7,6 +7,7 @@ const Taskbar = memo(function Taskbar() {
   const currentDesktop = useStore((s) => s.currentDesktop)
   const totalDesktops = useStore((s) => s.totalDesktops)
   const windowsPerDesktop = useStore((s) => s.windowsPerDesktop)
+  const theme = useStore((s) => s.theme)
 
   const minimizeWindow = useStore((s) => s.minimizeWindow)
   const restoreWindow = useStore((s) => s.restoreWindow)
@@ -18,16 +19,29 @@ const Taskbar = memo(function Taskbar() {
   const addDesktop = useStore((s) => s.addDesktop)
   const removeDesktop = useStore((s) => s.removeDesktop)
   const moveWindowToDesktop = useStore((s) => s.moveWindowToDesktop)
+  const setTheme = useStore((s) => s.setTheme)
 
   const [time, setTime] = useState(new Date())
   const [volume, setVolume] = useState(80)
   const [battery, setBattery] = useState(94)
   const [isCharging, setIsCharging] = useState(false)
+  const [showQuickSettings, setShowQuickSettings] = useState(false)
+  const [wifiEnabled, setWifiEnabled] = useState(true)
+  const [bluetoothEnabled, setBluetoothEnabled] = useState(false)
+  const [nightMode, setNightMode] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showQuickSettings) setShowQuickSettings(false)
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showQuickSettings])
 
   useEffect(() => {
     const batteryTimer = setInterval(() => {
@@ -184,6 +198,7 @@ const Taskbar = memo(function Taskbar() {
       </div>
 
       <div className="taskbar-right">
+        <div className="taskbar-tray-item" title="快速设置" onClick={(e) => { e.stopPropagation(); setShowQuickSettings(!showQuickSettings) }} style={{ cursor: 'pointer', transition: 'background 0.2s, transform 0.1s' }}>⚡</div>
         <div className="taskbar-tray-item" title="网络已连接" onClick={() => openApp('network-monitor')} style={{ cursor: 'pointer', transition: 'background 0.2s, transform 0.1s' }}>📶</div>
         <div className="taskbar-tray-item" title={`音量: ${volume}%`} onClick={() => setVolume(v => v === 0 ? 80 : v - 20)} style={{ cursor: 'pointer', transition: 'background 0.2s' }}>{getVolumeIcon()}</div>
         <div className="taskbar-tray-item" title={`电池: ${Math.round(battery)}% ${isCharging ? '(充电中)' : ''}`} onClick={() => openApp('power-manager')} style={{ cursor: 'pointer', transition: 'background 0.2s' }}>{getBatteryIcon()}</div>
@@ -200,6 +215,84 @@ const Taskbar = memo(function Taskbar() {
           <div style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.1 }}>{formatDate(time)}</div>
         </div>
       </div>
+
+      {showQuickSettings && (
+        <div className="quick-settings-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="quick-settings-grid">
+            <div
+              className={`quick-settings-item ${wifiEnabled ? 'active' : ''}`}
+              onClick={() => setWifiEnabled(!wifiEnabled)}
+              title="Wi-Fi"
+            >
+              📶
+            </div>
+            <div
+              className={`quick-settings-item ${bluetoothEnabled ? 'active' : ''}`}
+              onClick={() => setBluetoothEnabled(!bluetoothEnabled)}
+              title="蓝牙"
+            >
+              🔵
+            </div>
+            <div
+              className={`quick-settings-item ${nightMode ? 'active' : ''}`}
+              onClick={() => {
+                setNightMode(!nightMode)
+                setTheme(nightMode ? 'light' : 'dark')
+              }}
+              title="夜间模式"
+            >
+              🌙
+            </div>
+            <div
+              className="quick-settings-item"
+              onClick={() => openApp('network-monitor')}
+              title="网络设置"
+            >
+              🌐
+            </div>
+            <div
+              className="quick-settings-item"
+              onClick={() => openApp('settings')}
+              title="系统设置"
+            >
+              ⚙️
+            </div>
+            <div
+              className="quick-settings-item"
+              onClick={() => openApp('power-manager')}
+              title="电源管理"
+            >
+              ⚡
+            </div>
+          </div>
+
+          <div className="quick-settings-slider">
+            <span>🔊</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+            />
+            <span style={{ minWidth: '35px', textAlign: 'right', fontSize: 12 }}>{volume}%</span>
+          </div>
+
+          <div className="quick-settings-slider">
+            <span>🔋</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={battery}
+              onChange={(e) => setBattery(Number(e.target.value))}
+            />
+            <span style={{ minWidth: '45px', textAlign: 'right', fontSize: 12 }}>
+              {Math.round(battery)}%{isCharging ? ' ⚡' : ''}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   )
 })
