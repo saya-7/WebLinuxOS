@@ -143,6 +143,22 @@ export default function FileManager() {
   const renameFile = useStore((s) => s.renameFile)
   const openFileWith = useStore((s) => s.openFileWith)
   const copyFile = useStore((s) => s.copyFile)
+  
+  function handleDownload(fileId: string) {
+    const node = findNodeById(files, fileId)
+    if (node && node.type === 'file') {
+      const blob = new Blob([node.content || ''], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = node.name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }
+    closeContextMenu()
+  }
 
   const [currentPath, setCurrentPath] = useState<string[]>(['root'])
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']))
@@ -445,6 +461,7 @@ export default function FileManager() {
           <>
             <button className="app-toolbar-btn" onClick={() => handleCopy(selectedFileId)} title="复制 (Ctrl+C)">📋</button>
             <button className="app-toolbar-btn" onClick={() => handleCut(selectedFileId)} title="剪切 (Ctrl+X)">✂️</button>
+            <button className="app-toolbar-btn" onClick={() => handleDownload(selectedFileId)} title="下载">⬇️</button>
             <button className="app-toolbar-btn" onClick={() => handleDelete(selectedFileId)} title="删除">🗑</button>
           </>
         )}
@@ -603,6 +620,9 @@ export default function FileManager() {
           </div>
           <div className="app-context-menu-item" onClick={() => handleRenameStart(contextMenu.fileId)}>
             ✏️ 重命名
+          </div>
+          <div className="app-context-menu-item" onClick={() => handleDownload(contextMenu.fileId)}>
+            ⬇️ 下载
           </div>
           <div className="app-context-menu-separator" />
           <div className="app-context-menu-item" onClick={() => handleCreateNew('folder')}>
