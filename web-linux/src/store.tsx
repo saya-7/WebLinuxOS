@@ -234,6 +234,12 @@ interface Store {
   removeNotification: (id: string) => void
   toggleNotificationCenter: () => void
   closeNotificationCenter: () => void
+  setSearchQuery: (query: string) => void
+  addRecentFile: (file: FileNode) => void
+  toggleFavorite: (fileId: string) => void
+  togglePinnedApp: (appId: string) => void
+  clearRecentFiles: () => void
+  clearFavorites: () => void
 }
 
 let windowIdCounter = 0
