@@ -7,7 +7,6 @@ const Taskbar = memo(function Taskbar() {
   const currentDesktop = useStore((s) => s.currentDesktop)
   const totalDesktops = useStore((s) => s.totalDesktops)
   const windowsPerDesktop = useStore((s) => s.windowsPerDesktop)
-  const theme = useStore((s) => s.theme)
 
   const minimizeWindow = useStore((s) => s.minimizeWindow)
   const restoreWindow = useStore((s) => s.restoreWindow)
