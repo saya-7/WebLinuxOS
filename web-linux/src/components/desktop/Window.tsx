@@ -54,44 +54,39 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     }, 250)
   }, [win.id, minimizeWindow])
 
-  const handleKeyboardShortcuts = useCallback(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!win.focused) return
-      
-      const isMod = e.ctrlKey || e.metaKey
-      const isShift = e.shiftKey
-      
-      if (isMod && e.key === 'w') {
-        e.preventDefault()
-        handleClose()
-        return
-      }
-      
-      if (isMod && e.key === 'm' && !isShift) {
-        e.preventDefault()
-        handleMinimize()
-        return
-      }
-      
-      if (isMod && isShift && e.key.toLowerCase() === 'm') {
-        e.preventDefault()
-        maximizeWindow(win.id)
-        return
-      }
-      
-      if (e.key === 'Escape' && win.maximized) {
-        e.preventDefault()
-        maximizeWindow(win.id)
-      }
+  const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
+    if (!win.focused) return
+    
+    const isMod = e.ctrlKey || e.metaKey
+    const isShift = e.shiftKey
+    
+    if (isMod && e.key === 'w') {
+      e.preventDefault()
+      handleClose()
+      return
     }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    
+    if (isMod && e.key === 'm' && !isShift) {
+      e.preventDefault()
+      handleMinimize()
+      return
+    }
+    
+    if (isMod && isShift && e.key.toLowerCase() === 'm') {
+      e.preventDefault()
+      maximizeWindow(win.id)
+      return
+    }
+    
+    if (e.key === 'Escape' && win.maximized) {
+      e.preventDefault()
+      maximizeWindow(win.id)
+    }
   }, [win.focused, win.id, win.maximized, handleClose, handleMinimize, maximizeWindow])
 
   useEffect(() => {
-    const cleanup = handleKeyboardShortcuts()
-    return cleanup
+    window.addEventListener('keydown', handleKeyboardShortcuts)
+    return () => window.removeEventListener('keydown', handleKeyboardShortcuts)
   }, [handleKeyboardShortcuts])
 
   const handleDragStart = useCallback(

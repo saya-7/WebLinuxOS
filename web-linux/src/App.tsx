@@ -30,7 +30,7 @@ const appShortcuts: Record<string, { config: ShortcutConfig; appId: string }> = 
   'notes': { config: { mod: true, shift: true, key: 'n' }, appId: 'notes' },
   'calendar': { config: { mod: true, shift: true, key: 'c' }, appId: 'calendar' },
   'music-player': { config: { mod: true, shift: true, key: 'm' }, appId: 'music-player' },
-  'code-editor': { config: { mod: true, key: 'k' }, appId: 'code-editor' },
+  'code-editor': { config: { mod: true, key: 'g' }, appId: 'code-editor' },
   'system-monitor': { config: { mod: true, key: 'd' }, appId: 'system-monitor' },
   'weather': { config: { mod: true, shift: true, key: 'w' }, appId: 'weather' },
   'camera': { config: { mod: true, shift: true, key: 'a' }, appId: 'camera' },

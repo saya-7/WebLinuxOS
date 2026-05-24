@@ -44,32 +44,90 @@ const Desktop = memo(function Desktop() {
   const hideContextMenu = useStore((s) => s.hideContextMenu)
   const wallpaper = useStore((s) => s.wallpaper)
   const setWallpaper = useStore((s) => s.setWallpaper)
+  const liveWallpaper = useStore((s) => s.liveWallpaper)
+  const liveWallpaperEnabled = useStore((s) => s.liveWallpaperEnabled)
+  const toggleLiveWallpaper = useStore((s) => s.toggleLiveWallpaper)
+  const setLiveWallpaper = useStore((s) => s.setLiveWallpaper)
 
   const [selectedIconId, setSelectedIconId] = useState<string | null>(null)
   const [showSplash, setShowSplash] = useState(true)
   const lastClickRef = useRef<{ id: string; time: number } | null>(null)
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; speed: number; color: string }>>([])
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; speed: number; color: string; vx: number; vy: number }>>([])
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+    const newParticles = Array.from({ length: 50 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 4 + 1,
-      speed: Math.random() * 0.5 + 0.1,
-      color: Math.random() > 0.5 ? 'rgba(139, 124, 240, 0.4)' : 'rgba(0, 206, 201, 0.3)'
+      size: Math.random() * 6 + 2,
+      speed: Math.random() * 0.3 + 0.1,
+      color: Math.random() > 0.5 ? 'rgba(139, 124, 240, 0.5)' : 'rgba(0, 206, 201, 0.4)',
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.2
     }))
     setParticles(newParticles)
+  }, [])
+
+  useEffect(() => {
+    if (!liveWallpaperEnabled) return
     
-    const interval = setInterval(() => {
-      setParticles(prev => prev.map(p => ({
-        ...p,
-        y: p.y - p.speed < 0 ? 100 : p.y - p.speed,
-        x: p.x + Math.sin(Date.now() / 1000 + p.id) * 0.1
-      })))
-    }, 50)
+    let animationId: number
+    const animate = () => {
+      setParticles(prev => prev.map(p => {
+        let newX = p.x + p.vx
+        let newY = p.y + p.vy
+        let newVx = p.vx
+        let newVy = p.vy
+
+        // Bounce off edges
+        if (newX <= 0 || newX >= 100) {
+          newVx = -newVx
+          newX = Math.max(0, Math.min(100, newX))
+        }
+        if (newY <= 0 || newY >= 100) {
+          newVy = -newVy
+          newY = Math.max(0, Math.min(100, newY))
+        }
+
+        // Add mouse attraction for interactive wallpaper
+        if (liveWallpaper === 'interactive') {
+          const dx = (mousePos.x - p.x) / 100
+          const dy = (mousePos.y - p.y) / 100
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          if (dist < 0.3 && dist > 0) {
+            newVx -= dx * 0.01
+            newVy -= dy * 0.01
+          }
+        }
+
+        // Add some random movement
+        newVx += (Math.random() - 0.5) * 0.01
+        newVy += (Math.random() - 0.5) * 0.01
+
+        // Limit speed
+        const maxSpeed = 0.5
+        const speed = Math.sqrt(newVx * newVx + newVy * newVy)
+        if (speed > maxSpeed) {
+          newVx = (newVx / speed) * maxSpeed
+          newVy = (newVy / speed) * maxSpeed
+        }
+
+        return { ...p, x: newX, y: newY, vx: newVx, vy: newVy }
+      }))
+      animationId = requestAnimationFrame(animate)
+    }
+    animationId = requestAnimationFrame(animate)
     
-    return () => clearInterval(interval)
+    return () => cancelAnimationFrame(animationId)
+  }, [liveWallpaperEnabled, liveWallpaper, mousePos])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMousePos({
+      x: ((e.clientX - rect.left) / rect.width) * 100,
+      y: ((e.clientY - rect.top) / rect.height) * 100
+    })
   }, [])
 
   useEffect(() => {
@@ -139,12 +197,21 @@ const Desktop = memo(function Desktop() {
     setWallpaper(next)
   }, [wallpaper, setWallpaper])
 
+  const cycleLiveWallpaper = useCallback(() => {
+    const types = ['particles', 'interactive', 'waves']
+    const idx = types.indexOf(liveWallpaper)
+    const next = types[(idx + 1) % types.length]
+    setLiveWallpaper(next)
+  }, [liveWallpaper, setLiveWallpaper])
+
   const menuItems: MenuEntry[] = [
     { label: '打开终端', icon: '💻', action: () => openApp('terminal') },
     { label: '打开文件管理器', icon: '📁', action: () => openApp('files') },
     { label: '打开浏览器', icon: '🌐', action: () => openApp('browser') },
     { type: 'separator' },
     { label: '更换壁纸', icon: '🖼️', action: handleWallpaperChange },
+    { label: liveWallpaperEnabled ? '关闭动态壁纸' : '开启动态壁纸', icon: '✨', action: toggleLiveWallpaper },
+    { label: '切换动态壁纸', icon: '🎨', action: cycleLiveWallpaper },
     { label: '显示设置', icon: '⚙️', action: () => openApp('settings') },
     { type: 'separator' },
     { label: '打开计算器', icon: '🔢', action: () => openApp('calculator') },
@@ -257,6 +324,7 @@ const Desktop = memo(function Desktop() {
       className="desktop"
       onContextMenu={handleContextMenu}
       onClick={handleDesktopClick}
+      onMouseMove={handleMouseMove}
       style={{
         ...wallpaperStyle,
         background: wallpaper ? (wallpaper.startsWith('linear-gradient') ? wallpaper : undefined) : 
@@ -276,24 +344,56 @@ const Desktop = memo(function Desktop() {
         pointerEvents: 'none'
       }} />
       
-      {/* Floating particles */}
-      {particles.map(p => (
-        <div
-          key={p.id}
-          style={{
-            position: 'absolute',
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            borderRadius: '50%',
-            background: p.color,
-            boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
-            pointerEvents: 'none',
-            transition: 'left 0.05s linear'
-          }}
-        />
-      ))}
+      {/* Live wallpaper particles */}
+      {liveWallpaperEnabled && (
+        <>
+          {particles.map(p => (
+            <div
+              key={p.id}
+              style={{
+                position: 'absolute',
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                width: p.size,
+                height: p.size,
+                borderRadius: '50%',
+                background: p.color,
+                boxShadow: `0 0 ${p.size * 4}px ${p.color}`,
+                pointerEvents: 'none',
+                transition: 'left 0.02s linear, top 0.02s linear'
+              }}
+            />
+          ))}
+          
+          {/* Connecting lines for particles (waves/network effect) */}
+          {liveWallpaper !== 'particles' && (
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+              {particles.map((p1, i) => 
+                particles.slice(i + 1).map((p2, j) => {
+                  const dx = p1.x - p2.x
+                  const dy = p1.y - p2.y
+                  const dist = Math.sqrt(dx * dx + dy * dy)
+                  if (dist < 20) {
+                    const opacity = (1 - dist / 20) * 0.3
+                    return (
+                      <line
+                        key={`${i}-${j}`}
+                        x1={`${p1.x}%`}
+                        y1={`${p1.y}%`}
+                        x2={`${p2.x}%`}
+                        y2={`${p2.y}%`}
+                        stroke={`rgba(139, 124, 240, ${opacity})`}
+                        strokeWidth={1}
+                      />
+                    )
+                  }
+                  return null
+                })
+              )}
+            </svg>
+          )}
+        </>
+      )}
       
       <div className="sr-only" role="status" aria-live="polite">
         Web Linux 桌面环境 - 右键可打开上下文菜单

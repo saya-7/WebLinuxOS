@@ -125,6 +125,8 @@ const defaultIcons: DesktopIcon[] = [
 
 const initialTheme: 'dark' | 'light' = (localStorage.getItem('weblinux-theme') as 'dark' | 'light') || 'dark'
 const initialWallpaper: string = localStorage.getItem('weblinux-wallpaper') || ''
+const initialLiveWallpaper: string = localStorage.getItem('weblinux-live-wallpaper') || 'particles'
+const initialLiveWallpaperEnabled: boolean = localStorage.getItem('weblinux-live-wallpaper-enabled') === 'true'
 const initialCurrentDesktop = Number(localStorage.getItem('weblinux-current-desktop')) || 1
 const initialTotalDesktops = 4
 
@@ -183,6 +185,8 @@ interface Store {
   nextZIndex: number
   theme: 'dark' | 'light'
   wallpaper: string
+  liveWallpaper: string
+  liveWallpaperEnabled: boolean
   launcherOpen: boolean
   contextMenu: { x: number; y: number; visible: boolean }
   fileOperationHistory: FileOperation[]
@@ -211,6 +215,8 @@ interface Store {
   hideContextMenu: () => void
   setTheme: (theme: 'dark' | 'light') => void
   setWallpaper: (wallpaper: string) => void
+  setLiveWallpaper: (wallpaper: string) => void
+  toggleLiveWallpaper: () => void
   addWindow: (app: AppDefinition) => WindowState
   deleteFile: (id: string) => void
   addFile: (parentId: string, name: string, type: 'file' | 'folder') => void
@@ -252,6 +258,8 @@ export const useStore = create<Store>((set, get) => ({
   nextZIndex: 0,
   theme: initialTheme,
   wallpaper: initialWallpaper,
+  liveWallpaper: initialLiveWallpaper,
+  liveWallpaperEnabled: initialLiveWallpaperEnabled,
   launcherOpen: false,
   contextMenu: { x: 0, y: 0, visible: false },
   fileOperationHistory: [],
@@ -562,6 +570,15 @@ export const useStore = create<Store>((set, get) => ({
   setWallpaper: (wallpaper) => {
     localStorage.setItem('weblinux-wallpaper', wallpaper)
     set({ wallpaper })
+  },
+  setLiveWallpaper: (liveWallpaper) => {
+    localStorage.setItem('weblinux-live-wallpaper', liveWallpaper)
+    set({ liveWallpaper })
+  },
+  toggleLiveWallpaper: () => {
+    const newState = !get().liveWallpaperEnabled
+    localStorage.setItem('weblinux-live-wallpaper-enabled', String(newState))
+    set({ liveWallpaperEnabled: newState })
   },
 
   deleteFile: (id) =>
