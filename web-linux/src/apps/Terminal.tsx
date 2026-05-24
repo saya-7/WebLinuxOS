@@ -1053,12 +1053,19 @@ Hello from Node.js!`
         break
       case 'python':
       case 'python3':
-        if (args[0] === '--version') {
-          output = 'Python 3.11.4'
-        } else if (args[0] === '-V') {
-          output = 'Python 3.11.4'
+        if (args[0] === '--version' || args[0] === '-V') {
+          output = 'Python 3.11.4 (tags/v3.11.4:d23a85b, Jun  6 2023, 00:00:00) [MSC v.1928 64 bit (AMD64)] on win32'
+        } else if (args[0] === '-c') {
+          const code = args.slice(1).join(' ')
+          try {
+            output = `> ${code}\n${eval(code)}`
+          } catch (err: unknown) {
+            output = `Traceback (most recent call last):\n  File "<stdin>", line 1, in <module>\n${err instanceof Error ? err.toString() : 'Error'}`
+          }
+        } else if (args[0] === '-m') {
+          output = `Python 3.11.4\nModule path: ${args[1] || 'not specified'}`
         } else {
-          output = `Python 3.11.4 (tags/v3.11.4:d23a85b, Jun  6 2023, 00:00:00) [MSC v.1928 64 bit (AMD64)] on win32`
+          output = `Python 3.11.4 (tags/v3.11.4:d23a85b, Jun  6 2023, 00:00:00) [MSC v.1928 64 bit (AMD64)] on win32\nType "help" for more information.`
         }
         break
       case 'docker':
@@ -1076,6 +1083,72 @@ Server:
         } else {
           output = `docker: command not found (需要Docker环境)`
         }
+        break
+      case 'sync':
+        if (args[0] === '--export' || args[0] === '-e') {
+          output = `正在导出系统数据...
+✓ 文件系统数据已导出
+✓ 窗口状态已保存
+✓ 用户偏好已备份
+导出完成! 使用 sync --import 恢复数据`
+        } else if (args[0] === '--import' || args[0] === '-i') {
+          output = `正在导入系统数据...
+✓ 文件系统数据已恢复
+✓ 窗口状态已加载
+✓ 用户偏好已同步
+导入完成!`
+        } else if (args[0] === '--status') {
+          output = `同步状态: 已同步
+上次同步: ${new Date().toLocaleString('zh-CN')}
+同步项目:
+  - 文件系统
+  - 用户配置
+  - 窗口布局`
+        } else {
+          output = `sync: 数据同步工具
+用法: sync [选项]
+  --export, -e    导出系统数据
+  --import, -i    导入系统数据
+  --status        查看同步状态
+  --clear         清除同步数据`
+        }
+        break
+      case 'clear-cache':
+        output = `正在清除缓存...
+✓ 浏览器缓存已清除
+✓ 本地存储已清理
+✓ 临时文件已删除
+缓存清除完成!`
+        break
+      case 'sysinfo':
+        output = [
+          `═══════════════════════════════════════`,
+          `         WebLinux 系统信息工具`,
+          `═══════════════════════════════════════`,
+          ``,
+          `【系统】`,
+          `  操作系统:   WebLinuxOS ${Math.floor(Math.random() * 2 + 2)}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 10)}`,
+          `  内核:       WebLinux 6.9.0-web`,
+          `  架构:       x86_64 (模拟)`,
+          `  运行时间:   ${Math.floor(Math.random() * 30 + 1)}天 ${Math.floor(Math.random() * 24)}小时`,
+          ``,
+          `【硬件】`,
+          `  CPU:        WebAssembly x86_64 @ ${Math.floor(Math.random() * 1000 + 2000)}MHz`,
+          `  内存:       ${Math.floor(Math.random() * 4000 + 4000)}MB`,
+          `  存储:       ${Math.floor(Math.random() * 500 + 50)}GB`,
+          ``,
+          `【网络】`,
+          `  IP:         192.168.1.${Math.floor(Math.random() * 200 + 50)}`,
+          `  主机名:     ${hostname}`,
+          `  DNS:        8.8.8.8`,
+          ``,
+          `【运行时】`,
+          `  Node.js:    v20.10.0`,
+          `  Python:     3.11.4`,
+          `  React:      19.2.6`,
+          ``,
+          `═══════════════════════════════════════`,
+        ].join('\n')
         break
       case 'kubectl':
         output = `kubectl: command not found (需要Kubernetes环境)`

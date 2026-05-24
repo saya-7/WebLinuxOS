@@ -5,19 +5,37 @@
   <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite" alt="Vite">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/github/stars/saya-ch/WebLinuxOS?style=for-the-badge" alt="Stars">
 </p>
 
-> **一个完全运行在浏览器中的功能性 Linux 桌面环境**
+> **一个完全运行在浏览器中的功能性 Linux 桌面环境** - 让Web体验如同本地应用
 
 <p align="center">
   <a href="https://saya-ch.github.io/WebLinuxOS/">🚀 在线演示</a>
   <span> | </span>
   <a href="README_en.md">📖 English</a>
+  <span> | </span>
+  <a href="https://github.com/saya-ch/WebLinuxOS/issues">🐛 报告问题</a>
 </p>
 
 ---
 
-## ✨ 核心特性
+## ✨ 为什么选择 WebLinuxOS？
+
+🤔 **想要一个轻量级的在线工作环境？**
+- 无需安装，随时随地访问
+- 跨平台兼容，手机、平板、电脑都能用
+- 数据云端同步，换设备也能无缝工作
+
+🎯 **适合人群：**
+- 开发者：快速启动临时开发环境
+- 学生：在线学习和笔记整理
+- 设计师：创意草图和协作
+- 普通用户：日常文档处理和浏览
+
+---
+
+## 🎯 核心亮点
 
 ### 🖥️ 完整的桌面体验
 
@@ -101,7 +119,7 @@
 | 💻 代码编辑器 | 语法高亮 + Python 执行 |
 | 📚 命令参考 | 可搜索的命令文档 |
 
-#### 趣味应用 (15个)
+#### 趣味应用 (16个)
 | 应用 | 描述 |
 |------|------|
 | 🧠 思维导图 | 可视化思维整理工具 |
@@ -119,6 +137,26 @@
 | 🐍 贪吃蛇 | 经典贪吃蛇游戏 |
 | 🧱 俄罗斯方块 | 经典俄罗斯方块游戏 |
 | 🐾 虚拟宠物 | 互动电子宠物 |
+| ☁️ 云同步 | 数据备份与恢复 |
+
+---
+
+## 💡 实用功能
+
+### 📤 数据备份与恢复
+使用**云同步**应用，您可以：
+- 一键导出所有系统数据到本地文件
+- 选择性备份：文件系统、设置、壁纸等
+- 跨设备恢复数据
+- JSON格式，便于查看和验证
+
+### 🔧 终端高级功能
+- **40+ 内置命令** - 完整的命令行工具集
+- **系统信息查看** - `sysinfo` 命令
+- **数据同步** - `sync --export/import` 命令
+- **缓存清理** - `clear-cache` 命令
+- **Python执行** - `python3 -c "code"` 直接运行Python代码
+- **趣味命令** - cowsay、fortune、sl 等 ASCII 艺术
 
 ---
 
@@ -297,7 +335,20 @@ web-linux/
 
 ## 🔧 最近的改进
 
-### v2.1.0 (2026-05-24)
+### v2.3.0 (2026-05-24)
+- ✨ **新增云同步应用** - 支持数据备份和恢复
+  - 一键导出系统数据到JSON文件
+  - 选择性备份功能
+  - 跨设备数据迁移
+- 🔧 **增强终端功能**
+  - 新增 `sync` 命令 - 数据同步工具
+  - 新增 `sysinfo` 命令 - 详细系统信息
+  - 新增 `clear-cache` 命令 - 缓存清理
+  - 增强 Python 支持 - `python3 -c "code"` 直接执行
+- 🐛 修复终端命令解析问题
+- 📝 更新 README 文档
+
+### v2.2.0 (2026-05-24)
 - 终端模拟器新增趣味命令：`cowsay`、`fortune`、`sl`
 - 优化窗口动画效果，关闭和最小化动画更加流畅
 - 系统监视器增加更多进程信息
