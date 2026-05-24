@@ -202,10 +202,10 @@ export default function Terminal() {
   网络工具: ping, ifconfig, curl
   系统工具: clear, help, history, alias, type, man, exit, cls, reset
   工具命令: echo, find, grep, env, export
-  趣味命令: cowsay, fortune, sl - 试试这些有趣的小命令!
+  趣味命令: cowsay, fortune, sl, starwars, asciiart, dog - 试试这些有趣的小命令!
   加密工具: base64, unbase64, hash, rev - 文本编码解码工具
   数学工具: calc, prime, factor, roman - 计算器和数学工具
-  视觉效果: matrix, figlet, lolcat, cowthink - ASCII艺术
+  视觉效果: matrix, figlet, lolcat, cowthink, banner - ASCII艺术
 
 快捷键:
   Ctrl+Shift+L - 切换启动器
@@ -246,7 +246,11 @@ export default function Terminal() {
   curl - 网页请求
   cowsay <消息> - 让牛说话
   fortune - 显示随机名言
-  sl - 火车动画`
+  sl - 火车动画
+  starwars - 星球大战ASCII艺术
+  asciiart - 随机ASCII艺术
+  banner - 横幅文字
+  dog - 让狗狗说话!`
         break
       case 'clear':
       case 'cls':
@@ -289,10 +293,10 @@ export default function Terminal() {
         output = [
           `            .-/+oossssoo+/-.               ${username}@${hostname}`,
           `        \`:+ssssssssssssssssss+:\`           -------------`,
-          `      -+ssssssssssssssssssssssso+-         OS: Web Linux 2.1.0`,
-          `    /osssssssssssssssssssssssssso/        Kernel: 6.8.0-web`,
+          `      -+ssssssssssssssssssssssso+-         OS: Web Linux 2.2.0`,
+          `    /osssssssssssssssssssssssssso/        Kernel: 6.9.0-web`,
           `  /ossssssssssssssssssssssssssssso/       Shell: bash 5.2.21`,
-          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.1`,
+          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.2`,
           ` ossssssssssssssssssssssssssssssssso      Theme: ${theme}`,
           ` ossssssssssssssssssssssssssssssssso      Uptime: ${Math.floor(Math.random() * 24)} hours`,
           ` :sssssssssssssssssssssssssssssssss:      Packages: ${Math.floor(Math.random() * 500 + 100)}`,
@@ -357,6 +361,76 @@ export default function Terminal() {
           `            (__)\\       )\\/\\`,
           `                ||----w |`,
           `                ||     ||`,
+        ].join('\n')
+        break
+      case 'dog':
+        output = [
+          ` ___________________________`,
+          `/ ${args.join(' ') || 'Woof Woof!'} \\`,
+          ` ---------------------------`,
+          `     \\`,
+          `      \\`,
+          `        / \\__`,
+          `       (    @\\___`,
+          `       /         O`,
+          `      /   (_____/`,
+          `     /_____/   U`,
+        ].join('\n')
+        break
+      case 'starwars':
+        output = [
+          `   ____  ___  ____   ___  ____  ___  ____`,
+          `  / __/ / _ \\|_  /  / _ \\/ __ \\/ _ \\/ __/`,
+          ` _\\ \\  / ___// /  / , _/ /_/ / , _/ _/  `,
+          `/___/ /_/  /___/ /_/|_|\\____/_/|_/___/  `,
+          `                                       `,
+          `  May the Force be with you!`,
+        ].join('\n')
+        break
+      case 'asciiart':
+        const artIndex = Math.floor(Math.random() * 3)
+        const asciiArts = [
+          [
+            `   _     _`,
+            `  (a\\___/a)`,
+            ` /         \\`,
+            ` \\ =\\   /= /`,
+            `  |   ___   |`,
+            `  |  (   )  |`,
+            `  |___\\_/___|`,
+          ],
+          [
+            `     .----.`,
+            `    /      \\`,
+            `   |  O  O  |`,
+            `   |   __   |`,
+            `   |  /  \\  |`,
+            `   |  \\__/  |`,
+            `   \\        /`,
+            `    '------'`,
+          ],
+          [
+            `   ___   ___`,
+            `  /   \\ /   \\`,
+            ` |  O | | O  |`,
+            ` |    | |    |`,
+            `  \\  /   \\  /`,
+            `   \\/     \\/`,
+            `    \\     /`,
+            `     \\___/`,
+          ],
+        ]
+        output = asciiArts[artIndex].join('\n')
+        break
+      case 'banner':
+        const bannerText = args.join(' ') || 'WELCOME'
+        const bannerWidth = bannerText.length * 6 + 4
+        output = [
+          `*${'*'.repeat(bannerWidth - 2)}*`,
+          `*${' '.repeat(bannerWidth - 2)}*`,
+          `*  ${bannerText.toUpperCase().split('').join('  ')}  *`,
+          `*${' '.repeat(bannerWidth - 2)}*`,
+          `*${'*'.repeat(bannerWidth - 2)}*`,
         ].join('\n')
         break
       case 'lolcat':

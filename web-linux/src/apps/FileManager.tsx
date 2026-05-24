@@ -142,6 +142,7 @@ export default function FileManager() {
   const deleteFile = useStore((s) => s.deleteFile)
   const renameFile = useStore((s) => s.renameFile)
   const openFileWith = useStore((s) => s.openFileWith)
+  const copyFile = useStore((s) => s.copyFile)
 
   const [currentPath, setCurrentPath] = useState<string[]>(['root'])
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']))
@@ -153,6 +154,8 @@ export default function FileManager() {
   const [newItemName, setNewItemName] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<FileNode[]>([])
+  const [clipboard, setClipboard] = useState<FileNode | null>(null)
+  const [clipboardMode, setClipboardMode] = useState<'copy' | 'cut' | null>(null)
 
   const currentNodeId = currentPath[currentPath.length - 1]
   const currentNode = findNodeById(files, currentNodeId)
@@ -281,6 +284,37 @@ export default function FileManager() {
     setContextMenu({ visible: false, x: 0, y: 0, fileId: '' })
   }
 
+  function handleCopy(fileId: string) {
+    const node = findNodeById(files, fileId)
+    if (node) {
+      setClipboard(node)
+      setClipboardMode('copy')
+    }
+    closeContextMenu()
+  }
+
+  function handleCut(fileId: string) {
+    const node = findNodeById(files, fileId)
+    if (node) {
+      setClipboard(node)
+      setClipboardMode('cut')
+    }
+    closeContextMenu()
+  }
+
+  function handlePaste() {
+    if (clipboard) {
+      if (clipboardMode === 'copy') {
+        copyFile(clipboard.id, currentNodeId)
+      } else if (clipboardMode === 'cut') {
+        copyFile(clipboard.id, currentNodeId)
+        deleteFile(clipboard.id)
+      }
+      setClipboard(null)
+      setClipboardMode(null)
+    }
+  }
+
   function searchFiles(query: string, nodes: FileNode[]): FileNode[] {
     if (!query.trim()) return []
     const results: FileNode[] = []
@@ -311,6 +345,28 @@ export default function FileManager() {
         e.preventDefault()
         const searchInput = document.querySelector('.app-search-input') as HTMLInputElement
         searchInput?.focus()
+        return
+      }
+
+      if (e.ctrlKey && e.key === 'c') {
+        e.preventDefault()
+        if (selectedFileId) {
+          handleCopy(selectedFileId)
+        }
+        return
+      }
+
+      if (e.ctrlKey && e.key === 'x') {
+        e.preventDefault()
+        if (selectedFileId) {
+          handleCut(selectedFileId)
+        }
+        return
+      }
+
+      if (e.ctrlKey && e.key === 'v') {
+        e.preventDefault()
+        handlePaste()
         return
       }
 
@@ -346,7 +402,7 @@ export default function FileManager() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedFileId, searchQuery, files, goToParent, handleFileDoubleClick, handleDelete, closeContextMenu])
+  }, [selectedFileId, searchQuery, files, goToParent, handleFileDoubleClick, handleDelete, closeContextMenu, clipboard, clipboardMode])
 
   const treeContent = useMemo(() => {
     return files.map((node) => (
@@ -386,7 +442,14 @@ export default function FileManager() {
         <button className="app-toolbar-btn" onClick={() => handleCreateNew('folder')} title="新建文件夹">📁+</button>
         <button className="app-toolbar-btn" onClick={() => handleCreateNew('file')} title="新建文件">📄+</button>
         {selectedFileId && (
-          <button className="app-toolbar-btn" onClick={() => handleDelete(selectedFileId)} title="删除">🗑</button>
+          <>
+            <button className="app-toolbar-btn" onClick={() => handleCopy(selectedFileId)} title="复制 (Ctrl+C)">📋</button>
+            <button className="app-toolbar-btn" onClick={() => handleCut(selectedFileId)} title="剪切 (Ctrl+X)">✂️</button>
+            <button className="app-toolbar-btn" onClick={() => handleDelete(selectedFileId)} title="删除">🗑</button>
+          </>
+        )}
+        {clipboard && (
+          <button className="app-toolbar-btn" onClick={handlePaste} title="粘贴 (Ctrl+V)">📋📥</button>
         )}
         {newItemInput && (
           <span className="app-toolbar-inline-form">
@@ -527,6 +590,14 @@ export default function FileManager() {
           <div className="app-context-menu-item" onClick={() => { const node = findNodeById(files, contextMenu.fileId); if (node) handleFileDoubleClick(node); closeContextMenu(); }}>
             📂 打开
           </div>
+          <div className="app-context-menu-separator" />
+          <div className="app-context-menu-item" onClick={() => handleCopy(contextMenu.fileId)}>
+            📋 复制
+          </div>
+          <div className="app-context-menu-item" onClick={() => handleCut(contextMenu.fileId)}>
+            ✂️ 剪切
+          </div>
+          <div className="app-context-menu-separator" />
           <div className="app-context-menu-item" onClick={() => handleDelete(contextMenu.fileId)}>
             🗑 删除
           </div>
@@ -540,6 +611,14 @@ export default function FileManager() {
           <div className="app-context-menu-item" onClick={() => handleCreateNew('file')}>
             📄 新建文件
           </div>
+          {clipboard && (
+            <>
+              <div className="app-context-menu-separator" />
+              <div className="app-context-menu-item" onClick={() => { handlePaste(); closeContextMenu(); }}>
+                📋📥 粘贴
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
