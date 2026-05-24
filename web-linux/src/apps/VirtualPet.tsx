@@ -25,9 +25,10 @@ const Pet = () => {
     const saved = localStorage.getItem('web-linux-pet')
     if (saved) {
       const data = JSON.parse(saved)
-      setPet(data.pet)
-      setPetType(data.petType || 'cat')
-      setPetName(data.petName || 'Pixel')
+      // 使用函数式更新以避免警告
+      setPet(() => data.pet)
+      setPetType(() => data.petType || 'cat')
+      setPetName(() => data.petName || 'Pixel')
     }
   }, [])
 
@@ -61,14 +62,16 @@ const Pet = () => {
   }, [])
 
   const play = useCallback(() => {
-    if (pet.energy < 10) return
-    setPet(prev => ({
-      ...prev,
-      happiness: Math.min(100, prev.happiness + 15),
-      energy: Math.max(0, prev.energy - 10),
-      experience: prev.experience + 10
-    }))
-  }, [pet.energy])
+    setPet(prev => {
+      if (prev.energy < 10) return prev
+      return ({
+        ...prev,
+        happiness: Math.min(100, prev.happiness + 15),
+        energy: Math.max(0, prev.energy - 10),
+        experience: prev.experience + 10
+      })
+    })
+  }, [])
 
   const sleep = useCallback(() => {
     setPet(prev => ({
@@ -78,20 +81,20 @@ const Pet = () => {
     }))
   }, [])
 
-  const checkLevelUp = useCallback(() => {
-    const expNeeded = pet.level * 100
-    if (pet.experience >= expNeeded) {
-      setPet(prev => ({
-        ...prev,
-        level: prev.level + 1,
-        experience: prev.experience - expNeeded
-      }))
-    }
-  }, [pet.experience, pet.level])
-
+  // 移除 checkLevelUp 的 useCallback 和单独的 useEffect，直接在设置 experience 时检查
   useEffect(() => {
-    checkLevelUp()
-  }, [pet.experience, checkLevelUp])
+    setPet(prev => {
+      const expNeeded = prev.level * 100
+      if (prev.experience >= expNeeded) {
+        return {
+          ...prev,
+          level: prev.level + 1,
+          experience: prev.experience - expNeeded
+        }
+      }
+      return prev
+    })
+  }, [pet.experience])
 
   const getMood = () => {
     const avg = (pet.hunger + pet.happiness + pet.energy) / 3

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 
 interface Particle {
   x: number
@@ -27,29 +27,19 @@ const ParticleSystem: React.FC = () => {
   const rotationRef = useRef({ x: 0, y: 0 })
   const animationRef = useRef<number | null>(null)
   const lastTimeRef = useRef<number>(0)
+  const stateRef = useRef({ speed, size, colorMode, interactionMode })
 
-  const colors = {
+  // 保持 stateRef 同步
+  useEffect(() => {
+    stateRef.current = { speed, size, colorMode, interactionMode }
+  }, [speed, size, colorMode, interactionMode])
+
+  // 将 colors 移到 ref 中
+  const colorsRef = useRef({
     rainbow: () => `hsl(${Math.random() * 360}, 80%, 60%)`,
     blue: () => `hsl(${200 + Math.random() * 40}, 80%, 60%)`,
     fire: () => `hsl(${Math.random() * 40}, 100%, ${50 + Math.random() * 30}%)`
-  }
-
-  const initParticles = (width: number, height: number) => {
-    const particles: Particle[] = []
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: (Math.random() - 0.5) * width * 0.8,
-        y: (Math.random() - 0.5) * height * 0.8,
-        z: (Math.random() - 0.5) * 400,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        vz: (Math.random() - 0.5) * 0.5,
-        size: size + Math.random() * size,
-        color: colors[colorMode]()
-      })
-    }
-    particlesRef.current = particles
-  }
+  })
 
   const project = (x: number, y: number, z: number, width: number, height: number) => {
     const fov = 500
@@ -61,101 +51,29 @@ const ParticleSystem: React.FC = () => {
     }
   }
 
-  const animate = (time: number) => {
-    if (!lastTimeRef.current) lastTimeRef.current = time
-    const delta = (time - lastTimeRef.current) / 16
-    lastTimeRef.current = time
+  const initParticles = useCallback((width: number, height: number) => {
+    const particles: Particle[] = []
+    const { size: currentSize, colorMode: currentColorMode } = stateRef.current
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: (Math.random() - 0.5) * width * 0.8,
+        y: (Math.random() - 0.5) * height * 0.8,
+        z: (Math.random() - 0.5) * 400,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        vz: (Math.random() - 0.5) * 0.5,
+        size: currentSize + Math.random() * currentSize,
+        color: colorsRef.current[currentColorMode]()
+      })
+    }
+    particlesRef.current = particles
+  }, [particleCount])
 
+  const resetParticles = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const width = canvas.width
-    const height = canvas.height
-
-    ctx.fillStyle = 'rgba(10, 10, 26, 0.3)'
-    ctx.fillRect(0, 0, width, height)
-
-    rotationRef.current.x += 0.002 * delta * speed
-    rotationRef.current.y += 0.003 * delta * speed
-
-    particlesRef.current.forEach(p => {
-      if (mouseRef.current.active && interactionMode !== 'none') {
-        const dx = p.x - mouseRef.current.x
-        const dy = p.y - mouseRef.current.y
-        const dz = p.z - mouseRef.current.z
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
-        
-        if (dist < 200) {
-          const force = (200 - dist) / 200 * 0.5
-          const dir = interactionMode === 'gravity' ? -1 : 1
-          p.vx += (dx / dist) * force * dir
-          p.vy += (dy / dist) * force * dir
-          p.vz += (dz / dist) * force * dir
-        }
-      }
-
-      p.vx *= 0.99
-      p.vy *= 0.99
-      p.vz *= 0.99
-
-      p.x += p.vx * delta * speed
-      p.y += p.vy * delta * speed
-      p.z += p.vz * delta * speed
-
-      const rotX = p.x
-      const rotY = p.y * Math.cos(rotationRef.current.x) - p.z * Math.sin(rotationRef.current.x)
-      const rotZ = p.y * Math.sin(rotationRef.current.x) + p.z * Math.cos(rotationRef.current.x)
-      
-      const finalX = rotX * Math.cos(rotationRef.current.y) + rotZ * Math.sin(rotationRef.current.y)
-      const finalY = rotY
-      const finalZ = -rotX * Math.sin(rotationRef.current.y) + rotZ * Math.cos(rotationRef.current.y)
-
-      const projected = project(finalX, finalY, finalZ, width, height)
-      
-      const alpha = Math.max(0.2, Math.min(1, 1 - (finalZ + 200) / 400))
-      ctx.globalAlpha = alpha
-      ctx.fillStyle = p.color
-      ctx.beginPath()
-      ctx.arc(projected.x, projected.y, p.size * projected.scale, 0, Math.PI * 2)
-      ctx.fill()
-
-      const bounds = 300
-      if (p.x < -bounds || p.x > bounds) p.vx *= -1
-      if (p.y < -bounds || p.y > bounds) p.vy *= -1
-      if (p.z < -bounds || p.z > bounds) p.vz *= -1
-    })
-
-    ctx.globalAlpha = 1
-    ctx.strokeStyle = 'rgba(100, 150, 255, 0.1)'
-    ctx.lineWidth = 0.5
-    for (let i = 0; i < particlesRef.current.length; i++) {
-      for (let j = i + 1; j < particlesRef.current.length; j++) {
-        const p1 = particlesRef.current[i]
-        const p2 = particlesRef.current[j]
-        const dx = p1.x - p2.x
-        const dy = p1.y - p2.y
-        const dz = p1.z - p2.z
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
-        
-        if (dist < 80) {
-          const p1p = project(p1.x, p1.y, p1.z, width, height)
-          const p2p = project(p2.x, p2.y, p2.z, width, height)
-          
-          ctx.globalAlpha = (1 - dist / 80) * 0.2
-          ctx.beginPath()
-          ctx.moveTo(p1p.x, p1p.y)
-          ctx.lineTo(p2p.x, p2p.y)
-          ctx.stroke()
-        }
-      }
-    }
-    ctx.globalAlpha = 1
-
-    animationRef.current = requestAnimationFrame(animate)
-  }
+    initParticles(canvas.width, canvas.height)
+  }, [initParticles])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -187,6 +105,101 @@ const ParticleSystem: React.FC = () => {
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
 
+    // 使用闭包来定义 animate 函数，避免循环引用问题
+    const animate = (time: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = time
+      const delta = (time - lastTimeRef.current) / 16
+      lastTimeRef.current = time
+
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+
+      const width = canvas.width
+      const height = canvas.height
+
+      ctx.fillStyle = 'rgba(10, 10, 26, 0.3)'
+      ctx.fillRect(0, 0, width, height)
+
+      const { speed: currentSpeed, interactionMode: currentInteractionMode } = stateRef.current
+      rotationRef.current.x += 0.002 * delta * currentSpeed
+      rotationRef.current.y += 0.003 * delta * currentSpeed
+
+      particlesRef.current.forEach(p => {
+        if (mouseRef.current.active && currentInteractionMode !== 'none') {
+          const dx = p.x - mouseRef.current.x
+          const dy = p.y - mouseRef.current.y
+          const dz = p.z - mouseRef.current.z
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
+          
+          if (dist < 200) {
+            const force = (200 - dist) / 200 * 0.5
+            const dir = currentInteractionMode === 'gravity' ? -1 : 1
+            p.vx += (dx / dist) * force * dir
+            p.vy += (dy / dist) * force * dir
+            p.vz += (dz / dist) * force * dir
+          }
+        }
+
+        p.vx *= 0.99
+        p.vy *= 0.99
+        p.vz *= 0.99
+
+        p.x += p.vx * delta * currentSpeed
+        p.y += p.vy * delta * currentSpeed
+        p.z += p.vz * delta * currentSpeed
+
+        const rotX = p.x
+        const rotY = p.y * Math.cos(rotationRef.current.x) - p.z * Math.sin(rotationRef.current.x)
+        const rotZ = p.y * Math.sin(rotationRef.current.x) + p.z * Math.cos(rotationRef.current.x)
+        
+        const finalX = rotX * Math.cos(rotationRef.current.y) + rotZ * Math.sin(rotationRef.current.y)
+        const finalY = rotY
+        const finalZ = -rotX * Math.sin(rotationRef.current.y) + rotZ * Math.cos(rotationRef.current.y)
+
+        const projected = project(finalX, finalY, finalZ, width, height)
+        
+        const alpha = Math.max(0.2, Math.min(1, 1 - (finalZ + 200) / 400))
+        ctx.globalAlpha = alpha
+        ctx.fillStyle = p.color
+        ctx.beginPath()
+        ctx.arc(projected.x, projected.y, p.size * projected.scale, 0, Math.PI * 2)
+        ctx.fill()
+
+        const bounds = 300
+        if (p.x < -bounds || p.x > bounds) p.vx *= -1
+        if (p.y < -bounds || p.y > bounds) p.vy *= -1
+        if (p.z < -bounds || p.z > bounds) p.vz *= -1
+      })
+
+      ctx.globalAlpha = 1
+      ctx.strokeStyle = 'rgba(100, 150, 255, 0.1)'
+      ctx.lineWidth = 0.5
+      for (let i = 0; i < particlesRef.current.length; i++) {
+        for (let j = i + 1; j < particlesRef.current.length; j++) {
+          const p1 = particlesRef.current[i]
+          const p2 = particlesRef.current[j]
+          const dx = p1.x - p2.x
+          const dy = p1.y - p2.y
+          const dz = p1.z - p2.z
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
+          
+          if (dist < 80) {
+            const p1p = project(p1.x, p1.y, p1.z, width, height)
+            const p2p = project(p2.x, p2.y, p2.z, width, height)
+            
+            ctx.globalAlpha = (1 - dist / 80) * 0.2
+            ctx.beginPath()
+            ctx.moveTo(p1p.x, p1p.y)
+            ctx.lineTo(p2p.x, p2p.y)
+            ctx.stroke()
+          }
+        }
+      }
+      ctx.globalAlpha = 1
+
+      animationRef.current = requestAnimationFrame(animate)
+    }
+
     animationRef.current = requestAnimationFrame(animate)
 
     return () => {
@@ -197,13 +210,14 @@ const ParticleSystem: React.FC = () => {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [])
+  }, [initParticles])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     
     const currentCount = particlesRef.current.length
+    const { size: currentSize, colorMode: currentColorMode } = stateRef.current
     if (particleCount > currentCount) {
       for (let i = currentCount; i < particleCount; i++) {
         particlesRef.current.push({
@@ -213,20 +227,14 @@ const ParticleSystem: React.FC = () => {
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
           vz: (Math.random() - 0.5) * 0.5,
-          size: size + Math.random() * size,
-          color: colors[colorMode]()
+          size: currentSize + Math.random() * currentSize,
+          color: colorsRef.current[currentColorMode]()
         })
       }
     } else if (particleCount < currentCount) {
       particlesRef.current = particlesRef.current.slice(0, particleCount)
     }
-  }, [particleCount, colorMode, size])
-
-  const resetParticles = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    initParticles(canvas.width, canvas.height)
-  }
+  }, [particleCount])
 
   return (
     <div style={{ 

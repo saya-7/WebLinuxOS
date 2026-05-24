@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 interface PomodoroPhase {
   id: string
@@ -15,7 +15,7 @@ const Pomodoro: React.FC = () => {
   const [totalTime, setTotalTime] = useState(0)
   const timerRef = useRef<number | null>(null)
 
-  const phases: PomodoroPhase[] = [
+  const phases = useMemo<PomodoroPhase[]>(() => [
     { id: 'work', name: '专注工作', duration: 25 * 60, color: 'from-red-500 to-orange-500' },
     { id: 'short', name: '短休息', duration: 5 * 60, color: 'from-green-500 to-teal-500' },
     { id: 'work2', name: '专注工作', duration: 25 * 60, color: 'from-red-500 to-orange-500' },
@@ -24,7 +24,7 @@ const Pomodoro: React.FC = () => {
     { id: 'short3', name: '短休息', duration: 5 * 60, color: 'from-green-500 to-teal-500' },
     { id: 'work4', name: '专注工作', duration: 25 * 60, color: 'from-red-500 to-orange-500' },
     { id: 'long', name: '长休息', duration: 15 * 60, color: 'from-blue-500 to-indigo-500' },
-  ]
+  ], [])
 
   const currentPhase = phases[currentPhaseIndex]
 

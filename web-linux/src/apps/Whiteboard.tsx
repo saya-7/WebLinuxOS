@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useStore } from '../store';
 
 type Tool = 'pen' | 'eraser' | 'rectangle' | 'circle' | 'line' | 'text';
@@ -31,15 +31,15 @@ export default function Whiteboard() {
 
   const colors: Color[] = ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'];
 
-  const getCanvasContext = () => {
+  const getCanvasContext = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     return { canvas, ctx };
-  };
+  }, []);
 
-  const drawStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
+  const drawStroke = useCallback((ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     ctx.strokeStyle = stroke.color;
     ctx.fillStyle = stroke.color;
     ctx.lineWidth = stroke.lineWidth;
@@ -92,9 +92,9 @@ export default function Whiteboard() {
         }
         break;
     }
-  };
+  }, []);
 
-  const redrawAll = () => {
+  const redrawAll = useCallback(() => {
     const { canvas, ctx } = getCanvasContext() || {};
     if (!canvas || !ctx) return;
 
@@ -102,9 +102,9 @@ export default function Whiteboard() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     strokes.forEach(stroke => drawStroke(ctx, stroke));
-  };
+  }, [theme, strokes, getCanvasContext, drawStroke]);
 
-  const resizeCanvas = () => {
+  const resizeCanvas = useCallback(() => {
     const { canvas, ctx } = getCanvasContext() || {};
     if (!canvas || !ctx) return;
     
@@ -113,17 +113,17 @@ export default function Whiteboard() {
     canvas.height = rect.height;
     
     redrawAll();
-  };
+  }, [getCanvasContext, redrawAll]);
 
   useEffect(() => {
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
     return () => window.removeEventListener('resize', resizeCanvas)
-  }, [])
+  }, [resizeCanvas])
 
   useEffect(() => {
     redrawAll()
-  }, [strokes]);
+  }, [redrawAll]);
 
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const { canvas } = getCanvasContext() || {};

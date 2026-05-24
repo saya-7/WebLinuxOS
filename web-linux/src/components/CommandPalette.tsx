@@ -125,7 +125,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   }, [commands, searchQuery])
 
   useEffect(() => {
-    setSelectedIndex(0)
+    setSelectedIndex(() => 0)
   }, [searchQuery])
 
   useEffect(() => {

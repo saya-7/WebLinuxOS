@@ -123,10 +123,16 @@ const SmartSearch = () => {
       }))
   }, [openApp])
 
+  // 使用 useRef 存储当前结果，避免直接在 effect 中 setState 的警告
+  const resultsRef = useRef<SearchResult[]>([])
+
+  // 搜索逻辑
   const performSearch = useCallback((q: string) => {
     const trimmed = q.trim()
     if (!trimmed) {
+      resultsRef.current = []
       setResults([])
+      setSelectedIndex(0)
       return
     }
 
@@ -139,10 +145,12 @@ const SmartSearch = () => {
       .sort((a, b) => b.priority - a.priority)
       .slice(0, 20)
 
+    resultsRef.current = allResults
     setResults(allResults)
     setSelectedIndex(0)
   }, [searchApps, searchCommands, searchFiles, searchSettings])
 
+  // 监听 query 变化，调用 performSearch
   useEffect(() => {
     performSearch(query)
   }, [query, performSearch])
