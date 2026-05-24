@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 
-type Language = 'javascript' | 'html' | 'css';
+type Language = 'javascript' | 'html' | 'css' | 'markdown';
 
 interface Snippet {
   id: string;
@@ -14,42 +14,111 @@ interface Snippet {
 const defaultSnippets: Snippet[] = [
   {
     id: '1',
-    title: 'Hello World',
+    title: 'Hello World (JS)',
     language: 'javascript',
-    code: `console.log("Hello, WebLinuxOS!");
+    code: `// 试试运行这个简单的示例！
+console.log("Hello, WebLinuxOS!");
 let a = 10;
 let b = 20;
 console.log(\`a + b = \${a + b}\`);
-document.body.innerHTML = "<h1>运行成功!</h1>";`,
+
+// 还可以操作DOM
+document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h1 style="color: #6c5ce7;">🎉 运行成功!</h1><p>这是通过JavaScript动态生成的内容</p></div>';`,
     createdAt: new Date(),
   },
   {
     id: '2',
-    title: '简单 CSS',
+    title: '动画效果 (CSS)',
     language: 'css',
     code: `body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-h1 {
-  color: white;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-family: system-ui;
+}
+
+.animated-box {
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #6c5ce7;
+  font-weight: bold;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
 }`,
     createdAt: new Date(),
   },
   {
     id: '3',
-    title: 'HTML 示例',
+    title: '个人网页 (HTML)',
     language: 'html',
-    code: `<div style="text-align: center; padding: 40px;">
-  <h1>🎉 欢迎来到 WebLinuxOS!</h1>
-  <p>这是一个完全在浏览器中运行的操作系统。</p>
-  <button onclick="alert('你好！')">点击我</button>
+    code: `<div style="max-width: 800px; margin: 0 auto; padding: 40px; font-family: system-ui;">
+  <div style="text-align: center;">
+    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">👨‍💻</div>
+    <h1 style="color: #333; margin-bottom: 10px;">张三</h1>
+    <p style="color: #666; font-size: 18px;">全栈开发者 · 开源爱好者</p>
+  </div>
+  
+  <div style="margin-top: 40px;">
+    <h2>🎨 关于我</h2>
+    <p>喜欢编程和技术创新，正在WebLinuxOS上学习前端开发！</p>
+  </div>
+  
+  <div style="margin-top: 30px;">
+    <button style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 16px; cursor: pointer;" onclick="alert('欢迎联系我！')">联系我</button>
+  </div>
 </div>`,
+    createdAt: new Date(),
+  },
+  {
+    id: '4',
+    title: 'Markdown 文档',
+    language: 'markdown',
+    code: `# 📖 欢迎来到 WebLinuxOS
+
+## 这是一个 Markdown 示例
+
+WebLinuxOS 是一个完全运行在浏览器中的操作系统！
+
+### 功能特性
+
+- 🎮 **完整的桌面体验** - 窗口管理、任务栏、开始菜单
+- 💻 **终端模拟器** - 支持 40+ 内置命令
+- 📁 **文件系统** - 完整的虚拟文件系统
+- 🎨 **丰富的应用** - 50+ 预装应用
+
+### 代码示例
+
+\`\`\`javascript
+console.log("Hello from WebLinuxOS!");
+\`\`\`
+
+### 列表项目
+
+1. 首先
+2. 其次
+3. 最后
+
+> "代码是写给人看的，顺便让机器执行"
+> — 哈罗德·埃布尔森
+
+---
+
+*感谢使用 WebLinuxOS!* 🌟`,
     createdAt: new Date(),
   },
 ];
@@ -75,14 +144,32 @@ export default function CodePlayground() {
   const [output, setOutput] = useState('');
   const [showOutput, setShowOutput] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     localStorage.setItem('weblinux-code-snippets', JSON.stringify(snippets));
   }, [snippets]);
 
-  const runCode = () => {
-    setIsRunning(true);
-    setOutput('运行中...');
+  // 简单的 Markdown 解析器
+  const parseMarkdown = (md: string): string => {
+    return md
+      .replace(/^### (.*$)/gm, '<h3 style="margin-top: 20px;">$1</h3>')
+      .replace(/^## (.*$)/gm, '<h2 style="margin-top: 24px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">$1</h2>')
+      .replace(/^# (.*$)/gm, '<h1 style="color: #6c5ce7;">$1</h1>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code style="background: #f0f0f5; padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>')
+      .replace(/```([\s\S]*?)```/g, '<pre style="background: #1e1e2e; color: #e0e0e8; padding: 16px; border-radius: 8px; overflow-x: auto;"><code>$1</code></pre>')
+      .replace(/^> (.*$)/gm, '<blockquote style="border-left: 4px solid #6c5ce7; padding-left: 16px; color: #666; font-style: italic;">$1</blockquote>')
+      .replace(/^- (.*$)/gm, '<li style="margin-left: 20px;">$1</li>')
+      .replace(/^\d+\. (.*$)/gm, '<li style="margin-left: 20px;">$1</li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[h|b|p|l|i|q])(.*)$/gm, '<p>$1</p>')
+      .replace(/---/g, '<hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">');
+  };
+
+  const updatePreview = () => {
+    if (!iframeRef.current) return;
     
     let htmlContent = '';
     
@@ -97,37 +184,69 @@ export default function CodePlayground() {
               body { 
                 font-family: system-ui, -apple-system, sans-serif;
                 padding: 20px;
-                background: #f0f0f5;
+                background: #f8fafc;
                 margin: 0;
+                min-height: 100vh;
+                box-sizing: border-box;
               }
-              pre { 
+              #console {
                 background: #1e1e2e;
                 color: #e0e0e8;
-                padding: 10px;
-                border-radius: 8px;
+                padding: 16px;
+                border-radius: 12px;
                 white-space: pre-wrap;
                 word-wrap: break-word;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                margin-top: 16px;
               }
+              .log-line { margin: 4px 0; }
+              .error { color: #ff6b6b; }
+              .success { color: #51cf66; }
+              .info { color: #74c0fc; }
             </style>
           </head>
           <body>
+            <div style="color: #333; font-size: 14px;">
+              <strong>📤 控制台输出</strong>
+            </div>
             <div id="console"></div>
             <script>
               const consoleEl = document.getElementById('console');
-              const originalLog = console.log;
               const logs = [];
-              console.log = function(...args) {
-                logs.push(args.map(arg => 
-                  typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-                ).join(' '));
-                consoleEl.innerHTML = '<pre>' + logs.join('\\n') + '</pre>';
-                originalLog.apply(console, args);
+              
+              const addLog = (type, args) => {
+                const text = args.map(arg => {
+                  if (typeof arg === 'object') {
+                    try {
+                      return JSON.stringify(arg, null, 2);
+                    } catch {
+                      return String(arg);
+                    }
+                  }
+                  return String(arg);
+                }).join(' ');
+                
+                logs.push({ type, text });
+                
+                consoleEl.innerHTML = logs.map(log => 
+                  '<div class="log-line ' + log.type + '">' + 
+                  log.text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
+                  '</div>'
+                ).join('');
+                consoleEl.scrollTop = consoleEl.scrollHeight;
               };
+              
+              console.log = function(...args) { addLog('info', args); };
+              console.error = function(...args) { addLog('error', args); };
+              console.warn = function(...args) { addLog('warning', args); };
+              
               try {
                 ${code}
               } catch (e) {
-                console.error(e);
-                document.body.innerHTML += '<pre style="color: #ff3b30;">错误: ' + e + '</pre>';
+                console.error('错误:', e.message);
+                console.error(e.stack);
               }
             <\/script>
           </body>
@@ -137,7 +256,14 @@ export default function CodePlayground() {
         htmlContent = `
           <!DOCTYPE html>
           <html>
-          <head><meta charset="utf-8"></head>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              * { box-sizing: border-box; }
+              body { margin: 0; padding: 0; font-family: system-ui; }
+            </style>
+          </head>
           <body>${code}</body>
           </html>
         `;
@@ -147,30 +273,74 @@ export default function CodePlayground() {
           <html>
           <head>
             <meta charset="utf-8">
-            <style>${code}</style>
+            <style>
+              * { box-sizing: border-box; }
+              body { margin: 0; padding: 40px; font-family: system-ui; }
+              ${code}
+            </style>
           </head>
           <body>
-            <h1>样式预览</h1>
-            <p>这是一个测试段落，用来展示你的CSS效果。</p>
-            <button>按钮</button>
+            <div class="animated-box">✨ WebLinuxOS</div>
+            <div style="margin-top: 40px;">
+              <h1>样式预览</h1>
+              <p>这是一个测试段落，用来展示你的CSS效果。</p>
+              <button style="margin-top: 16px; padding: 12px 24px; font-size: 16px;">按钮</button>
+              <div style="margin-top: 16px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                <h3>示例卡片</h3>
+                <p>在这里添加你的内容...</p>
+              </div>
+            </div>
           </body>
+          </html>
+        `;
+      } else if (activeTab === 'markdown') {
+        htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { 
+                font-family: system-ui, -apple-system, sans-serif;
+                padding: 30px;
+                background: #ffffff;
+                margin: 0;
+                line-height: 1.7;
+                color: #333;
+                max-width: 800px;
+                margin: 0 auto;
+              }
+              h1, h2, h3 { margin-bottom: 0.5em; margin-top: 1.5em; font-weight: 600; }
+              h1 { color: #6c5ce7; font-size: 2.5em; }
+              code { background: #f0f0f5; padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 0.9em; }
+              pre { background: #1e1e2e; color: #e0e0e8; padding: 20px; border-radius: 12px; overflow-x: auto; }
+              pre code { background: none; padding: 0; color: inherit; }
+              blockquote { border-left: 4px solid #6c5ce7; padding: 0 20px; color: #666; font-style: italic; margin: 1.5em 0; }
+              hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+            </style>
+          </head>
+          <body>${parseMarkdown(code)}</body>
           </html>
         `;
       }
       
       const blob = new Blob([htmlContent], { type: 'text/html' });
-      const outputUrl = URL.createObjectURL(blob);
-      
-      setOutput(`✅ 代码已生成！
-你可以在新窗口预览: ${outputUrl}
-(实际预览功能在完整桌面环境中运行)`);
-      
-      setIsRunning(false);
+      iframeRef.current.src = URL.createObjectURL(blob);
+      setOutput('✅ 预览已更新！');
       
     } catch (e) {
       setOutput(`错误: ${e}`);
-      setIsRunning(false);
     }
+  };
+
+  const runCode = () => {
+    setIsRunning(true);
+    setOutput('运行中...');
+    
+    setTimeout(() => {
+      updatePreview();
+      setIsRunning(false);
+    }, 100);
   };
 
   const saveSnippet = () => {
@@ -190,6 +360,7 @@ export default function CodePlayground() {
   const loadSnippet = (snippet: Snippet) => {
     setCode(snippet.code);
     setActiveTab(snippet.language);
+    setTimeout(() => updatePreview(), 50);
   };
 
   const deleteSnippet = (id: string) => {
@@ -203,6 +374,20 @@ export default function CodePlayground() {
       setCode('');
     }
   };
+
+  // 自动运行代码（防抖）
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updatePreview();
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, [code, activeTab]);
+
+  // 初始化预览
+  useEffect(() => {
+    setTimeout(() => updatePreview(), 100);
+  }, []);
 
   return (
     <div 
@@ -228,7 +413,7 @@ export default function CodePlayground() {
           <div>
             <div style={{ fontWeight: 600, fontSize: '14px' }}>代码运行器</div>
             <div style={{ fontSize: '11px', color: theme === 'light' ? '#8e8e93' : '#9090a4' }}>
-              在浏览器中运行代码
+              在浏览器中实时运行代码 · 支持 HTML/CSS/JS/Markdown
             </div>
           </div>
         </div>
@@ -280,7 +465,7 @@ export default function CodePlayground() {
               gap: '6px',
             }}
           >
-            {isRunning ? '⏳ 运行中...' : '▶ 运行'}
+            {isRunning ? '⏳ 运行中...' : '▶ 立即运行'}
           </button>
         </div>
       </div>
@@ -291,35 +476,36 @@ export default function CodePlayground() {
         overflow: 'hidden',
       }}>
         <div style={{ 
-          width: '200px',
+          width: '220px',
           borderRight: `1px solid ${theme === 'light' ? '#d1d1d6' : '#3a3a5c'}`,
           display: 'flex',
           flexDirection: 'column',
           background: theme === 'light' ? '#ffffff' : '#252536',
         }}>
           <div style={{ 
-            padding: '12px',
-            fontWeight: 600,
+            padding: '14px',
+            fontWeight: 700,
             fontSize: '12px',
             borderBottom: `1px solid ${theme === 'light' ? '#d1d1d6' : '#3a3a5c'}`,
             textTransform: 'uppercase',
             color: theme === 'light' ? '#8e8e93' : '#9090a4',
+            letterSpacing: '0.5px',
           }}>
-            代码片段
+            📚 示例代码
           </div>
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {snippets.map((snippet) => (
               <div
                 key={snippet.id}
                 style={{
-                  padding: '10px 12px',
+                  padding: '14px',
                   cursor: 'pointer',
-                  borderBottom: `1px solid ${theme === 'light' ? '#e5e5ea' : '#2e2e44'}`,
-                  transition: 'background 0.2s',
+                  borderBottom: `1px solid ${theme === 'light' ? '#f5f5f7' : '#2e2e44'}`,
+                  transition: 'all 0.2s ease',
                 }}
                 onClick={() => loadSnippet(snippet)}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme === 'light' ? '#f0f0f5' : '#1e1e2e';
+                  e.currentTarget.style.background = theme === 'light' ? '#f8fafc' : '#1a1a2e';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
@@ -327,8 +513,8 @@ export default function CodePlayground() {
               >
                 <div style={{ 
                   fontSize: '13px',
-                  fontWeight: 500,
-                  marginBottom: '4px',
+                  fontWeight: 600,
+                  marginBottom: '6px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -342,12 +528,13 @@ export default function CodePlayground() {
                 }}>
                   <span style={{ 
                     fontSize: '11px',
-                    color: theme === 'light' ? '#8e8e93' : '#9090a4',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    background: theme === 'light' ? '#f0f0f5' : '#1e1e2e',
+                    color: theme === 'light' ? '#007aff' : '#a29bfe',
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: theme === 'light' ? '#f0f7ff' : '#2a2a4e',
+                    fontWeight: 600,
                   }}>
-                    {snippet.language}
+                    {snippet.language.toUpperCase()}
                   </span>
                   <button
                     onClick={(e) => {
@@ -357,10 +544,11 @@ export default function CodePlayground() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#ff3b30',
+                      color: '#ff6b6b',
                       cursor: 'pointer',
-                      fontSize: '12px',
-                      padding: '2px 6px',
+                      fontSize: '14px',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
                     }}
                   >
                     ✕
@@ -382,12 +570,12 @@ export default function CodePlayground() {
             borderBottom: `1px solid ${theme === 'light' ? '#d1d1d6' : '#3a3a5c'}`,
             background: theme === 'light' ? '#ffffff' : '#252536',
           }}>
-            {(['javascript', 'html', 'css'] as Language[]).map((lang) => (
+            {(['javascript', 'html', 'css', 'markdown'] as Language[]).map((lang) => (
               <button
                 key={lang}
                 onClick={() => setActiveTab(lang)}
                 style={{
-                  padding: '10px 16px',
+                  padding: '12px 20px',
                   border: 'none',
                   background: 'transparent',
                   color: activeTab === lang 
@@ -395,26 +583,30 @@ export default function CodePlayground() {
                     : (theme === 'light' ? '#8e8e93' : '#9090a4'),
                   cursor: 'pointer',
                   fontSize: '12px',
-                  fontWeight: activeTab === lang ? 600 : 400,
+                  fontWeight: activeTab === lang ? 700 : 500,
                   borderBottom: activeTab === lang 
                     ? `2px solid ${theme === 'light' ? '#007aff' : '#6c5ce7'}`
                     : 'none',
                   transition: 'all 0.2s',
                 }}
               >
-                {lang.toUpperCase()}
+                {lang === 'javascript' ? 'JavaScript' : 
+                 lang === 'html' ? 'HTML' : 
+                 lang === 'css' ? 'CSS' : 
+                 'Markdown'}
               </button>
             ))}
             <div style={{ flex: 1 }} />
             <button
               onClick={() => setShowOutput(!showOutput)}
               style={{
-                padding: '10px 16px',
+                padding: '12px 20px',
                 border: 'none',
                 background: 'transparent',
                 color: theme === 'light' ? '#8e8e93' : '#9090a4',
                 cursor: 'pointer',
                 fontSize: '12px',
+                fontWeight: 500,
               }}
             >
               {showOutput ? '📄 隐藏输出' : '📄 显示输出'}
@@ -431,55 +623,74 @@ export default function CodePlayground() {
               display: 'flex',
               flexDirection: 'column',
             }}>
+              <div style={{
+                padding: '8px 16px',
+                fontSize: '11px',
+                color: theme === 'light' ? '#8e8e93' : '#9090a4',
+                background: theme === 'light' ? '#f8fafc' : '#1a1a2e',
+                borderBottom: `1px solid ${theme === 'light' ? '#d1d1d6' : '#2a2a4e'}`,
+              }}>
+                ✨ 输入代码，右侧将自动预览 · 或者点击「立即运行」查看效果
+              </div>
               <textarea
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 spellCheck={false}
                 style={{
                   flex: 1,
-                  padding: '16px',
+                  padding: '20px',
                   border: 'none',
                   outline: 'none',
                   resize: 'none',
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: '13px',
-                  lineHeight: '1.6',
-                  background: theme === 'light' ? '#ffffff' : '#1e1e2e',
+                  fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", monospace',
+                  fontSize: '14px',
+                  lineHeight: '1.7',
+                  background: theme === 'light' ? '#ffffff' : '#0f0f1a',
                   color: theme === 'light' ? '#1c1c1e' : '#e0e0e8',
+                  tabSize: 2,
                 }}
-                placeholder={`// 输入 ${activeTab} 代码并点击运行...`}
+                placeholder={`// 输入 ${activeTab} 代码...`}
               />
             </div>
 
             {showOutput && (
               <div style={{ 
-                width: '45%',
+                width: '50%',
                 borderLeft: `1px solid ${theme === 'light' ? '#d1d1d6' : '#3a3a5c'}`,
                 display: 'flex',
                 flexDirection: 'column',
                 background: theme === 'light' ? '#ffffff' : '#252536',
               }}>
                 <div style={{ 
-                  padding: '10px 16px',
+                  padding: '12px 16px',
                   borderBottom: `1px solid ${theme === 'light' ? '#d1d1d6' : '#3a3a5c'}`,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '12px',
                   color: theme === 'light' ? '#8e8e93' : '#9090a4',
+                  background: theme === 'light' ? '#f8fafc' : '#1a1a2e',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}>
-                  控制台输出
+                  <span>👁️ 实时预览</span>
+                  <span style={{ fontSize: '10px', color: '#6c5ce7', fontWeight: 600 }}>
+                    {output}
+                  </span>
                 </div>
                 <div style={{ 
                   flex: 1,
-                  padding: '16px',
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  fontSize: '12px',
-                  lineHeight: '1.6',
-                  overflowY: 'auto',
-                  background: theme === 'light' ? '#f5f5f7' : '#181824',
-                  whiteSpace: 'pre-wrap',
-                  wordWrap: 'break-word',
+                  overflow: 'hidden',
+                  background: '#ffffff',
                 }}>
-                  {output || '// 运行代码查看输出...'}
+                  <iframe
+                    ref={iframeRef}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                    }}
+                    sandbox="allow-scripts allow-same-origin"
+                  />
                 </div>
               </div>
             )}
