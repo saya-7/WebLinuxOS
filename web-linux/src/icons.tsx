@@ -593,3 +593,17 @@ export const WhiteboardIcon = () => (
     <path d="M6 7L10 11L14 9L18 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 )
+
+export const AutomationIcon = () => (
+  <svg width='1em' height='1em' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M12 17V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2"/>
+    <path d="M21 12H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M7 12H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M18.36 7.05L16.24 9.17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M7.76 14.83L5.64 16.95" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M5.64 7.05L7.76 9.17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M16.24 14.83L18.36 16.95" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+)
