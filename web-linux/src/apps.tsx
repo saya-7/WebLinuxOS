@@ -10,12 +10,13 @@ import {
   BluetoothIcon, BatteryIcon, InfoIcon, HelpIcon, CommandIcon,
   PaletteIcon, MagnifierIcon, SnakeIcon, TetrisIcon, ChatIcon, BoardIcon,
   ClipboardIcon, LightningIcon, SearchIcon, PomodoroIcon, PetIcon,
-  WallpaperIcon, MindMapIcon, StickyNotesIcon, ParticleIcon, WhiteboardIcon,
-  AutomationIcon
+  WallpaperIcon, MindMapIcon, StickyNotesIcon, ParticleIcon, WhiteboardIcon, AutomationIcon,
+  VoiceIcon
 } from './icons'
 import type { AppDefinition } from './types'
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'voice-transcriber', name: '语音转录', icon: <VoiceIcon />, component: 'VoiceTranscriber', category: 'utilities', defaultWidth: 800, defaultHeight: 700, minWidth: 600, minHeight: 500, resizable: true, multiple: false },
   { id: 'news-reader', name: '新闻阅读器', icon: '📰', component: 'NewsReader', category: 'internet', defaultWidth: 1000, defaultHeight: 700, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
   { id: 'github-trending', name: 'GitHub 热门', icon: '💻', component: 'GitHubTrending', category: 'development', defaultWidth: 900, defaultHeight: 700, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
   { id: 'unit-converter', name: '单位转换器', icon: '📏', component: 'UnitConverter', category: 'utilities', defaultWidth: 700, defaultHeight: 700, minWidth: 500, minHeight: 500, resizable: true, multiple: false },
