@@ -26,7 +26,9 @@ const COMMANDS = [
   'tar', 'zip', 'unzip', 'diff', 'sort', 'uniq', 'head', 'tail',
   'less', 'more', 'xargs', 'sed', 'awk',
   'systemctl', 'journalctl', 'dmesg', 'lsblk', 'lsof', 'netstat', 'ss',
-  'welcome', 'search', 'translate', 'qrcode', 'timer', 'stopwatch'
+  'welcome', 'search', 'translate', 'qrcode', 'timer', 'stopwatch',
+  'disk-usage', 'process-list', 'network-stats', 'system-info', 'memory-info', 'cpu-info',
+  'version', 'credits', 'about', 'todo', 'notes', 'encrypt', 'decrypt'
 ]
 
 function listDir(files: FileNode[], path: string): string {
@@ -297,10 +299,10 @@ export default function Terminal() {
         output = [
           `            .-/+oossssoo+/-.               ${username}@${hostname}`,
           `        \`:+ssssssssssssssssss+:\`           -------------`,
-          `      -+ssssssssssssssssssssssso+-         OS: Web Linux 2.2.0`,
-          `    /osssssssssssssssssssssssssso/        Kernel: 6.9.0-web`,
+          `      -+ssssssssssssssssssssssso+-         OS: Web Linux 2.3.0`,
+          `    /osssssssssssssssssssssssssso/        Kernel: 6.10.0-web`,
           `  /ossssssssssssssssssssssssssssso/       Shell: bash 5.2.21`,
-          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.2`,
+          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.3`,
           ` ossssssssssssssssssssssssssssssssso      Theme: ${theme}`,
           ` ossssssssssssssssssssssssssssssssso      Uptime: ${Math.floor(Math.random() * 24)} hours`,
           ` :sssssssssssssssssssssssssssssssss:      Packages: ${Math.floor(Math.random() * 500 + 100)}`,
@@ -472,6 +474,163 @@ export default function Terminal() {
           ``,
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
           `祝你使用愉快! 🎊`,
+        ].join('\n')
+        break
+      case 'version':
+        output = [
+          `WebLinuxOS 版本信息`,
+          ``,
+          `  版本:   2.3.0`,
+          `  内核:   6.10.0-web`,
+          `  架构:   x86_64`,
+          `  平台:   WebAssembly`,
+          `  发布:   2026-05-25`,
+          ``,
+          `更多信息请访问: https://github.com/saya-ch/WebLinuxOS`,
+        ].join('\n')
+        break
+      case 'credits':
+        output = [
+          `🎉 WebLinuxOS 致谢`,
+          ``,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          ``,
+          `📦 核心技术栈:`,
+          `  • React 19.2.6 - UI框架`,
+          `  • TypeScript 6 - 类型系统`,
+          `  • Zustand 5 - 状态管理`,
+          `  • Vite 8 - 构建工具`,
+          `  • Pyodide 0.26 - Python运行时`,
+          `  • Lucide React - 图标库`,
+          ``,
+          `🛠️ 开发工具:`,
+          `  • Git - 版本控制`,
+          `  • GitHub Pages - 托管部署`,
+          `  • Trae AI - 代码优化助手`,
+          ``,
+          `👨‍💻 贡献者:`,
+          `  • saya-ch - 项目发起者和维护者`,
+          `  • 所有开源社区贡献者`,
+          ``,
+          `💝 特别感谢:`,
+          `  • React团队`,
+          `  • Vite团队`,
+          `  • 所有使用和支持WebLinuxOS的用户`,
+          ``,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          ``,
+          `📝 许可证: MIT`,
+          `🌐 网址: https://github.com/saya-ch/WebLinuxOS`,
+        ].join('\n')
+        break
+      case 'about':
+        output = [
+          `═══════════════════════════════════════`,
+          `         WebLinuxOS 关于`,
+          `═══════════════════════════════════════`,
+          ``,
+          `  WebLinuxOS 是一个功能完整的`,
+          `  Web端Linux桌面操作系统模拟器`,
+          ``,
+          `  版本: 2.3.0`,
+          `  发布日期: 2026-05-25`,
+          ``,
+          `  特性:`,
+          `    ✓ 60+ 预装应用程序`,
+          `    ✓ 多窗口管理系统`,
+          `    ✓ 虚拟文件系统`,
+          `    ✓ 终端模拟器`,
+          `    ✓ Python运行时支持`,
+          `    ✓ 深色/浅色主题`,
+          ``,
+          `═══════════════════════════════════════`,
+        ].join('\n')
+        break
+      case 'disk-usage':
+        output = [
+          `╔════════════════════════════════════════════════════════╗`,
+          `║              磁盘使用情况                             ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  文件系统        大小      已用      可用    使用%    ║`,
+          `║  /dev/sda1      50GB     12GB      38GB     24%     ║`,
+          `║  tmpfs          3.9GB    1.2MB     3.9GB     1%     ║`,
+          `║  /dev/sda2      20GB     8GB       12GB     40%     ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  总计: 73.9GB    已用: 20GB    可用: 53.9GB           ║`,
+          `╚════════════════════════════════════════════════════════╝`,
+        ].join('\n')
+        break
+      case 'process-list':
+        output = [
+          `╔════════════════════════════════════════════════════════╗`,
+          `║              进程列表                                 ║`,
+          `╠═══════════════╦════════╦══════════╦══════════════════╣`,
+          `║  PID    │ 用户   │  CPU   │ 内存    │ 进程名           ║`,
+          `╠═════════╬════════╬════════╬═════════╬════════════════╣`,
+          `║    1    │ root   │  0.0%  │  12MB   │ systemd          ║`,
+          `║  234    │ user   │  0.1%  │  45MB   │ terminal         ║`,
+          `║  567    │ user   │  1.2%  │ 156MB   │ browser          ║`,
+          `║  890    │ user   │  0.3%  │  89MB   │ file-manager     ║`,
+          `║ 1023    │ user   │  0.5%  │  67MB   │ code-editor      ║`,
+          `║ 1156    │ user   │  0.2%  │  34MB   │ music-player     ║`,
+          `╚═════════╩════════╩════════╩═════════╩════════════════╝`,
+          ``,
+          `总进程数: ${Math.floor(Math.random() * 50 + 100)}`,
+        ].join('\n')
+        break
+      case 'network-stats':
+        output = [
+          `╔════════════════════════════════════════════════════════╗`,
+          `║              网络统计                                 ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  接口     │ 状态    │  接收      │  发送            ║`,
+          `╠══════════╬═════════╬═══════════╬═══════════════════╣`,
+          `║  eth0    │ UP      │ 12.3MB    │ 4.5MB            ║`,
+          `║  lo      │ UP      │ 234KB     │ 234KB            ║`,
+          `║  wlan0   │ DOWN    │   -       │   -              ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  TCP连接数: ${Math.floor(Math.random() * 50 + 10)}    │  UDP连接数: ${Math.floor(Math.random() * 30 + 5)}        ║`,
+          `║  总接收: 12.5MB        │  总发送: 4.7MB              ║`,
+          `╚════════════════════════════════════════════════════════╝`,
+        ].join('\n')
+        break
+      case 'memory-info':
+        const memTotal = 16384
+        const memUsed = Math.floor(memTotal * (0.3 + Math.random() * 0.3))
+        const memFree = memTotal - memUsed
+        const memBuffers = Math.floor(memUsed * 0.3)
+        const memCached = Math.floor(memUsed * 0.4)
+        output = [
+          `╔════════════════════════════════════════════════════════╗`,
+          `║              内存信息                                 ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  总内存:    ${(memTotal / 1024).toFixed(0).padEnd(35)}MB║`,
+          `║  已用:     ${(memUsed / 1024).toFixed(0).padEnd(35)}MB║`,
+          `║  空闲:     ${(memFree / 1024).toFixed(0).padEnd(35)}MB║`,
+          `║  缓冲:     ${(memBuffers / 1024).toFixed(0).padEnd(35)}MB║`,
+          `║  缓存:     ${(memCached / 1024).toFixed(0).padEnd(35)}MB║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  交换空间:  ${Math.floor(Math.random() * 2000 + 1000).toString().padEnd(35)}MB║`,
+          `║  虚拟内存:  已启用                                   ║`,
+          `╚════════════════════════════════════════════════════════╝`,
+        ].join('\n')
+        break
+      case 'cpu-info':
+        output = [
+          `╔════════════════════════════════════════════════════════╗`,
+          `║              CPU信息                                  ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  型号:     WebAssembly Virtual CPU                     ║`,
+          `║  架构:     x86_64                                     ║`,
+          `║  核心数:   ${Math.floor(Math.random() * 4 + 4)} 核心                              ║`,
+          `║  频率:     ${Math.floor(Math.random() * 1000 + 2000)} MHz (动态)                    ║`,
+          `║  缓存:     L1: 32KB  L2: 256KB  L3: 8MB              ║`,
+          `╠════════════════════════════════════════════════════════╣`,
+          `║  CPU使用率: ${Math.floor(Math.random() * 30 + 10)}%                              ║`,
+          `║  用户空间:  ${Math.floor(Math.random() * 15 + 5)}%                              ║`,
+          `║  系统空间:  ${Math.floor(Math.random() * 5 + 1)}%                               ║`,
+          `║  空闲:     ${Math.floor(Math.random() * 60 + 30)}%                              ║`,
+          `╚════════════════════════════════════════════════════════╝`,
         ].join('\n')
         break
       case 'search':

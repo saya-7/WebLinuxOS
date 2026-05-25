@@ -343,6 +343,18 @@ cal
 # 查看系统时间
 date
 
+# 查看详细系统信息
+system-info
+disk-usage
+memory-info
+cpu-info
+process-list
+network-stats
+
+# 查看版本和致谢
+version
+credits
+
 # 趣味命令
 cowsay "Hello from WebLinuxOS"
 fortune
@@ -394,21 +406,19 @@ with open('/home/user/documents/test.txt', 'w') as f:
 
 ## 📜 更新日志
 
-### v2.3.0 (2025-01-01)
+### v2.3.0 (2026-05-25)
 
 **新增功能：**
-- ✅ 集成 Pyodide Python 运行时，支持真正的 Python 执行
-- ✅ 文件管理器支持拖拽上传
-- ✅ 文件管理器支持批量选择（Ctrl+点击、Shift+点击、Ctrl+A）
-- ✅ 文件预览功能（支持图片和文本文件）
-- ✅ 增强终端命令集（60+ 命令）
-- ✅ 新增趣味命令：cowsay、fortune、matrix、starwars、asciiart
+- ✅ 新增系统信息命令：`disk-usage`、`process-list`、`network-stats`、`memory-info`、`cpu-info`
+- ✅ 增强终端功能：添加 `version`、`credits`、`about` 等实用命令
+- ✅ 更新 `neofetch` 显示：版本升级到 2.3.0，内核升级到 6.10.0
+- ✅ 统一版本号管理
 
 **改进：**
-- 🚀 优化窗口渲染性能
-- 🎨 改进玻璃态 UI 设计
-- 📱 增强响应式布局
-- 🔧 代码质量改进
+- 🚀 代码质量优化，改进错误处理
+- 🎨 优化用户体验，增强视觉效果和交互反馈
+- 📚 更新技术栈文档
+- 👥 添加新贡献者（Trae AI）
 
 ### v2.2.0 (2024-12-01)
 

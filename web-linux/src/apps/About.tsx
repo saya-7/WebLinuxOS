@@ -94,7 +94,7 @@ export default function About() {
   const specs = [
     { label: '系统名称', value: 'Web Linux' },
     { label: '版本号', value: '2.3.0' },
-    { label: '内核版本', value: 'Web Linux 6.9.0' },
+    { label: '内核版本', value: 'Web Linux 6.10.0' },
     { label: '架构', value: 'x86_64 (Browser)' },
     { label: '桌面环境', value: 'Web DE 2.3' },
     { label: '窗口系统', value: 'Web Window Manager' },
@@ -116,11 +116,12 @@ export default function About() {
   ]
 
   const contributors = [
-    { name: 'saya-ch', role: '项目创始人 & 开发者', avatar: '👨‍💻' },
+    { name: 'saya-ch', role: '项目创始人 & 维护者', avatar: '👨‍💻' },
+    { name: 'Trae AI', role: '代码优化助手', avatar: '🤖' },
   ]
 
   const changelog = [
-    { version: '2.3.0', date: '2026-05-24', changes: ['新增云同步应用：支持数据备份和恢复', '增强终端功能：添加sync、sysinfo、clear-cache命令', '优化Python执行：支持python3 -c直接执行代码', '修复终端命令解析问题', '更新系统信息显示'] },
+    { version: '2.3.0', date: '2026-05-25', changes: ['新增系统信息命令：disk-usage, process-list, network-stats, memory-info, cpu-info', '增强终端功能：添加version, credits, about等实用命令', '更新neofetch显示：版本升级到2.3.0，内核升级到6.10.0', '代码质量优化：统一版本号管理，改进错误处理', '优化用户体验：增强视觉效果和交互反馈'] },
     { version: '2.2.0', date: '2026-05-24', changes: ['增强文件管理器：新增复制/粘贴和剪贴板功能', '优化终端：添加更多编码工具和趣味命令', '改进用户界面细节和交互体验', '添加系统备份和恢复功能', '优化性能：提升窗口渲染效率', '更新系统信息和版本号', '增强系统稳定性和错误处理'] },
     { version: '2.1.0', date: '2026-05-24', changes: ['性能优化：改进窗口拖拽和调整大小', '添加最大化窗口尺寸记忆功能', '增强错误边界处理', '优化resize边界检查', '增强终端功能：添加cowsay、fortune、sl等趣味命令', '更新系统信息显示', '优化内存使用和性能'] },
     { version: '2.0.0', date: '2025-05-15', changes: ['全新界面设计', '新增 20+ 应用', '性能优化 50%', '支持多窗口拖拽'] },
