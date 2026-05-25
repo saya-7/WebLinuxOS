@@ -92,7 +92,7 @@ export default function JSONFormatter() {
   }, [input])
 
   // JSON Tree View
-  const renderJSONTree = (data: any, depth: number = 0) => {
+  const renderJSONTree = (data: unknown, depth: number = 0): React.ReactNode => {
     if (data === null) return <span style={{ color: '#f38ba8' }}>null</span>
     if (typeof data === 'boolean') return <span style={{ color: '#f38ba8' }}>{String(data)}</span>
     if (typeof data === 'number') return <span style={{ color: '#74c0fc' }}>{String(data)}</span>
@@ -117,7 +117,8 @@ export default function JSONFormatter() {
     }
     
     if (typeof data === 'object') {
-      const keys = Object.keys(data)
+      const objData = data as Record<string, unknown>
+      const keys = Object.keys(objData)
       if (keys.length === 0) return <span>{}</span>
       return (
         <>
@@ -127,7 +128,7 @@ export default function JSONFormatter() {
               <div key={i}>
                 <span style={{ color: '#cdd6f4' }}>"{key}"</span>
                 <span style={{ color: '#9090a4' }}>: </span>
-                {renderJSONTree(data[key], depth + 1)}
+                {renderJSONTree(objData[key], depth + 1)}
                 {i < keys.length - 1 && <span style={{ color: '#9090a4' }}>,</span>}
               </div>
             ))}
@@ -143,7 +144,9 @@ export default function JSONFormatter() {
   let treeData = null
   try {
     if (input.trim()) treeData = JSON.parse(input)
-  } catch {}
+  } catch (e) {
+    console.error('JSON parse error:', e)
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#1e1e2e', color: '#e0e0e0' }}>

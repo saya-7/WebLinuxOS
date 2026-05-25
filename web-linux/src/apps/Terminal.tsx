@@ -325,7 +325,7 @@ export default function Terminal() {
           `                ||     ||`,
         ].join('\n')
         break
-      case 'matrix':
+      case 'matrix': {
         const matrixLines = []
         for (let i = 0; i < 20; i++) {
           let line = ''
@@ -336,7 +336,8 @@ export default function Terminal() {
         }
         output = matrixLines.join('\n')
         break
-      case 'figlet':
+      }
+      case 'figlet': {
         const text = args.join(' ') || 'Hello'
         const width = 60
         const pad = Math.max(0, Math.floor((width - text.length * 2) / 2))
@@ -345,6 +346,7 @@ export default function Terminal() {
           ' '.repeat(pad) + '═'.repeat(text.length * 2),
         ].join('\n')
         break
+      }
       case 'cowsay':
         output = [
           ` _______________________`,
@@ -393,7 +395,7 @@ export default function Terminal() {
           `  May the Force be with you!`,
         ].join('\n')
         break
-      case 'asciiart':
+      case 'asciiart': {
         const artIndex = Math.floor(Math.random() * 3)
         const asciiArts = [
           [
@@ -428,6 +430,7 @@ export default function Terminal() {
         ]
         output = asciiArts[artIndex].join('\n')
         break
+      }
       case 'welcome':
         output = [
           `🎉 欢迎使用 WebLinuxOS 终端 v2.3!`,
@@ -594,7 +597,7 @@ export default function Terminal() {
           `╚════════════════════════════════════════════════════════╝`,
         ].join('\n')
         break
-      case 'memory-info':
+      case 'memory-info': {
         const memTotal = 16384
         const memUsed = Math.floor(memTotal * (0.3 + Math.random() * 0.3))
         const memFree = memTotal - memUsed
@@ -615,6 +618,7 @@ export default function Terminal() {
           `╚════════════════════════════════════════════════════════╝`,
         ].join('\n')
         break
+      }
       case 'cpu-info':
         output = [
           `╔════════════════════════════════════════════════════════╗`,
@@ -633,7 +637,7 @@ export default function Terminal() {
           `╚════════════════════════════════════════════════════════╝`,
         ].join('\n')
         break
-      case 'search':
+      case 'search': {
         if (args.length === 0) {
           output = 'search: 请提供搜索关键词\n用法: search <关键词>'
         } else {
@@ -674,6 +678,7 @@ export default function Terminal() {
           }
         }
         break
+      }
       case 'translate':
         if (args.length === 0) {
           output = [
@@ -790,7 +795,7 @@ export default function Terminal() {
           `💡 可用于测量命令执行时间`,
         ].join('\n')
         break
-      case 'banner':
+      case 'banner': {
         const bannerText = args.join(' ') || 'WELCOME'
         const bannerWidth = bannerText.length * 6 + 4
         output = [
@@ -801,7 +806,8 @@ export default function Terminal() {
           `*${'*'.repeat(bannerWidth - 2)}*`,
         ].join('\n')
         break
-      case 'lolcat':
+      }
+      case 'lolcat': {
         const escapeChar = String.fromCharCode(27)
         const colors = ['31', '33', '32', '36', '34', '35']
         const lines = (args.join(' ') || 'Rainbow Power!').split('')
@@ -810,13 +816,15 @@ export default function Terminal() {
           return `${escapeChar}[${color}m${char}${escapeChar}[0m`
         }).join('')
         break
-      case 'bacon':
+      }
+      case 'bacon': {
         const baconText = (args.join(' ') || 'BACON').split('').map(c => {
           const binary = c.charCodeAt(0).toString(2).padStart(8, '0')
           return binary.split('').map(b => b === '1' ? ' bacon' : ' Bacon').join('')
         }).join('\n')
         output = baconText
         break
+      }
       case 'rev':
         output = (args.join(' ') || 'Hello World').split('').reverse().join('')
         break
@@ -842,7 +850,7 @@ export default function Terminal() {
           output = 'base64: 请提供要解码的文本'
         }
         break
-      case 'hash':
+      case 'hash': {
         if (args.length > 0) {
           const text = args.join(' ')
           let hash = 0
@@ -860,7 +868,8 @@ export default function Terminal() {
           output = 'hash: 请提供要哈希的文本'
         }
         break
-      case 'prime':
+      }
+      case 'prime': {
         const max = parseInt(args[0]) || 100
         const isPrime = (n: number) => {
           if (n < 2) return false
@@ -875,7 +884,8 @@ export default function Terminal() {
         }
         output = `质数 (2-${max}): ${primes.join(', ')}\n共 ${primes.length} 个质数`
         break
-      case 'factor':
+      }
+      case 'factor': {
         const num = parseInt(args[0]) || 42
         const factors: number[] = []
         let n = num
@@ -887,7 +897,8 @@ export default function Terminal() {
         }
         output = `${num} = ${factors.join(' × ')}`
         break
-      case 'calc':
+      }
+      case 'calc': {
         if (args.length > 0) {
           try {
             const expr = args.join('')
@@ -900,7 +911,8 @@ export default function Terminal() {
           output = 'calc: 请提供数学表达式'
         }
         break
-      case 'roman':
+      }
+      case 'roman': {
         const toRoman = (num: number): string => {
           const romanNumerals: [string, number][] = [
             ['M', 1000], ['CM', 900], ['D', 500], ['CD', 400],
@@ -920,6 +932,7 @@ export default function Terminal() {
         const numToConvert = parseInt(args[0]) || 2024
         output = `${numToConvert} = ${toRoman(numToConvert)}`
         break
+      }
       case 'fortune': {
         const fortunes = [
           '人生苦短，我用Python。',
@@ -1573,35 +1586,6 @@ Server:
  Version:    24.0.7`
         } else {
           output = `docker: command not found (需要Docker环境)`
-        }
-        break
-      case 'sync':
-        if (args[0] === '--export' || args[0] === '-e') {
-          output = `正在导出系统数据...
-✓ 文件系统数据已导出
-✓ 窗口状态已保存
-✓ 用户偏好已备份
-导出完成! 使用 sync --import 恢复数据`
-        } else if (args[0] === '--import' || args[0] === '-i') {
-          output = `正在导入系统数据...
-✓ 文件系统数据已恢复
-✓ 窗口状态已加载
-✓ 用户偏好已同步
-导入完成!`
-        } else if (args[0] === '--status') {
-          output = `同步状态: 已同步
-上次同步: ${new Date().toLocaleString('zh-CN')}
-同步项目:
-  - 文件系统
-  - 用户配置
-  - 窗口布局`
-        } else {
-          output = `sync: 数据同步工具
-用法: sync [选项]
-  --export, -e    导出系统数据
-  --import, -i    导入系统数据
-  --status        查看同步状态
-  --clear         清除同步数据`
         }
         break
       case 'clear-cache':

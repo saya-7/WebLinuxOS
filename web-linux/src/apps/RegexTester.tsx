@@ -23,11 +23,11 @@ export default function RegexTester() {
   const [replaceText, setReplaceText] = useState('[$1 at $2]')
   
   const { matches, error, replaceResult } = useMemo((): RegexTest => {
-    let regex: RegExp | null = null
     let currentError: string | null = null
-    let currentMatches: Match[] = []
+    const currentMatches: Match[] = []
     let currentReplaceResult = ''
 
+    let regex: RegExp | null = null
     try {
       regex = new RegExp(pattern, flags)
     } catch (e) {
@@ -82,7 +82,7 @@ export default function RegexTester() {
   const highlightedText = useMemo(() => {
     if (!matches.length) return <span>{testString}</span>
 
-    const parts: any[] = []
+    const parts: React.ReactNode[] = []
     let lastIndex = 0
 
     matches.forEach((match, i) => {

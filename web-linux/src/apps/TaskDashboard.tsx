@@ -98,10 +98,10 @@ export default function TaskDashboard() {
     const saved = localStorage.getItem('weblinux-tasks')
     if (saved) {
       try {
-        return JSON.parse(saved).map((t: any) => ({
+        return JSON.parse(saved).map((t: Record<string, unknown>) => ({
           ...t,
-          createdAt: new Date(t.createdAt),
-          completedAt: t.completedAt ? new Date(t.completedAt) : null,
+          createdAt: new Date(t.createdAt as string),
+          completedAt: t.completedAt ? new Date(t.completedAt as string) : null,
         }))
       } catch {
         return sampleTasks
@@ -426,8 +426,9 @@ export default function TaskDashboard() {
                 height: '200px',
                 padding: '20px 0',
               }}>
-                {['一', '二', '三', '四', '五', '六', '日'].map((day) => {
-                  const height = 30 + Math.random() * 150
+                {['一', '二', '三', '四', '五', '六', '日'].map((day, index) => {
+                  const heights = [80, 120, 65, 150, 95, 140, 75]
+                  const height = heights[index]
                   return (
                     <div key={day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{

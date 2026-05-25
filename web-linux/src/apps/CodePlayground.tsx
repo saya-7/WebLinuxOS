@@ -131,9 +131,9 @@ export default function CodePlayground() {
     const saved = localStorage.getItem('weblinux-code-snippets');
     if (saved) {
       try {
-        return JSON.parse(saved).map((s: any) => ({
+        return JSON.parse(saved).map((s: Record<string, unknown>) => ({
           ...s,
-          createdAt: new Date(s.createdAt),
+          createdAt: new Date(s.createdAt as string),
         }));
       } catch {
         return defaultSnippets;
@@ -250,7 +250,7 @@ export default function CodePlayground() {
               }
             <\/script>
           </body>
-          </html>
+          <\/html>
         `;
       } else if (activeTab === 'html') {
         htmlContent = `

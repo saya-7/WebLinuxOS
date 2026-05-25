@@ -1,6 +1,14 @@
 # Dependencies
 node_modules/
 
+# Build output
+dist/
+assets/
+index.html
+favicon.svg
+icons.svg
+.nojekyll
+
 # Development
 .env
 .env.local

@@ -69,6 +69,11 @@ export default function TaskAutomation() {
   const logsEndRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<number | null>(null)
 
+  const addLog = useCallback((message: string) => {
+    const timestamp = new Date().toLocaleTimeString()
+    setLogs(prev => [...prev, `[${timestamp}] ${message}`].slice(-100))
+  }, [])
+
   // 保存任务到 localStorage
   useEffect(() => {
     localStorage.setItem('weblinux-automation-tasks', JSON.stringify(tasks))
@@ -106,11 +111,6 @@ export default function TaskAutomation() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [])
-
-  const addLog = useCallback((message: string) => {
-    const timestamp = new Date().toLocaleTimeString()
-    setLogs(prev => [...prev, `[${timestamp}] ${message}`].slice(-100))
   }, [])
 
   const handleAddTask = useCallback(() => {

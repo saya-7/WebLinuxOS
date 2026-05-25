@@ -62,62 +62,6 @@ const SystemDashboard = () => {
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (!canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect()
-      canvas.width = rect.width * window.devicePixelRatio
-      canvas.height = rect.height * window.devicePixelRatio
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
-    }
-    resize()
-    window.addEventListener('resize', resize)
-
-    const draw = () => {
-      const rect = canvas.getBoundingClientRect()
-      ctx.clearRect(0, 0, rect.width, rect.height)
-
-      if (stats.length < 2) return
-
-      const padding = 40
-      const chartWidth = rect.width - padding * 2
-      const chartHeight = rect.height - padding * 2
-
-      // Draw grid
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
-      ctx.lineWidth = 1
-      for (let i = 0; i <= 4; i++) {
-        const y = padding + (chartHeight / 4) * i
-        ctx.beginPath()
-        ctx.moveTo(padding, y)
-        ctx.lineTo(rect.width - padding, y)
-        ctx.stroke()
-      }
-
-      // Draw CPU
-      drawLine(ctx, stats, 'cpu', rect, padding, chartWidth, chartHeight, 'rgba(139, 124, 240, 0.8)', 'rgba(139, 124, 240, 0.2)')
-      
-      // Draw Memory
-      drawLine(ctx, stats, 'memory', rect, padding, chartWidth, chartHeight, 'rgba(0, 206, 201, 0.8)', 'rgba(0, 206, 201, 0.2)')
-
-      // Draw Network
-      drawLine(ctx, stats, 'network', rect, padding, chartWidth, chartHeight, 'rgba(255, 159, 67, 0.8)', 'rgba(255, 159, 67, 0.2)')
-
-      requestAnimationFrame(draw)
-    }
-    const animationId = requestAnimationFrame(draw)
-
-    return () => {
-      window.removeEventListener('resize', resize)
-      cancelAnimationFrame(animationId)
-    }
-  }, [stats])
-
   const drawLine = (
     ctx: CanvasRenderingContext2D,
     data: SystemStat[],
@@ -150,13 +94,64 @@ const SystemDashboard = () => {
     })
     ctx.stroke()
 
-    // Fill area
     ctx.lineTo(maxX, padding + chartHeight)
     ctx.lineTo(startX, padding + chartHeight)
     ctx.closePath()
     ctx.fillStyle = fillColor
     ctx.fill()
   }
+
+  useEffect(() => {
+    if (!canvasRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect()
+      canvas.width = rect.width * window.devicePixelRatio
+      canvas.height = rect.height * window.devicePixelRatio
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const draw = () => {
+      const rect = canvas.getBoundingClientRect()
+      ctx.clearRect(0, 0, rect.width, rect.height)
+
+      if (stats.length < 2) return
+
+      const padding = 40
+      const chartWidth = rect.width - padding * 2
+      const chartHeight = rect.height - padding * 2
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+      ctx.lineWidth = 1
+      for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartHeight / 4) * i
+        ctx.beginPath()
+        ctx.moveTo(padding, y)
+        ctx.lineTo(rect.width - padding, y)
+        ctx.stroke()
+      }
+
+      drawLine(ctx, stats, 'cpu', rect, padding, chartWidth, chartHeight, 'rgba(139, 124, 240, 0.8)', 'rgba(139, 124, 240, 0.2)')
+
+      drawLine(ctx, stats, 'memory', rect, padding, chartWidth, chartHeight, 'rgba(0, 206, 201, 0.8)', 'rgba(0, 206, 201, 0.2)')
+
+      drawLine(ctx, stats, 'network', rect, padding, chartWidth, chartHeight, 'rgba(255, 159, 67, 0.8)', 'rgba(255, 159, 67, 0.2)')
+
+      requestAnimationFrame(draw)
+    }
+    const animationId = requestAnimationFrame(draw)
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationId)
+    }
+  }, [stats])
 
   const formatUptime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)

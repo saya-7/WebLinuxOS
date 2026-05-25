@@ -256,7 +256,7 @@ export default function QRGenerator() {
               ].map((level) => (
                 <button
                   key={level.val}
-                  onClick={() => setErrorCorrection(level.val as any)}
+                  onClick={() => setErrorCorrection(level.val as 'L' | 'M' | 'Q' | 'H')}
                   style={{
                     flex: 1,
                     padding: '8px',
