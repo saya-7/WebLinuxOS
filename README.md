@@ -13,9 +13,9 @@
 <p align="center">
   <a href="https://saya-ch.github.io/WebLinuxOS/">🚀 在线演示</a>
   <span> | </span>
-  <a href="README_en.md">📖 English</a>
-  <span> | </span>
   <a href="https://github.com/saya-ch/WebLinuxOS/issues">🐛 报告问题</a>
+  <span> | </span>
+  <a href="https://github.com/saya-ch/WebLinuxOS">🌟 项目主页</a>
 </p>
 
 ---

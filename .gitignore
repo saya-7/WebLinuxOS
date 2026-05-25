@@ -1,13 +1,14 @@
 # Dependencies
 node_modules/
+web-linux/node_modules/
 
-# Build output
-dist/
-assets/
-index.html
-favicon.svg
-icons.svg
-.nojekyll
+# Build output - These are deployed to GitHub Pages
+# dist/
+# assets/
+# index.html
+# favicon.svg
+# icons.svg
+# .nojekyll
 
 # Development
 .env
