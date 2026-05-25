@@ -277,9 +277,9 @@ export default function Terminal() {
         break
       case 'uname':
         if (args.includes('-a')) {
-          output = 'Linux web-linux 6.1.0-web #1 SMP PREEMPT_DYNAMIC ' + new Date().toISOString().slice(0, 10) + ' x86_64 GNU/Linux'
+          output = 'Linux web-linux 6.15.0-web #1 SMP PREEMPT_DYNAMIC ' + new Date().toISOString().slice(0, 10) + ' x86_64 GNU/Linux'
         } else if (args.includes('-r')) {
-          output = '6.1.0-web'
+          output = '6.15.0-web'
         } else if (args.includes('-s')) {
           output = 'Linux'
         } else if (args.includes('-n')) {
@@ -292,17 +292,17 @@ export default function Terminal() {
         break
       case 'lsb_release':
         output = args.includes('-a')
-          ? `Distributor ID: WebLinux\nDescription:    Web Linux 1.0\nRelease:        1.0\nCodename:       web`
-          : 'Web Linux 1.0'
+          ? `Distributor ID: WebLinux\nDescription:    Web Linux 2.9\nRelease:        2.9.0\nCodename:       web`
+          : 'Web Linux 2.9'
         break
       case 'neofetch':
         output = [
           `            .-/+oossssoo+/-.               ${username}@${hostname}`,
           `        \`:+ssssssssssssssssss+:\`           -------------`,
-          `      -+ssssssssssssssssssssssso+-         OS: WebLinuxOS 2.8.0`,
-          `    /osssssssssssssssssssssssssso/        Kernel: 6.11.0-web`,
+          `      -+ssssssssssssssssssssssso+-         OS: WebLinuxOS 2.9.0`,
+          `    /osssssssssssssssssssssssssso/        Kernel: 6.15.0-web`,
           `  /ossssssssssssssssssssssssssssso/       Shell: bash 5.2.21`,
-          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.8`,
+          ` :sssssssssssssssssssssssssssssssss:      DE: WebDE 2.9`,
           ` ossssssssssssssssssssssssssssssssso      Theme: ${theme}`,
           ` ossssssssssssssssssssssssssssssssso      Uptime: ${Math.floor(Math.random() * 24)} hours`,
           ` :sssssssssssssssssssssssssssssssss:      Packages: ${Math.floor(Math.random() * 500 + 100)}`,
@@ -483,8 +483,8 @@ export default function Terminal() {
         output = [
           `WebLinuxOS 版本信息`,
           ``,
-          `  版本:   2.3.0`,
-          `  内核:   6.10.0-web`,
+          `  版本:   2.9.0`,
+          `  内核:   6.15.0-web`,
           `  架构:   x86_64`,
           `  平台:   WebAssembly`,
           `  发布:   2026-05-25`,
@@ -535,7 +535,7 @@ export default function Terminal() {
           `  WebLinuxOS 是一个功能完整的`,
           `  Web端Linux桌面操作系统模拟器`,
           ``,
-          `  版本: 2.3.0`,
+          `  版本: 2.9.0`,
           `  发布日期: 2026-05-25`,
           ``,
           `  特性:`,

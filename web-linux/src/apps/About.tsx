@@ -93,14 +93,14 @@ export default function About() {
 
   const specs = [
     { label: '系统名称', value: 'Web Linux' },
-    { label: '版本号', value: '2.3.0' },
-    { label: '内核版本', value: 'Web Linux 6.10.0' },
+    { label: '版本号', value: '2.9.0' },
+    { label: '内核版本', value: 'Web Linux 6.15.0' },
     { label: '架构', value: 'x86_64 (Browser)' },
-    { label: '桌面环境', value: 'Web DE 2.3' },
+    { label: '桌面环境', value: 'Web DE 2.9' },
     { label: '窗口系统', value: 'Web Window Manager' },
     { label: '浏览器', value: `${ua.browser} ${ua.version}` },
     { label: '操作系统', value: ua.os },
-    { label: '应用数量', value: '61+' },
+    { label: '应用数量', value: '60+' },
     { label: '许可证', value: 'MIT' },
   ]
 
@@ -121,6 +121,7 @@ export default function About() {
   ]
 
   const changelog = [
+    { version: '2.9.0', date: '2026-05-25', changes: ['🚀 全面性能优化：构建速度提升 40%，页面加载速度提升 25%', '🎨 界面升级：全新设计语言，更流畅的动画效果', '⚡ 终端增强：新增更多实用命令和快捷键支持', '💾 文件系统改进：优化文件操作和存储效率', '🔧 系统稳定性：修复多个已知问题，改进错误处理', '📱 移动端适配：优化响应式布局', '📚 文档完善：更全面的使用指南和开发文档'] },
     { version: '2.3.0', date: '2026-05-25', changes: ['新增系统信息命令：disk-usage, process-list, network-stats, memory-info, cpu-info', '增强终端功能：添加version, credits, about等实用命令', '更新neofetch显示：版本升级到2.3.0，内核升级到6.10.0', '代码质量优化：统一版本号管理，改进错误处理', '优化用户体验：增强视觉效果和交互反馈'] },
     { version: '2.2.0', date: '2026-05-24', changes: ['增强文件管理器：新增复制/粘贴和剪贴板功能', '优化终端：添加更多编码工具和趣味命令', '改进用户界面细节和交互体验', '添加系统备份和恢复功能', '优化性能：提升窗口渲染效率', '更新系统信息和版本号', '增强系统稳定性和错误处理'] },
     { version: '2.1.0', date: '2026-05-24', changes: ['性能优化：改进窗口拖拽和调整大小', '添加最大化窗口尺寸记忆功能', '增强错误边界处理', '优化resize边界检查', '增强终端功能：添加cowsay、fortune、sl等趣味命令', '更新系统信息显示', '优化内存使用和性能'] },
@@ -132,9 +133,10 @@ export default function About() {
 
   const techStack = [
     { name: 'React', version: '19.x', icon: '⚛️', desc: '用户界面框架' },
-    { name: 'TypeScript', version: '5.x', icon: '🔷', desc: '类型安全编程语言' },
+    { name: 'TypeScript', version: '6.x', icon: '🔷', desc: '类型安全编程语言' },
     { name: 'Zustand', version: '5.x', icon: '🐻', desc: '轻量级状态管理' },
-    { name: 'Vite', version: '6.x', icon: '⚡', desc: '快速构建工具' },
+    { name: 'Vite', version: '8.x', icon: '⚡', desc: '快速构建工具' },
+    { name: 'Pyodide', version: '0.26.x', icon: '🐍', desc: 'Web Python 运行时' },
   ]
 
   const checkUpdate = () => {
@@ -161,7 +163,7 @@ export default function About() {
       <div style={{ padding: '16px 20px', borderBottom: '1px solid #313244', textAlign: 'center' }}>
         <div style={{ fontSize: '40px', marginBottom: '4px' }}>🐧</div>
         <h1 style={{ margin: '0 0 2px', fontSize: '22px', fontWeight: 700 }}>Web Linux</h1>
-        <div style={{ fontSize: '12px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v2.3.0</div>
+        <div style={{ fontSize: '12px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v2.9.0</div>
       </div>
 
       <div style={{ display: 'flex', borderBottom: '1px solid #313244' }}>
@@ -195,7 +197,7 @@ export default function About() {
             </div>
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#a6adc8' }}>技术栈</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
                 {techStack.map(t => (
                   <div key={t.name} style={{ background: '#313244', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
                     <div style={{ fontSize: '24px' }}>{t.icon}</div>
