@@ -19,23 +19,53 @@ const CATEGORIES = [
   { id: 'sports', name: '体育', icon: '⚽' },
 ]
 
+// 使用免费的Spaceflight News API
+const SPACEFLIGHT_NEWS_API = 'https://api.spaceflightnewsapi.net/v4'
+
 export default function NewsReader() {
   const [articles, setArticles] = useState<NewsArticle[]>([])
   const [selectedCategory, setSelectedCategory] = useState('general')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchMode, setSearchMode] = useState(false)
 
-  // 模拟新闻数据（实际生产中会使用真实的 API）
+  // 获取真实新闻数据
+  const fetchSpaceflightNews = async (category: string, _search?: string) => {
+    try {
+      let url = `${SPACEFLIGHT_NEWS_API}/articles?limit=12&ordering=-published_at`
+      
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Failed to fetch news')
+      
+      const data = await response.json()
+      
+      const mappedArticles: NewsArticle[] = data.results.map((item: any) => ({
+        title: item.title,
+        description: item.summary || item.news_site,
+        url: item.url,
+        urlToImage: item.image_url,
+        source: { name: item.news_site },
+        publishedAt: item.published_at,
+      }))
+      
+      return { articles: mappedArticles }
+    } catch (err) {
+      // 如果失败，使用模拟数据作为备用
+      return fetchMockNews(category)
+    }
+  }
+
+  // 模拟新闻数据作为备用
   const fetchMockNews = async (category: string) => {
-    // 模拟网络延迟
     await new Promise(resolve => setTimeout(resolve, 500))
     
     const mockArticles: NewsArticle[] = [
       {
         title: `${getCategoryName(category)}领域取得重大突破`,
         description: '近日，在全球专家的共同努力下，该领域取得了前所未有的进展。这项创新将深刻影响我们的日常生活。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&auto=format&fit=crop',
         source: { name: '科技日报' },
         publishedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
@@ -43,7 +73,7 @@ export default function NewsReader() {
       {
         title: 'Web Linux 操作系统发布新版本，性能大幅提升',
         description: 'Web Linux 3.1 版本正式发布，带来了全新的用户界面、更快的启动速度和更多实用应用程序。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop',
         source: { name: '开发周报' },
         publishedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
@@ -51,7 +81,7 @@ export default function NewsReader() {
       {
         title: '人工智能助力医疗诊断，准确率提高30%',
         description: '医院开始部署 AI 辅助诊断系统，医生们表示该系统大大提高了诊断的准确性和效率。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1559757121-5b744b2f75cf?w=800&auto=format&fit=crop',
         source: { name: '健康医疗' },
         publishedAt: new Date(Date.now() - 3600000 * 8).toISOString(),
@@ -59,7 +89,7 @@ export default function NewsReader() {
       {
         title: '全球环保峰会召开，各国签署减排协议',
         description: '在刚刚结束的全球环保峰会上，100多个国家签署了新的减排协议，承诺到2030年将碳排放减少50%。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?w=800&auto=format&fit=crop',
         source: { name: '国际新闻' },
         publishedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
@@ -67,7 +97,7 @@ export default function NewsReader() {
       {
         title: '区块链技术应用于供应链管理',
         description: '多家跨国企业开始使用区块链技术来追踪商品的整个供应链过程，提高了透明度和效率。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
         source: { name: '商业周刊' },
         publishedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
@@ -75,7 +105,7 @@ export default function NewsReader() {
       {
         title: '量子计算机取得里程碑式进展',
         description: '研究团队宣布他们在量子计算领域取得了重要突破，量子比特的稳定性提高了100倍。',
-        url: '#',
+        url: 'https://github.com/saya-ch/WebLinuxOS',
         urlToImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop',
         source: { name: '科学探索' },
         publishedAt: new Date(Date.now() - 3600000 * 36).toISOString(),
@@ -100,11 +130,16 @@ export default function NewsReader() {
     return date.toLocaleDateString('zh-CN')
   }
 
-  const loadNews = async (category: string) => {
+  const loadNews = async (category: string, search?: string) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetchMockNews(category)
+      let response
+      if (category === 'technology' || category === 'science') {
+        response = await fetchSpaceflightNews(category, search)
+      } else {
+        response = await fetchMockNews(category)
+      }
       setArticles(response.articles)
     } catch (err) {
       setError('加载新闻失败，请稍后重试')
@@ -113,12 +148,82 @@ export default function NewsReader() {
     }
   }
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      loadNews(selectedCategory, searchQuery)
+      setSearchMode(true)
+    }
+  }
+
+  const clearSearch = () => {
+    setSearchQuery('')
+    setSearchMode(false)
+    loadNews(selectedCategory)
+  }
+
   useEffect(() => {
     loadNews(selectedCategory)
   }, [selectedCategory])
 
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* 搜索栏 */}
+      <div style={{ 
+        padding: '12px', 
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
+        background: 'rgba(0,0,0,0.2)',
+      }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索新闻..."
+            style={{
+              flex: 1,
+              padding: '12px 16px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#fff',
+              fontSize: '14px',
+              outline: 'none',
+            }}
+          />
+          {searchMode && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              style={{
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.05)',
+                color: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              清除
+            </button>
+          )}
+          <button
+            type="submit"
+            style={{
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: '#fff',
+              cursor: 'pointer',
+              fontWeight: '500',
+            }}
+          >
+            搜索
+          </button>
+        </form>
+      </div>
+
       {/* 分类导航 */}
       <div style={{ 
         display: 'flex', 
@@ -131,7 +236,10 @@ export default function NewsReader() {
         {CATEGORIES.map(category => (
           <button
             key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
+            onClick={() => {
+              setSelectedCategory(category.id)
+              if (searchMode) clearSearch()
+            }}
             style={{
               padding: '8px 16px',
               border: 'none',
@@ -162,7 +270,7 @@ export default function NewsReader() {
             height: '200px',
             color: '#888'
           }}>
-            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📰</div>
+            <div style={{ fontSize: '32px', marginBottom: '8px', animation: 'spin 1s linear infinite' }}>📰</div>
             <div>加载中...</div>
           </div>
         ) : error ? (
@@ -191,6 +299,18 @@ export default function NewsReader() {
               重试
             </button>
           </div>
+        ) : articles.length === 0 ? (
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            height: '200px',
+            color: '#888'
+          }}>
+            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
+            <div>没有找到相关新闻</div>
+          </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
             {articles.map((article, index) => (
@@ -203,7 +323,7 @@ export default function NewsReader() {
                   overflow: 'hidden',
                   cursor: 'pointer',
                   transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)'
@@ -356,6 +476,12 @@ export default function NewsReader() {
           </div>
         </div>
       )}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
