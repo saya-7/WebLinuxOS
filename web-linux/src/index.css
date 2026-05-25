@@ -33,6 +33,18 @@ button, input, textarea {
   perspective: 1000px;
 }
 
+.gpu-composite {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.gpu-render {
+  transform: translateZ(0) scale(1);
+  will-change: transform, opacity;
+  filter: blur(0);
+}
+
 .contain-layout {
   contain: layout;
 }

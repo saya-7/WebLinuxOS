@@ -21,6 +21,8 @@ const suggestions = [
   '教我如何使用 WebLinux',
   '帮我创建一个 API',
   '解释什么是算法复杂度',
+  '推荐一些学习资源',
+  '帮我调试代码',
 ];
 
 const quickActions = [
@@ -269,12 +271,35 @@ function example() {
       };
     }
     
-    // WebLinux 使用教程
-    if (lower.includes('weblinux') || lower.includes('使用') || lower.includes('教程')) {
+    // 学习资源推荐
+    if (lower.includes('学习') || lower.includes('资源') || lower.includes('教程') && lower.includes('推荐')) {
       return {
         id: Date.now().toString(),
         role: 'assistant',
-        content: '很高兴你想了解 WebLinux！🚀\n\n**快速入门指南：**\n\n**1. 桌面环境**\n• 右键桌面可以打开快捷菜单\n• 双击桌面图标启动应用\n• 使用 Ctrl+Alt+方向键切换桌面\n\n**2. 应用启动器**\n• 点击任务栏的 🦊 图标\n• 或使用快捷键 Ctrl+Shift+L\n\n**3. 窗口管理**\n• 拖拽标题栏移动窗口\n• 拖拽边缘调整大小\n• 最小化/最大化/关闭按钮在左上角\n\n**4. 快捷键**\n• Ctrl+Shift+T - 终端\n• Ctrl+Shift+F - 文件管理器\n• Alt+Tab - 切换窗口\n\n需要我详细介绍某个功能吗？',
+        content: '好的学习资源推荐！📚\n\n**编程学习平台：**\n\n• **免费教程**\n  - MDN Web Docs (https://developer.mozilla.org)\n  - freeCodeCamp (https://www.freecodecamp.org)\n  - 阮一峰的网络日志\n\n• **交互式学习**\n  - LeetCode (算法练习)\n  - HackerRank (编程挑战)\n  - Codecademy\n\n• **视频教程**\n  - B站编程教学视频\n  - YouTube 技术频道\n  - Udemy 付费课程(经常打折)\n\n• **中文资源**\n  - 掘金 (https://juejin.cn)\n  - 思否 (https://segmentfault.com)\n  - GitHub 中文精选\n\n**推荐学习路径：**\n1. HTML/CSS/JavaScript 基础\n2. React 或 Vue 框架\n3. Node.js 后端开发\n4. 数据库和 API 设计\n\n想学习哪个方向？我可以给你更具体的建议！',
+        timestamp: new Date(),
+      };
+    }
+    
+    // 代码调试
+    if (lower.includes('调试') || lower.includes('debug') || lower.includes('bug')) {
+      return {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: '代码调试技巧！🔧\n\n**通用调试方法：**\n\n**1. 使用 console.log**\n```javascript\nconsole.log("变量值:", variable);\nconsole.log("数据类型:", typeof variable);\n```\n\n**2. 使用断点**\n- 浏览器开发者工具 F12\n- 在 Sources 面板设置断点\n- 观察变量值和调用栈\n\n**3. 检查常见错误**\n• 拼写错误\n• 缺少分号或括号\n• 变量未定义\n• 类型不匹配\n• 异步操作未处理\n\n**4. Python 调试**\n```python\n# 使用 print 调试\nprint(f"变量值: {variable}")\n\n# 使用 pdb\nimport pdb; pdb.set_trace()\n\n# 使用 IDE 断点\n```\n\n**5. 调试心态**\n• 冷静分析错误信息\n• 逐行检查代码\n• 注释掉可疑代码\n• 简化问题到最小复现\n\n有具体的代码问题吗？可以粘贴给我看看！',
+        timestamp: new Date(),
+      };
+    }
+    
+    // WebLinux 使用教程
+    if (lower.includes('weblinux') || (lower.includes('使用') && !lower.includes('教程')) || (lower.includes('教程') && lower.includes('weblinux'))) {
+      const isTutorial = lower.includes('教程');
+      return {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: isTutorial 
+          ? 'WebLinux 完整使用教程！🚀\n\n**第一章：桌面基础**\n\n**1.1 桌面图标**\n• 双击图标启动应用\n• 单击选中图标\n• 右键打开快捷菜单\n\n**1.2 窗口操作**\n• 拖拽标题栏移动窗口\n• 拖拽边缘调整大小\n• 右上角按钮：最小化、最大化、关闭\n\n**1.3 任务栏**\n• 显示运行中的应用\n• 点击切换应用\n• 右下角快速设置\n\n**第二章：应用使用**\n\n**2.1 终端 (Ctrl+Shift+T)**\n• 输入命令操作\n• 支持 Python 编程\n• Tab 键自动补全\n\n**2.2 文件管理器**\n• 浏览器虚拟文件系统\n• 创建、删除、重命名文件\n• 支持拖拽操作\n\n**2.3 代码编辑器**\n• 语法高亮\n• 代码补全\n• 支持多种语言\n\n**第三章：高级功能**\n\n**3.1 多桌面**\n• Ctrl+Alt+1-4 切换桌面\n• 拖拽窗口到其他桌面\n\n**3.2 快捷键**\n• Ctrl+L 打开启动器\n• Alt+Tab 切换窗口\n• Ctrl+Shift+K 智慧搜索\n\n**3.3 自定义**\n• 更换壁纸\n• 切换主题\n• 添加桌面图标\n\n需要我详细解释某个功能吗？'
+          : '很高兴你想了解 WebLinux！🚀\n\n**快速入门指南：**\n\n**1. 桌面环境**\n• 右键桌面可以打开快捷菜单\n• 双击桌面图标启动应用\n• 使用 Ctrl+Alt+方向键切换桌面\n\n**2. 应用启动器**\n• 点击任务栏的 🦊 图标\n• 或使用快捷键 Ctrl+Shift+L\n\n**3. 窗口管理**\n• 拖拽标题栏移动窗口\n• 拖拽边缘调整大小\n• 最小化/最大化/关闭按钮在左上角\n\n**4. 快捷键**\n• Ctrl+Shift+T - 终端\n• Ctrl+Shift+F - 文件管理器\n• Alt+Tab - 切换窗口\n\n需要我详细介绍某个功能吗？',
         timestamp: new Date(),
       };
     }
