@@ -18,6 +18,51 @@ type DailyStats = {
   apps: Record<string, number>
 }
 
+function CurrentSessionDisplay({ 
+  currentSession, 
+  formatDuration 
+}: { 
+  currentSession: { appId: string; startTime: number }
+  formatDuration: (seconds: number) => string 
+}) {
+  const [elapsed, setElapsed] = useState(0)
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - currentSession.startTime) / 1000))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [currentSession.startTime])
+  
+  return (
+    <div style={{
+      background: 'linear-gradient(90deg, rgba(100,150,255,0.15), rgba(100,200,150,0.1))',
+      borderRadius: '12px',
+      padding: '16px',
+      border: '1px solid rgba(100,150,255,0.2)'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: '#4f4',
+            boxShadow: '0 0 8px #4f4',
+            animation: 'pulse 1.5s ease-in-out infinite'
+          }} />
+          <span style={{ color: '#fff', fontWeight: 500 }}>
+            当前活动: {appRegistry.find((a: AppDefinition) => a.id === currentSession.appId)?.name || currentSession.appId}
+          </span>
+        </div>
+        <span style={{ color: '#8af', fontWeight: 600 }}>
+          {formatDuration(elapsed)}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export default function ActivityTracker() {
   const [activities, setActivities] = useState<ActivityRecord[]>(() => {
     const saved = localStorage.getItem('activity-tracker-data')
@@ -179,31 +224,7 @@ export default function ActivityTracker() {
 
       {/* 当前活动 */}
       {currentSession && (
-        <div style={{
-          background: 'linear-gradient(90deg, rgba(100,150,255,0.15), rgba(100,200,150,0.1))',
-          borderRadius: '12px',
-          padding: '16px',
-          border: '1px solid rgba(100,150,255,0.2)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: '#4f4',
-                boxShadow: '0 0 8px #4f4',
-                animation: 'pulse 1.5s ease-in-out infinite'
-              }} />
-              <span style={{ color: '#fff', fontWeight: 500 }}>
-                当前活动: {appRegistry.find((a: AppDefinition) => a.id === currentSession.appId)?.name || currentSession.appId}
-              </span>
-            </div>
-            <span style={{ color: '#8af', fontWeight: 600 }}>
-              {formatDuration(Math.floor((Date.now() - currentSession.startTime) / 1000))}
-            </span>
-          </div>
-        </div>
+        <CurrentSessionDisplay currentSession={currentSession} formatDuration={formatDuration} />
       )}
 
       {/* 总统计 */}
@@ -303,7 +324,7 @@ export default function ActivityTracker() {
             每日趋势
           </h3>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', height: '100px' }}>
-            {stats.dailyStats.slice(-7).map((day, _idx) => {
+            {stats.dailyStats.slice(-7).map((day) => {
               const maxDay = Math.max(...stats.dailyStats.map(d => d.totalDuration))
               const height = maxDay > 0 ? (day.totalDuration / maxDay) * 100 : 0
               return (

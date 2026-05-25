@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useStore } from '../store'
 
 export default function CloudSync() {
@@ -7,20 +7,16 @@ export default function CloudSync() {
   const wallpaper = useStore((s) => s.wallpaper)
 
   const [syncStatus, setSyncStatus] = useState<'idle' | 'exporting' | 'importing'>('idle')
-  const [lastSync, setLastSync] = useState<Date | null>(null)
+  const [lastSync, setLastSync] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('weblinux-last-sync')
+    return saved ? new Date(saved) : null
+  })
   const [syncProgress, setSyncProgress] = useState(0)
   const [selectedItems, setSelectedItems] = useState<string[]>(['files', 'settings', 'wallpaper'])
   const [showImportModal, setShowImportModal] = useState(false)
   const [importText, setImportText] = useState('')
   const [syncError, setSyncError] = useState<string | null>(null)
   const [syncSuccess, setSyncSuccess] = useState<string | null>(null)
-
-  useEffect(() => {
-    const saved = localStorage.getItem('weblinux-last-sync')
-    if (saved) {
-      setLastSync(new Date(saved))
-    }
-  }, [])
 
   const toggleItem = (item: string) => {
     setSelectedItems(prev =>
