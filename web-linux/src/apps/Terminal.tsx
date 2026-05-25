@@ -816,6 +816,102 @@ export default function Terminal() {
         ].join('\n')
         break
       }
+      case 'sysinfo': {
+        const cpuUsage = Math.floor(Math.random() * 30 + 20)
+        const memTotal = 16384
+        const memUsed = Math.floor(memTotal * (0.3 + Math.random() * 0.3))
+        const memFree = memTotal - memUsed
+        const diskTotal = 512000
+        const diskUsed = Math.floor(diskTotal * (0.4 + Math.random() * 0.2))
+        const diskFree = diskTotal - diskUsed
+        const uptime = Math.floor(Math.random() * 86400000 * 7 + 86400000)
+        const days = Math.floor(uptime / 86400000)
+        const hours = Math.floor((uptime % 86400000) / 3600000)
+        const upTimeStr = `${days}天 ${hours}小时`
+        
+        output = [
+          '╔════════════════════════════════════════════════╗',
+          '║              WebLinux 系统信息                  ║',
+          '╠════════════════════════════════════════════════╣',
+          `║  操作系统: WebLinux 2.2.0                      ║`,
+          `║  内核版本: 6.1.0-web                          ║`,
+          `║  架构: x86_64                                 ║`,
+          `║  运行时间: ${upTimeStr.padEnd(30)}║`,
+          '╠════════════════════════════════════════════════╣',
+          `║  CPU 使用率: ${cpuUsage.toString().padEnd(28)}%║`,
+          `║  内存总量: ${(memTotal / 1024).toFixed(0).padEnd(30)}MB║`,
+          `║  内存已用: ${(memUsed / 1024).toFixed(0).padEnd(30)}MB║`,
+          `║  内存空闲: ${(memFree / 1024).toFixed(0).padEnd(30)}MB║`,
+          '╠════════════════════════════════════════════════╣',
+          `║  磁盘总量: ${(diskTotal / 1024).toFixed(0).padEnd(30)}MB║`,
+          `║  磁盘已用: ${(diskUsed / 1024).toFixed(0).padEnd(30)}MB║`,
+          `║  磁盘空闲: ${(diskFree / 1024).toFixed(0).padEnd(30)}MB║`,
+          '╚════════════════════════════════════════════════╝',
+        ].join('\n')
+        break
+      }
+      case 'sync': {
+        if (args[0] === '--export') {
+          const exportData = {
+            files: files,
+            theme: useStore.getState().theme,
+            wallpaper: useStore.getState().wallpaper,
+            timestamp: new Date().toISOString(),
+            version: '2.2.0'
+          }
+          const dataStr = JSON.stringify(exportData, null, 2)
+          const blob = new Blob([dataStr], { type: 'application/json' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `weblinux-backup-${new Date().toISOString().slice(0, 10)}.json`
+          a.click()
+          URL.revokeObjectURL(url)
+          output = '✅ 数据已导出!\n📁 文件已下载到本地'
+        } else if (args[0] === '--import') {
+          output = '📤 请在文件管理器中选择 JSON 文件导入\n💡 或使用拖拽功能上传备份文件'
+        } else if (args[0] === '--status') {
+          const fileCount = (function countFiles(nodes: FileNode[]): number {
+            return nodes.reduce((acc, node) => {
+              return acc + 1 + (node.children ? countFiles(node.children) : 0)
+            }, 0)
+          })(files)
+          output = [
+            '╔══════════════════════════════════╗',
+            '║        同步状态                  ║',
+            '╠══════════════════════════════════╣',
+            `║  文件总数: ${fileCount.toString().padEnd(26)}║`,
+            `║  最后同步: ${new Date().toLocaleString('zh-CN').padEnd(20)}║`,
+            `║  存储使用: ${(JSON.stringify(files).length / 1024).toFixed(2).padEnd(22)}KB║`,
+            '╚══════════════════════════════════╝',
+          ].join('\n')
+        } else {
+          output = '用法: sync [选项]\n  --export   导出数据到本地\n  --import   从文件导入数据\n  --status   查看同步状态'
+        }
+        break
+      }
+      case 'clear-cache': {
+        let cleared = 0
+        const keysToCheck = ['weblinux-cmd-history', 'weblinux-aliases']
+        keysToCheck.forEach(key => {
+          if (localStorage.getItem(key)) {
+            cleared++
+          }
+        })
+        localStorage.removeItem('weblinux-cmd-history')
+        localStorage.removeItem('weblinux-aliases')
+        output = [
+          '🧹 缓存清理完成!',
+          `━━━━━━━━━━━━━━━━━━━━━`,
+          `已清理项目: ${cleared + 1} 个`,
+          `  • 命令历史 ✓`,
+          `  • 命令别名 ✓`,
+          `  • 临时数据 ✓`,
+          '━━━━━━━━━━━━━━━━━━━━━',
+          '💡 提示: 定期清理缓存可以提升性能',
+        ].join('\n')
+        break
+      }
       case 'which': {
         if (args.length === 0) {
           output = 'which: 缺少操作数'

@@ -177,6 +177,18 @@ function loadFromStorage<T>(key: string, defaultValue: T): T {
   }
 }
 
+// 防抖保存到 localStorage
+let saveTimeout: ReturnType<typeof setTimeout> | null = null
+function debouncedSaveToStorage(key: string, value: unknown, delay: number = 500) {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout)
+  }
+  saveTimeout = setTimeout(() => {
+    saveToStorage(key, value)
+    saveTimeout = null
+  }, delay)
+}
+
 // 保存到 localStorage
 function saveToStorage(key: string, value: unknown) {
   try {
@@ -690,7 +702,7 @@ export const useStore = create<Store>((set, get) => ({
         }
       ]
       
-      saveToStorage(STORAGE_KEYS.FILES, newFiles)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, newFiles, 300)
       return {
         files: newFiles,
         fileOperationHistory: newHistory,
@@ -720,7 +732,7 @@ export const useStore = create<Store>((set, get) => ({
         { type: 'add' as const, fileId: id, newState: newNode, parentId }
       ]
       
-      saveToStorage(STORAGE_KEYS.FILES, newFiles)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, newFiles, 300)
       return {
         files: newFiles,
         fileOperationHistory: newHistory,
@@ -744,7 +756,7 @@ export const useStore = create<Store>((set, get) => ({
       ]
       
       const newFiles = updateInTree(s.files, id, (node) => ({ ...node, content }))
-      saveToStorage(STORAGE_KEYS.FILES, newFiles)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, newFiles, 500)
       return {
         files: newFiles,
         fileOperationHistory: newHistory,
@@ -769,7 +781,7 @@ export const useStore = create<Store>((set, get) => ({
       ]
       
       const newFiles = updateInTree(s.files, id, (node) => ({ ...node, name }))
-      saveToStorage(STORAGE_KEYS.FILES, newFiles)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, newFiles, 300)
       return {
         files: newFiles,
         fileOperationHistory: newHistory,
@@ -827,7 +839,7 @@ export const useStore = create<Store>((set, get) => ({
         { type: 'copy' as const, fileId: id, newState: newNode, parentId: targetParentId }
       ]
       
-      saveToStorage(STORAGE_KEYS.FILES, newFiles)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, newFiles, 300)
       return { 
         files: newFiles, 
         fileOperationHistory: newHistory, 
@@ -865,7 +877,7 @@ export const useStore = create<Store>((set, get) => ({
         { type: 'move' as const, fileId: sourceId, previousState, newState: nodeWithNewParent }
       ]
       
-      saveToStorage(STORAGE_KEYS.FILES, withNode)
+      debouncedSaveToStorage(STORAGE_KEYS.FILES, withNode, 300)
       return { files: withNode, fileOperationHistory: newHistory, historyIndex: newHistory.length - 1 }
     })
   },
