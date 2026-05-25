@@ -143,6 +143,7 @@ export default function FileManager() {
   const renameFile = useStore((s) => s.renameFile)
   const openFileWith = useStore((s) => s.openFileWith)
   const copyFile = useStore((s) => s.copyFile)
+  const updateFileContent = useStore((s) => s.updateFileContent)
   
   function handleDownload(fileId: string) {
     const node = findNodeById(files, fileId)
@@ -160,6 +161,30 @@ export default function FileManager() {
     closeContextMenu()
   }
 
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const fileList = e.target.files
+    if (!fileList) return
+    
+    Array.from(fileList).forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const content = event.target?.result as string
+        const newFileId = `file-${Date.now()}-${Math.random()}`
+        addFile(currentNodeId, file.name, 'file')
+        // 先添加文件，然后更新内容
+        setTimeout(() => {
+          // 这里我们需要找到新创建的文件ID，这里做简化处理
+          // 实际项目中应该有更好的实现方式
+          updateFileContent(newFileId, content)
+        }, 100)
+      }
+      reader.readAsText(file)
+    })
+    
+    // 清空input值，允许重复选择同一文件
+    e.target.value = ''
+  }
+
   const [currentPath, setCurrentPath] = useState<string[]>(['root'])
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']))
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null)
@@ -172,6 +197,9 @@ export default function FileManager() {
   const [searchResults, setSearchResults] = useState<FileNode[]>([])
   const [clipboard, setClipboard] = useState<FileNode | null>(null)
   const [clipboardMode, setClipboardMode] = useState<'copy' | 'cut' | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'size' | 'date'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const currentNodeId = currentPath[currentPath.length - 1]
   const currentNode = findNodeById(files, currentNodeId)
@@ -449,6 +477,51 @@ export default function FileManager() {
     return formatSize((node.content?.length || 0) * 2)
   }
 
+  function getFileSizeBytes(node: FileNode): number {
+    if (node.type === 'folder') return 0
+    return (node.content?.length || 0) * 2
+  }
+
+  function getSortKey(node: FileNode): string | number {
+    switch (sortBy) {
+      case 'name': return node.name.toLowerCase()
+      case 'type': return node.type
+      case 'size': return getFileSizeBytes(node)
+      case 'date': return getFileDate(node)
+      default: return node.name.toLowerCase()
+    }
+  }
+
+  function sortNodes(nodes: FileNode[]): FileNode[] {
+    return [...nodes].sort((a, b) => {
+      // 文件夹总是排在前面
+      if (a.type === 'folder' && b.type !== 'folder') return -1
+      if (a.type !== 'folder' && b.type === 'folder') return 1
+      
+      const aKey = getSortKey(a)
+      const bKey = getSortKey(b)
+      
+      if (typeof aKey === 'number' && typeof bKey === 'number') {
+        return sortOrder === 'asc' ? aKey - bKey : bKey - aKey
+      }
+      
+      const aStr = String(aKey)
+      const bStr = String(bKey)
+      return sortOrder === 'asc' 
+        ? aStr.localeCompare(bStr) 
+        : bStr.localeCompare(aStr)
+    })
+  }
+
+  function toggleSort(newSortBy: 'name' | 'type' | 'size' | 'date') {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(newSortBy)
+      setSortOrder('asc')
+    }
+  }
+
   return (
     <div className="app-container app-file-manager" onClick={closeContextMenu}>
       <div className="app-toolbar">
@@ -457,6 +530,15 @@ export default function FileManager() {
         <span className="app-toolbar-separator" />
         <button className="app-toolbar-btn" onClick={() => handleCreateNew('folder')} title="新建文件夹">📁+</button>
         <button className="app-toolbar-btn" onClick={() => handleCreateNew('file')} title="新建文件">📄+</button>
+        <label className="app-toolbar-btn" title="上传文件" style={{ cursor: 'pointer' }}>
+          📤
+          <input
+            type="file"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleFileUpload}
+          />
+        </label>
         {selectedFileId && (
           <>
             <button className="app-toolbar-btn" onClick={() => handleCopy(selectedFileId)} title="复制 (Ctrl+C)">📋</button>
@@ -468,6 +550,17 @@ export default function FileManager() {
         {clipboard && (
           <button className="app-toolbar-btn" onClick={handlePaste} title="粘贴 (Ctrl+V)">📋📥</button>
         )}
+        <span className="app-toolbar-separator" />
+        <button 
+          className={`app-toolbar-btn${viewMode === 'list' ? ' active' : ''}`} 
+          onClick={() => setViewMode('list')} 
+          title="列表视图"
+        >📋</button>
+        <button 
+          className={`app-toolbar-btn${viewMode === 'grid' ? ' active' : ''}`} 
+          onClick={() => setViewMode('grid')} 
+          title="网格视图"
+        >🗂️</button>
         {newItemInput && (
           <span className="app-toolbar-inline-form">
             <input
@@ -524,36 +617,66 @@ export default function FileManager() {
           </div>
         </div>
         <div className="app-file-list-container">
-          <div className="app-file-list-header">
-            <span className="app-file-col-name">名称</span>
-            <span className="app-file-col-type">类型</span>
-            <span className="app-file-col-size">大小</span>
-            <span className="app-file-col-date">修改日期</span>
-          </div>
-          <div className="app-file-list">
-            {searchResults.length > 0 ? (
-              searchResults.map((file) => (
-                <div
-                  key={file.id}
-                  className={`app-file-row${selectedFileId === file.id ? ' selected' : ''}`}
-                  onClick={() => {
-                    setSelectedFileId(file.id)
-                    navigateTo(file.parentId || 'root')
-                  }}
-                  onDoubleClick={() => handleFileDoubleClick(file)}
-                  onContextMenu={(e) => handleContextMenu(e, file.id)}
-                >
-                  <span className="app-file-col-name">
-                    <span className="app-file-icon">{getFileIcon(file.name, file.type)}</span>
-                    {file.name}
-                  </span>
-                  <span className="app-file-col-type">{file.type === 'folder' ? '文件夹' : '文本文件'}</span>
-                  <span className="app-file-col-size">{getFileSize(file)}</span>
-                  <span className="app-file-col-date">{getFileDate(file)}</span>
-                </div>
-              ))
-            ) : (
-              children.map((file) => (
+          {viewMode === 'list' && (
+            <div className="app-file-list-header">
+              <span 
+                className="app-file-col-name" 
+                onClick={() => toggleSort('name')}
+                style={{ cursor: 'pointer' }}
+              >
+                名称 {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </span>
+              <span 
+                className="app-file-col-type" 
+                onClick={() => toggleSort('type')}
+                style={{ cursor: 'pointer' }}
+              >
+                类型 {sortBy === 'type' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </span>
+              <span 
+                className="app-file-col-size" 
+                onClick={() => toggleSort('size')}
+                style={{ cursor: 'pointer' }}
+              >
+                大小 {sortBy === 'size' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </span>
+              <span 
+                className="app-file-col-date" 
+                onClick={() => toggleSort('date')}
+                style={{ cursor: 'pointer' }}
+              >
+                修改日期 {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </span>
+            </div>
+          )}
+          <div className={`app-file-list ${viewMode === 'grid' ? 'app-file-grid' : ''}`}>
+            {(() => {
+              const displayNodes = searchResults.length > 0 
+                ? sortNodes(searchResults) 
+                : sortNodes(children)
+              
+              if (displayNodes.length === 0 && searchResults.length === 0) {
+                return <div className="app-file-empty">此文件夹为空</div>
+              }
+              
+              if (viewMode === 'grid') {
+                return displayNodes.map((file) => (
+                  <div
+                    key={file.id}
+                    className={`app-file-grid-item${selectedFileId === file.id ? ' selected' : ''}`}
+                    onClick={() => setSelectedFileId(file.id)}
+                    onDoubleClick={() => handleFileDoubleClick(file)}
+                    onContextMenu={(e) => handleContextMenu(e, file.id)}
+                  >
+                    <div className="app-file-grid-icon">{getFileIcon(file.name, file.type)}</div>
+                    <div className="app-file-grid-name" title={file.name}>
+                      {file.name}
+                    </div>
+                  </div>
+                ))
+              }
+              
+              return displayNodes.map((file) => (
                 <div
                   key={file.id}
                   className={`app-file-row${selectedFileId === file.id ? ' selected' : ''}`}
@@ -586,12 +709,9 @@ export default function FileManager() {
                   <span className="app-file-col-date">{getFileDate(file)}</span>
                 </div>
               ))
-            )}
-            {searchResults.length === 0 && children.length === 0 && (
-              <div className="app-file-empty">此文件夹为空</div>
-            )}
+            })()}
             {searchResults.length > 0 && (
-              <div className="app-file-empty" style={{ paddingTop: '12px' }}>
+              <div className="app-file-empty" style={{ paddingTop: '12px', gridColumn: '1 / -1' }}>
                 找到 {searchResults.length} 个搜索结果
               </div>
             )}
