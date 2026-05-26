@@ -59,7 +59,17 @@ function TextFormatIcon() {
   )
 }
 
+function CodeSnippetsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <polyline points="16,18 22,12 16,6"></polyline>
+      <polyline points="8,6 2,12 8,18"></polyline>
+    </svg>
+  )
+}
+
 export const appRegistry: AppDefinition[] = [
+  { id: 'code-snippets', name: '代码片段管理', icon: <CodeSnippetsIcon />, component: 'CodeSnippetsManager', category: 'development', defaultWidth: 1100, defaultHeight: 750, minWidth: 800, minHeight: 500, resizable: true, multiple: false },
   { id: 'chat-ai', name: 'AI 智能助手', icon: '🧠', component: 'ChatAI', category: 'utilities', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'code-studio', name: 'Code Studio', icon: '💻', component: 'CodeStudio', category: 'development', defaultWidth: 1100, defaultHeight: 800, minWidth: 800, minHeight: 550, resizable: true, multiple: false },
   { id: 'text-formatter', name: '文本格式化', icon: <TextFormatIcon />, component: 'TextFormatter', category: 'utilities', defaultWidth: 850, defaultHeight: 700, minWidth: 600, minHeight: 500, resizable: true, multiple: false },
