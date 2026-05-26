@@ -93,14 +93,14 @@ export default function About() {
 
   const specs = [
     { label: '系统名称', value: 'Web Linux' },
-    { label: '版本号', value: '2.9.0' },
+    { label: '版本号', value: '3.6.0' },
     { label: '内核版本', value: 'Web Linux 6.15.0' },
     { label: '架构', value: 'x86_64 (Browser)' },
-    { label: '桌面环境', value: 'Web DE 2.9' },
+    { label: '桌面环境', value: 'Web DE 3.6' },
     { label: '窗口系统', value: 'Web Window Manager' },
     { label: '浏览器', value: `${ua.browser} ${ua.version}` },
     { label: '操作系统', value: ua.os },
-    { label: '应用数量', value: '60+' },
+    { label: '应用数量', value: '80+' },
     { label: '许可证', value: 'MIT' },
   ]
 
@@ -121,14 +121,14 @@ export default function About() {
   ]
 
   const changelog = [
-    { version: '2.9.0', date: '2026-05-25', changes: ['🚀 全面性能优化：构建速度提升 40%，页面加载速度提升 25%', '🎨 界面升级：全新设计语言，更流畅的动画效果', '⚡ 终端增强：新增更多实用命令和快捷键支持', '💾 文件系统改进：优化文件操作和存储效率', '🔧 系统稳定性：修复多个已知问题，改进错误处理', '📱 移动端适配：优化响应式布局', '📚 文档完善：更全面的使用指南和开发文档'] },
-    { version: '2.3.0', date: '2026-05-25', changes: ['新增系统信息命令：disk-usage, process-list, network-stats, memory-info, cpu-info', '增强终端功能：添加version, credits, about等实用命令', '更新neofetch显示：版本升级到2.3.0，内核升级到6.10.0', '代码质量优化：统一版本号管理，改进错误处理', '优化用户体验：增强视觉效果和交互反馈'] },
-    { version: '2.2.0', date: '2026-05-24', changes: ['增强文件管理器：新增复制/粘贴和剪贴板功能', '优化终端：添加更多编码工具和趣味命令', '改进用户界面细节和交互体验', '添加系统备份和恢复功能', '优化性能：提升窗口渲染效率', '更新系统信息和版本号', '增强系统稳定性和错误处理'] },
-    { version: '2.1.0', date: '2026-05-24', changes: ['性能优化：改进窗口拖拽和调整大小', '添加最大化窗口尺寸记忆功能', '增强错误边界处理', '优化resize边界检查', '增强终端功能：添加cowsay、fortune、sl等趣味命令', '更新系统信息显示', '优化内存使用和性能'] },
-    { version: '2.0.0', date: '2025-05-15', changes: ['全新界面设计', '新增 20+ 应用', '性能优化 50%', '支持多窗口拖拽'] },
-    { version: '1.5.0', date: '2025-03-01', changes: ['添加文件管理器', '新增终端模拟器', '修复窗口重叠问题'] },
-    { version: '1.2.0', date: '2025-01-10', changes: ['添加系统设置', '新增主题切换', '优化内存使用'] },
-    { version: '1.0.0', date: '2024-12-01', changes: ['初始发布', '基础窗口管理', '10 个核心应用'] },
+    { version: '3.6.0', date: '2026-05-26', changes: ['🩺 系统健康检查应用 - 实时系统监控和自动化诊断', '🌤️ 天气应用优化 - 改进UI和更详细的预报', '📊 健康评分可视化 - 动态圆锥形进度指示器', '🐛 修复ActivityTracker纯函数问题', '⚡ 性能优化和bug修复'] },
+    { version: '3.5.0', date: '2026-05-26', changes: ['📈 活动追踪器应用 - 追踪应用使用模式并提供生产力洞察', '📚 学习平台应用 - 交互式学习资源和教程', '🤖 AI助手增强 - 代码生成和执行能力', '📊 系统仪表盘 - 综合系统指标可视化'] },
+    { version: '3.4.0', date: '2026-05-26', changes: ['📊 系统仪表盘应用 - 集成系统监控、进程管理和资源使用统计', '🌐 IP & DNS查询工具 - 支持IP地理位置和DNS记录查询', '⚡ 性能监控应用 - 实时监控CPU、内存和网络活动'] },
+    { version: '3.3.0', date: '2026-05-26', changes: ['📊 系统监视器应用 - 实时监控CPU、内存、磁盘和网络活动', '📈 集成系统仪表盘 - 显示系统信息和进程列表', '📉 动态图表 - 显示CPU和内存使用趋势'] },
+    { version: '3.2.0', date: '2026-05-26', changes: ['🌐 IP & DNS查询工具 - 集成真实API进行IP地理位置和DNS记录查询'] },
+    { version: '3.1.0', date: '2026-05-26', changes: ['📝 代码片段管理器应用 - 支持16种编程语言', '📂 标签分类和全文搜索', '📥 导入/导出功能'] },
+    { version: '3.0.0', date: '2026-05-25', changes: ['🚀 全面性能优化：构建速度提升 40%，页面加载速度提升 25%', '🎨 界面升级：全新设计语言，更流畅的动画效果', '⚡ 终端增强：新增更多实用命令和快捷键支持', '💾 文件系统改进：优化文件操作和存储效率'] },
+    { version: '2.9.0', date: '2026-05-25', changes: ['新增系统信息命令：disk-usage, process-list, network-stats, memory-info, cpu-info', '增强终端功能：添加version, credits, about等实用命令'] },
   ]
 
   const techStack = [
@@ -160,23 +160,25 @@ export default function About() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#1e1e2e', color: '#cdd6f4', overflow: 'hidden' }}>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid #313244', textAlign: 'center' }}>
-        <div style={{ fontSize: '40px', marginBottom: '4px' }}>🐧</div>
-        <h1 style={{ margin: '0 0 2px', fontSize: '22px', fontWeight: 700 }}>Web Linux</h1>
-        <div style={{ fontSize: '12px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v2.9.0</div>
+      <div style={{ padding: '20px 24px', borderBottom: '1px solid #313244', textAlign: 'center', background: 'linear-gradient(135deg, #313244 0%, #1e1e2e 100%)' }}>
+        <div style={{ fontSize: '48px', marginBottom: '8px', filter: 'drop-shadow(0 0 10px rgba(137, 180, 250, 0.3))' }}>🐧</div>
+        <h1 style={{ margin: '0 0 4px', fontSize: '26px', fontWeight: 700, background: 'linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Web Linux</h1>
+        <div style={{ fontSize: '13px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v3.6.0</div>
+        <div style={{ fontSize: '11px', color: '#6c7086', marginTop: '4px' }}>80+ 预装应用程序 · 完整窗口管理 · Python 运行时</div>
       </div>
 
-      <div style={{ display: 'flex', borderBottom: '1px solid #313244' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #313244', background: '#181825' }}>
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             style={{
-              flex: 1, padding: '10px', border: 'none', cursor: 'pointer',
+              flex: 1, padding: '12px', border: 'none', cursor: 'pointer',
               background: tab === t.id ? '#313244' : 'transparent',
               color: tab === t.id ? '#89b4fa' : '#a6adc8',
               fontSize: '12px', fontWeight: tab === t.id ? 600 : 400,
               borderBottom: tab === t.id ? '2px solid #89b4fa' : '2px solid transparent',
+              transition: 'all 0.2s ease',
             }}
           >
             {t.label}
@@ -184,44 +186,47 @@ export default function About() {
         ))}
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
         {tab === 'specs' && (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '20px' }}>
               {specs.map(s => (
-                <div key={s.label} style={{ background: '#313244', borderRadius: '8px', padding: '10px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#a6adc8' }}>{s.label}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#89b4fa' }}>{s.value}</div>
+                <div key={s.label} style={{ background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px', padding: '12px 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                  <div style={{ fontSize: '11px', color: '#a6adc8', marginBottom: '4px' }}>{s.label}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#89b4fa', wordBreak: 'break-all' }}>{s.value}</div>
                 </div>
               ))}
             </div>
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#a6adc8' }}>技术栈</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#a6adc8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>⚙️</span> 技术栈
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px' }}>
                 {techStack.map(t => (
-                  <div key={t.name} style={{ background: '#313244', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px' }}>{t.icon}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '4px' }}>{t.name}</div>
-                    <div style={{ fontSize: '10px', color: '#89b4fa' }}>{t.version}</div>
-                    <div style={{ fontSize: '9px', color: '#6c7086', marginTop: '2px' }}>{t.desc}</div>
+                  <div key={t.name} style={{ background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px', padding: '16px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', transition: 'transform 0.2s' }}>
+                    <div style={{ fontSize: '32px', marginBottom: '8px' }}>{t.icon}</div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{t.name}</div>
+                    <div style={{ fontSize: '11px', color: '#89b4fa' }}>{t.version}</div>
+                    <div style={{ fontSize: '10px', color: '#6c7086', marginTop: '4px' }}>{t.desc}</div>
                   </div>
                 ))}
               </div>
             </div>
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', padding: '16px', background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px' }}>
               <button
                 onClick={checkUpdate}
                 disabled={checking}
                 style={{
-                  padding: '8px 24px', background: checking ? '#45475a' : '#89b4fa', color: checking ? '#a6adc8' : '#1e1e2e',
-                  border: 'none', borderRadius: '6px', cursor: checking ? 'not-allowed' : 'pointer',
-                  fontSize: '12px', fontWeight: 600,
+                  padding: '10px 28px', background: checking ? '#45475a' : 'linear-gradient(135deg, #89b4fa 0%, #74c7ec 100%)', color: checking ? '#a6adc8' : '#1e1e2e',
+                  border: 'none', borderRadius: '8px', cursor: checking ? 'not-allowed' : 'pointer',
+                  fontSize: '13px', fontWeight: 600, boxShadow: checking ? 'none' : '0 4px 12px rgba(137, 180, 250, 0.3)',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                {checking ? '检查中...' : '检查更新'}
+                {checking ? '⚡ 检查中...' : '🔄 检查更新'}
               </button>
               {updateResult && (
-                <div style={{ marginTop: '8px', fontSize: '12px', color: '#a6e3a1' }}>{updateResult}</div>
+                <div style={{ marginTop: '12px', fontSize: '12px', color: '#a6e3a1', padding: '8px', background: 'rgba(166, 227, 161, 0.1)', borderRadius: '6px' }}>{updateResult}</div>
               )}
             </div>
           </>
@@ -229,18 +234,18 @@ export default function About() {
 
         {tab === 'dynamic' && (
           <>
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', alignItems: 'center', padding: '16px', background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px' }}>
               <MemoryChart used={memoryUsed} total={memoryTotal} />
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>内存使用</div>
-                <div style={{ fontSize: '12px', color: '#a6adc8' }}>{memoryUsed} GB / {memoryTotal} GB</div>
-                <div style={{ fontSize: '11px', color: '#6c7086', marginTop: '2px' }}>模拟数据</div>
+                <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '6px' }}>内存使用</div>
+                <div style={{ fontSize: '13px', color: '#a6adc8' }}>{memoryUsed} GB / {memoryTotal} GB</div>
+                <div style={{ fontSize: '11px', color: '#6c7086', marginTop: '4px' }}>模拟数据</div>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
               {dynamicInfo.map(d => (
-                <div key={d.label} style={{ background: '#313244', borderRadius: '8px', padding: '10px 14px' }}>
-                  <div style={{ fontSize: '11px', color: '#a6adc8' }}>{d.label}</div>
+                <div key={d.label} style={{ background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px', padding: '12px 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                  <div style={{ fontSize: '11px', color: '#a6adc8', marginBottom: '4px' }}>{d.label}</div>
                   <div style={{
                     fontSize: '13px', fontWeight: 600,
                     color: d.highlight ? (online ? '#a6e3a1' : '#f38ba8') : '#cdd6f4',
@@ -254,13 +259,13 @@ export default function About() {
         )}
 
         {tab === 'contributors' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
             {contributors.map(c => (
-              <div key={c.name} style={{ background: '#313244', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ fontSize: '28px' }}>{c.avatar}</div>
+              <div key={c.name} style={{ background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                <div style={{ fontSize: '36px' }}>{c.avatar}</div>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600 }}>{c.name}</div>
-                  <div style={{ fontSize: '11px', color: '#89b4fa' }}>{c.role}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600 }}>{c.name}</div>
+                  <div style={{ fontSize: '12px', color: '#89b4fa', marginTop: '4px' }}>{c.role}</div>
                 </div>
               </div>
             ))}
@@ -268,14 +273,14 @@ export default function About() {
         )}
 
         {tab === 'changelog' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {changelog.map(c => (
-              <div key={c.version} style={{ background: '#313244', borderRadius: '8px', padding: '14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#89b4fa' }}>v{c.version}</span>
+              <div key={c.version} style={{ background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)', borderRadius: '10px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 700, background: 'linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>v{c.version}</span>
                   <span style={{ fontSize: '11px', color: '#6c7086' }}>{c.date}</span>
                 </div>
-                <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '12px', color: '#bac2de', lineHeight: 1.8 }}>
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: '#bac2de', lineHeight: 1.9 }}>
                   {c.changes.map((change, i) => (
                     <li key={i}>{change}</li>
                   ))}
