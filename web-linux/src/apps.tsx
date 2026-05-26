@@ -60,6 +60,8 @@ function TextFormatIcon() {
 }
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'chat-ai', name: 'AI 智能助手', icon: '🧠', component: 'ChatAI', category: 'utilities', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
+  { id: 'code-studio', name: 'Code Studio', icon: '💻', component: 'CodeStudio', category: 'development', defaultWidth: 1100, defaultHeight: 800, minWidth: 800, minHeight: 550, resizable: true, multiple: false },
   { id: 'text-formatter', name: '文本格式化', icon: <TextFormatIcon />, component: 'TextFormatter', category: 'utilities', defaultWidth: 850, defaultHeight: 700, minWidth: 600, minHeight: 500, resizable: true, multiple: false },
   { id: 'currency-converter', name: '汇率转换', icon: '💱', component: 'CurrencyConverter', category: 'utilities', defaultWidth: 600, defaultHeight: 800, minWidth: 500, minHeight: 600, resizable: true, multiple: false },
   { id: 'voice-transcriber', name: '语音转录', icon: <VoiceIcon />, component: 'VoiceTranscriber', category: 'utilities', defaultWidth: 800, defaultHeight: 700, minWidth: 600, minHeight: 500, resizable: true, multiple: false },
