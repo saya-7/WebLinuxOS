@@ -11,6 +11,17 @@ interface Crypto {
   image?: string
 }
 
+interface CoinGeckoResponse {
+  id: string
+  name: string
+  symbol: string
+  current_price: number
+  price_change_percentage_24h?: number
+  market_cap: number
+  total_volume: number
+  image?: string
+}
+
 const CRYPTO_API = 'https://api.coingecko.com/api/v3'
 
 const POPULAR_CRYPTO = [
@@ -66,7 +77,7 @@ export default function CryptoTracker() {
       
       const data = await response.json()
       
-      const formatted: Crypto[] = data.map((coin: any) => ({
+      const formatted: Crypto[] = (data as CoinGeckoResponse[]).map((coin) => ({
         id: coin.id,
         name: coin.name,
         symbol: coin.symbol.toUpperCase(),

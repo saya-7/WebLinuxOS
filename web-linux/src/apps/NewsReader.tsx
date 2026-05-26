@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface NewsArticle {
   title: string
@@ -22,6 +22,60 @@ const CATEGORIES = [
 // 使用免费的Spaceflight News API
 const SPACEFLIGHT_NEWS_API = 'https://api.spaceflightnewsapi.net/v4'
 
+const getCategoryName = (id: string) => CATEGORIES.find(c => c.id === id)?.name || '综合'
+
+// 生成固定日期，避免在渲染期间调用 Date.now()
+const getMockArticles = (category: string, now: number) => [
+  {
+    title: `${getCategoryName(category)}领域取得重大突破`,
+    description: '近日，在全球专家的共同努力下，该领域取得了前所未有的进展。这项创新将深刻影响我们的日常生活。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&auto=format&fit=crop',
+    source: { name: '科技日报' },
+    publishedAt: new Date(now - 3600000 * 2).toISOString(),
+  },
+  {
+    title: 'Web Linux 操作系统发布新版本，性能大幅提升',
+    description: 'Web Linux 3.1 版本正式发布，带来了全新的用户界面、更快的启动速度和更多实用应用程序。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop',
+    source: { name: '开发周报' },
+    publishedAt: new Date(now - 3600000 * 5).toISOString(),
+  },
+  {
+    title: '人工智能助力医疗诊断，准确率提高30%',
+    description: '医院开始部署 AI 辅助诊断系统，医生们表示该系统大大提高了诊断的准确性和效率。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1559757121-5b744b2f75cf?w=800&auto=format&fit=crop',
+    source: { name: '健康医疗' },
+    publishedAt: new Date(now - 3600000 * 8).toISOString(),
+  },
+  {
+    title: '全球环保峰会召开，各国签署减排协议',
+    description: '在刚刚结束的全球环保峰会上，100多个国家签署了新的减排协议，承诺到2030年将碳排放减少50%。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?w=800&auto=format&fit=crop',
+    source: { name: '国际新闻' },
+    publishedAt: new Date(now - 3600000 * 12).toISOString(),
+  },
+  {
+    title: '区块链技术应用于供应链管理',
+    description: '多家跨国企业开始使用区块链技术来追踪商品的整个供应链过程，提高了透明度和效率。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
+    source: { name: '商业周刊' },
+    publishedAt: new Date(now - 3600000 * 24).toISOString(),
+  },
+  {
+    title: '量子计算机取得里程碑式进展',
+    description: '研究团队宣布他们在量子计算领域取得了重要突破，量子比特的稳定性提高了100倍。',
+    url: 'https://github.com/saya-ch/WebLinuxOS',
+    urlToImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop',
+    source: { name: '科学探索' },
+    publishedAt: new Date(now - 3600000 * 36).toISOString(),
+  },
+]
+
 export default function NewsReader() {
   const [articles, setArticles] = useState<NewsArticle[]>([])
   const [selectedCategory, setSelectedCategory] = useState('general')
@@ -30,92 +84,7 @@ export default function NewsReader() {
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchMode, setSearchMode] = useState(false)
-
-  // 获取真实新闻数据
-  const fetchSpaceflightNews = async (category: string, _search?: string) => {
-    try {
-      let url = `${SPACEFLIGHT_NEWS_API}/articles?limit=12&ordering=-published_at`
-      
-      const response = await fetch(url)
-      if (!response.ok) throw new Error('Failed to fetch news')
-      
-      const data = await response.json()
-      
-      const mappedArticles: NewsArticle[] = data.results.map((item: any) => ({
-        title: item.title,
-        description: item.summary || item.news_site,
-        url: item.url,
-        urlToImage: item.image_url,
-        source: { name: item.news_site },
-        publishedAt: item.published_at,
-      }))
-      
-      return { articles: mappedArticles }
-    } catch (err) {
-      // 如果失败，使用模拟数据作为备用
-      return fetchMockNews(category)
-    }
-  }
-
-  // 模拟新闻数据作为备用
-  const fetchMockNews = async (category: string) => {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const mockArticles: NewsArticle[] = [
-      {
-        title: `${getCategoryName(category)}领域取得重大突破`,
-        description: '近日，在全球专家的共同努力下，该领域取得了前所未有的进展。这项创新将深刻影响我们的日常生活。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&auto=format&fit=crop',
-        source: { name: '科技日报' },
-        publishedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-      },
-      {
-        title: 'Web Linux 操作系统发布新版本，性能大幅提升',
-        description: 'Web Linux 3.1 版本正式发布，带来了全新的用户界面、更快的启动速度和更多实用应用程序。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop',
-        source: { name: '开发周报' },
-        publishedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-      },
-      {
-        title: '人工智能助力医疗诊断，准确率提高30%',
-        description: '医院开始部署 AI 辅助诊断系统，医生们表示该系统大大提高了诊断的准确性和效率。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1559757121-5b744b2f75cf?w=800&auto=format&fit=crop',
-        source: { name: '健康医疗' },
-        publishedAt: new Date(Date.now() - 3600000 * 8).toISOString(),
-      },
-      {
-        title: '全球环保峰会召开，各国签署减排协议',
-        description: '在刚刚结束的全球环保峰会上，100多个国家签署了新的减排协议，承诺到2030年将碳排放减少50%。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?w=800&auto=format&fit=crop',
-        source: { name: '国际新闻' },
-        publishedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-      },
-      {
-        title: '区块链技术应用于供应链管理',
-        description: '多家跨国企业开始使用区块链技术来追踪商品的整个供应链过程，提高了透明度和效率。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
-        source: { name: '商业周刊' },
-        publishedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-      },
-      {
-        title: '量子计算机取得里程碑式进展',
-        description: '研究团队宣布他们在量子计算领域取得了重要突破，量子比特的稳定性提高了100倍。',
-        url: 'https://github.com/saya-ch/WebLinuxOS',
-        urlToImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop',
-        source: { name: '科学探索' },
-        publishedAt: new Date(Date.now() - 3600000 * 36).toISOString(),
-      },
-    ]
-    
-    return { articles: mockArticles }
-  }
-
-  const getCategoryName = (id: string) => CATEGORIES.find(c => c.id === id)?.name || '综合'
+  const [nowTimestamp] = useState(() => Date.now())
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -130,7 +99,42 @@ export default function NewsReader() {
     return date.toLocaleDateString('zh-CN')
   }
 
-  const loadNews = async (category: string, search?: string) => {
+  // 获取真实新闻数据
+  const fetchSpaceflightNews = async (category: string, _search?: string) => {
+    try {
+      const url = `${SPACEFLIGHT_NEWS_API}/articles?limit=12&ordering=-published_at`
+      
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Failed to fetch news')
+      
+      const data = await response.json()
+      
+      const mappedArticles: NewsArticle[] = data.results.map((item: unknown) => {
+        const typedItem = item as { title?: string; summary?: string; news_site?: string; url?: string; image_url?: string; published_at?: string }
+        return {
+          title: typedItem.title || '',
+          description: typedItem.summary || typedItem.news_site || '',
+          url: typedItem.url || '',
+          urlToImage: typedItem.image_url,
+          source: { name: typedItem.news_site || '' },
+          publishedAt: typedItem.published_at || new Date().toISOString(),
+        }
+      })
+      
+      return { articles: mappedArticles }
+    } catch {
+      // 如果失败，使用模拟数据作为备用
+      return fetchMockNews(category)
+    }
+  }
+
+  // 模拟新闻数据作为备用
+  const fetchMockNews = async (category: string) => {
+    await new Promise(resolve => setTimeout(resolve, 500))
+    return { articles: getMockArticles(category, nowTimestamp) }
+  }
+
+  const loadNews = useCallback(async (category: string, search?: string) => {
     setLoading(true)
     setError(null)
     try {
@@ -141,12 +145,12 @@ export default function NewsReader() {
         response = await fetchMockNews(category)
       }
       setArticles(response.articles)
-    } catch (err) {
+    } catch {
       setError('加载新闻失败，请稍后重试')
     } finally {
       setLoading(false)
     }
-  }
+  }, [nowTimestamp])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -164,7 +168,7 @@ export default function NewsReader() {
 
   useEffect(() => {
     loadNews(selectedCategory)
-  }, [selectedCategory])
+  }, [selectedCategory, loadNews])
 
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>

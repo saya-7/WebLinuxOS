@@ -726,7 +726,7 @@ export default function ProjectManager() {
                 </label>
                 <select
                   value={newTaskPriority}
-                  onChange={e => setNewTaskPriority(e.target.value as any)}
+                  onChange={e => setNewTaskPriority(e.target.value as 'low' | 'medium' | 'high')}
                   style={{
                     width: '100%',
                     padding: '10px 12px',

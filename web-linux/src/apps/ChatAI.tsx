@@ -30,7 +30,7 @@ export default function ChatAI() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState(Date.now().toString());
+  const [sessionId, setSessionId] = useState(() => Date.now().toString());
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
     try {
       const saved = localStorage.getItem('weblinux-chatai-sessions');
@@ -306,7 +306,7 @@ print(greet("WebLinux"))
             </div>
             <select
               value={apiProvider}
-              onChange={(e) => setApiProvider(e.target.value as any)}
+              onChange={(e) => setApiProvider(e.target.value as 'openai' | 'anthropic' | 'mock')}
               style={{
                 width: '100%',
                 padding: '8px',

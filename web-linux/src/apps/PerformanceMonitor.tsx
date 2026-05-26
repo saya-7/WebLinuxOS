@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { useStore } from '../store'
 
+interface MemoryInfo {
+  usedJSHeapSize: number
+  totalJSHeapSize?: number
+  jsHeapSizeLimit?: number
+}
+
+interface PerformanceWithMemory extends Performance {
+  memory?: MemoryInfo
+}
+
 interface PerformanceMetrics {
   fps: number
   memory: number
@@ -32,8 +42,9 @@ export default function PerformanceMonitor() {
 
       if (currentTime >= lastTime + 1000) {
         const fps = Math.round((frameCount * 1000) / (currentTime - lastTime))
-        const memory = (performance as any).memory
-          ? Math.round((performance as any).memory.usedJSHeapSize / 1048576)
+        const perf = performance as PerformanceWithMemory
+        const memory = perf.memory
+          ? Math.round(perf.memory.usedJSHeapSize / 1048576)
           : 0
 
         const newMetrics: PerformanceMetrics = {

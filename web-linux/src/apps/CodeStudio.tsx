@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 
+interface Pyodide {
+  runPython: (code: string) => unknown;
+}
+
+interface WindowWithPyodide extends Window {
+  loadPyodide?: () => Promise<Pyodide>;
+}
+
 const DEFAULT_CODE = `// WebLinux Code Studio
 // 一个创新的在线编程环境
 
@@ -104,27 +112,30 @@ export default function CodeStudio() {
     addOutput('Python 运行时正在加载...', 'info');
     
     try {
-      if (typeof window !== 'undefined' && (window as any).loadPyodide) {
-        const pyodide = await (window as any).loadPyodide();
-        pyodide.runPython(`
-          import sys
-          from io import StringIO
-          sys.stdout = StringIO()
-        `);
-        
-        const result = pyodide.runPython(code);
-        const stdout = pyodide.runPython('sys.stdout.getvalue()');
-        
-        if (stdout) {
-          stdout.split('\\n').forEach((line: string) => {
-            if (line) addOutput(line, 'log');
-          });
+      if (typeof window !== 'undefined' && (window as WindowWithPyodide).loadPyodide) {
+        const loadFn = (window as WindowWithPyodide).loadPyodide;
+        if (loadFn) {
+          const pyodide = await loadFn();
+          pyodide.runPython(`
+            import sys
+            from io import StringIO
+            sys.stdout = StringIO()
+          `);
+          
+          const result = pyodide.runPython(code);
+          const stdout = pyodide.runPython('sys.stdout.getvalue()') as unknown;
+          
+          if (stdout && typeof stdout === 'string') {
+            stdout.split('\\n').forEach((line: string) => {
+              if (line) addOutput(line, 'log');
+            });
+          }
+          
+          if (result !== undefined && result !== null) {
+            addOutput(String(result), 'success');
+          }
+          addOutput('✓ Python 代码执行完成', 'success');
         }
-        
-        if (result !== undefined && result !== null) {
-          addOutput(String(result), 'success');
-        }
-        addOutput('✓ Python 代码执行完成', 'success');
       } else {
         addOutput('⚠️ Python 运行时不可用，这是一个模拟结果', 'info');
         addOutput('Python: ' + code.slice(0, 50) + '...', 'log');
@@ -241,7 +252,7 @@ export default function CodeStudio() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
+            onChange={(e) => setLanguage(e.target.value as 'javascript' | 'python' | 'html')}
             style={{
               padding: '8px 12px',
               borderRadius: '6px',

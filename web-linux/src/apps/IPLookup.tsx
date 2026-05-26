@@ -100,7 +100,7 @@ export default function IPLookup() {
           records: []
         })
       }
-    } catch (err) {
+    } catch {
       setDnsInfo({
         domain: domain,
         type: 'A',

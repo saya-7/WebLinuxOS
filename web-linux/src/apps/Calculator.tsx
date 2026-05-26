@@ -267,7 +267,7 @@ export default function Calculator() {
   const handleFactorial = useCallback(() => {
     if (display === 'Error') return
     try {
-      let n = parseInt(display)
+      const n = parseInt(display)
       if (n < 0 || !Number.isInteger(parseFloat(display))) {
         setDisplay('Error')
         return

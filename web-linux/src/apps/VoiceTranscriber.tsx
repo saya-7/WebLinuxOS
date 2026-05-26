@@ -7,6 +7,49 @@ interface TranscriptSegment {
   isFinal: boolean
 }
 
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+}
+
+interface SpeechRecognitionResult {
+  0: { transcript: string }
+  isFinal: boolean
+  length: number
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult
+  length: number
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
+
+interface SpeechRecognitionConstructor {
+  new(): SpeechRecognition
+}
+
+interface SpeechRecognition {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onstart: (() => void) | null
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  start(): void
+  stop(): void
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor
+    webkitSpeechRecognition?: SpeechRecognitionConstructor
+  }
+}
+
 export default function VoiceTranscriber() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcripts, setTranscripts] = useState<TranscriptSegment[]>([])
@@ -15,18 +58,22 @@ export default function VoiceTranscriber() {
   const [errorMessage, setErrorMessage] = useState('')
   const [recognitionSupported, setRecognitionSupported] = useState(true)
   const [wordCount, setWordCount] = useState(0)
+  const [interimTranscript, setInterimTranscript] = useState('')
   
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
   const finalTranscriptRef = useRef('')
-  const interimTranscriptRef = useRef('')
 
   useEffect(() => {
+    let mounted = true
+
     // 检查浏览器是否支持 Web Speech API
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) {
-      setRecognitionSupported(false)
-      setStatus('error')
-      setErrorMessage('您的浏览器不支持语音识别功能，请使用 Chrome 或 Edge 浏览器')
+      if (mounted) {
+        setRecognitionSupported(false)
+        setStatus('error')
+        setErrorMessage('您的浏览器不支持语音识别功能，请使用 Chrome 或 Edge 浏览器')
+      }
       return
     }
 
@@ -37,23 +84,25 @@ export default function VoiceTranscriber() {
       recognition.lang = language
       
       recognition.onstart = () => {
-        setIsRecording(true)
-        setStatus('recording')
+        if (mounted) {
+          setIsRecording(true)
+          setStatus('recording')
+        }
       }
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event) => {
         let finalTranscript = ''
-        let interimTranscript = ''
+        let interimTranscriptText = ''
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript
           } else {
-            interimTranscript += event.results[i][0].transcript
+            interimTranscriptText += event.results[i][0].transcript
           }
         }
 
-        if (finalTranscript) {
+        if (finalTranscript && mounted) {
           finalTranscriptRef.current += finalTranscript
           const newSegment: TranscriptSegment = {
             id: Date.now().toString(),
@@ -64,16 +113,18 @@ export default function VoiceTranscriber() {
           setTranscripts(prev => [...prev, newSegment])
         }
 
-        interimTranscriptRef.current = interimTranscript
-        
-        // 更新字数统计
-        const fullText = finalTranscriptRef.current + interimTranscriptRef.current
-        setWordCount(fullText.replace(/\s/g, '').length)
+        if (mounted) {
+          setInterimTranscript(interimTranscriptText)
+          
+          // 更新字数统计
+          const fullText = finalTranscriptRef.current + interimTranscriptText
+          setWordCount(fullText.replace(/\s/g, '').length)
+        }
       }
 
-      recognition.onerror = (event: any) => {
+      recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error)
-        if (event.error !== 'no-speech' && event.error !== 'aborted') {
+        if (event.error !== 'no-speech' && event.error !== 'aborted' && mounted) {
           setErrorMessage(`识别错误: ${event.error}`)
           setStatus('error')
           setIsRecording(false)
@@ -81,44 +132,46 @@ export default function VoiceTranscriber() {
       }
 
       recognition.onend = () => {
-        if (isRecording) {
+        if (isRecording && mounted) {
           // 如果用户没有手动停止，继续识别
           try {
             recognition.start()
-          } catch (e) {
+          } catch {
             // 忽略错误
           }
         }
       }
 
       recognitionRef.current = recognition
-    } catch (e) {
-      setRecognitionSupported(false)
-      setStatus('error')
-      setErrorMessage('初始化语音识别失败')
+    } catch {
+      if (mounted) {
+        setRecognitionSupported(false)
+        setStatus('error')
+        setErrorMessage('初始化语音识别失败')
+      }
     }
 
     return () => {
+      mounted = false
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop()
-        } catch (e) {
+        } catch {
           // 忽略
         }
       }
     }
-  }, [language, isRecording])
+  }, [language])
 
   const startRecording = useCallback(() => {
     if (!recognitionRef.current) return
     
     try {
       finalTranscriptRef.current = ''
-      interimTranscriptRef.current = ''
+      setInterimTranscript('')
       recognitionRef.current.lang = language
       recognitionRef.current.start()
-    } catch (e) {
-      console.error('Failed to start recording:', e)
+    } catch {
       setErrorMessage('无法开始录音，请检查麦克风权限')
       setStatus('error')
     }
@@ -131,8 +184,7 @@ export default function VoiceTranscriber() {
       recognitionRef.current.stop()
       setIsRecording(false)
       setStatus('ready')
-    } catch (e) {
-      // 忽略
+    } catch {
       setIsRecording(false)
       setStatus('ready')
     }
@@ -141,7 +193,7 @@ export default function VoiceTranscriber() {
   const clearTranscripts = useCallback(() => {
     setTranscripts([])
     finalTranscriptRef.current = ''
-    interimTranscriptRef.current = ''
+    setInterimTranscript('')
     setWordCount(0)
   }, [])
 
@@ -349,7 +401,7 @@ export default function VoiceTranscriber() {
             maxHeight: 400,
             overflow: 'auto',
           }}>
-            {transcripts.length === 0 && !interimTranscriptRef.current ? (
+            {transcripts.length === 0 && !interimTranscript ? (
               <div style={{ 
                 textAlign: 'center', 
                 padding: 40, 
@@ -374,7 +426,7 @@ export default function VoiceTranscriber() {
                     <div style={{ fontSize: 16 }}>{segment.text}</div>
                   </div>
                 ))}
-                {interimTranscriptRef.current && (
+                {interimTranscript && (
                   <div style={{ 
                     marginBottom: 8, 
                     padding: 8,
@@ -386,7 +438,7 @@ export default function VoiceTranscriber() {
                     <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 4 }}>
                       正在识别...
                     </div>
-                    <div style={{ fontSize: 16 }}>{interimTranscriptRef.current}</div>
+                    <div style={{ fontSize: 16 }}>{interimTranscript}</div>
                   </div>
                 )}
               </div>

@@ -109,7 +109,7 @@ export default function ApiTester() {
     try {
       const parsed = JSON.parse(body)
       setBody(JSON.stringify(parsed, null, 2))
-    } catch (e) {
+    } catch {
       alert('无效的 JSON')
     }
   }, [body])
@@ -133,7 +133,7 @@ export default function ApiTester() {
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <select
               value={method}
-              onChange={(e) => setMethod(e.target.value as any)}
+              onChange={(e) => setMethod(e.target.value as HttpRequest['method'])}
               style={{ padding: '10px 15px', borderRadius: '6px', border: '1px solid #444', background: '#2a2a2a', color: '#fff', fontSize: '14px' }}
             >
               <option value="GET">GET</option>
