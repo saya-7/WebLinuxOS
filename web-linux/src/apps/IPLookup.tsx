@@ -91,7 +91,7 @@ export default function IPLookup() {
         setDnsInfo({
           domain: domain,
           type: 'A',
-          records: data.Answer.map((r: any) => r.data)
+          records: data.Answer.map((r: { data: string }) => r.data)
         })
       } else {
         setDnsInfo({
