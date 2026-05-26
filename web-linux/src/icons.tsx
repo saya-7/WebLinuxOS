@@ -6,7 +6,7 @@ import {
   Mic, Bluetooth, Battery, Info, HelpCircle, Command, Pipette,
   Blocks, MessageCircle, ClipboardList, Zap, Timer, Heart, Wallpaper, GitBranch, StickyNote, Atom, Pencil, RefreshCw, ChevronRight,
   ChevronDown, Minus, Square, X, Plus, Volume2, VolumeX, Moon, FileImage, FileJson, FileCode,
-  PlayCircle, Gamepad2, Sparkles, Wand2, Keyboard, Mic2, GraduationCap
+  PlayCircle, Gamepad2, Sparkles, Wand2, Keyboard, Mic2, GraduationCap, Wrench
 } from 'lucide-react'
 
 export const FolderIcon = Folder
@@ -83,6 +83,7 @@ export const FileJsonIcon = FileJson
 export const FileCodeIcon = FileCode
 export const VoiceIcon = Mic2
 export const GraduationCapIcon = GraduationCap
+export const WrenchIcon = Wrench
 
 export { ChevronRight, ChevronDown, Minus, Square, X, Plus, Volume2, VolumeX, Moon, Sun as SunIcon }
 

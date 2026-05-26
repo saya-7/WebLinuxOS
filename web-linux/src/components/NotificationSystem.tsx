@@ -1,268 +1,402 @@
-import { memo, useState, useEffect, useCallback } from 'react'
+import { useState, memo } from 'react'
 import { useStore } from '../store'
+import { X, Bell, Check, Trash2, Clock, AlertCircle } from 'lucide-react'
 
-export interface NotificationData {
-  id: string
-  title: string
-  message: string
-  icon?: string
-  type?: 'info' | 'success' | 'warning' | 'error'
-  duration?: number
-  timestamp?: Date
-}
-
-interface StoreType {
-  notifications: NotificationData[]
-  addNotification?: (notification: NotificationData) => void
-  removeNotification?: (id: string) => void
-}
-
-interface NotificationItemProps {
-  notification: NotificationData
-  onClose: (id: string) => void
-}
-
-const NotificationItem = memo(function NotificationItem({ notification, onClose }: NotificationItemProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isExiting, setIsExiting] = useState(false)
-
-  useEffect(() => {
-    requestAnimationFrame(() => setIsVisible(true))
-    
-    const duration = notification.duration || 5000
-    const timer = setTimeout(() => {
-      setIsExiting(true)
-      setTimeout(() => onClose(notification.id), 300)
-    }, duration)
-
-    return () => clearTimeout(timer)
-  }, [notification, onClose])
-
-  const getTypeStyles = () => {
-    switch (notification.type) {
+const NotificationItem = memo(function NotificationItem({ 
+  notification, 
+  onRemove 
+}: { 
+  notification: any
+  onRemove: () => void 
+}) {
+  const getTypeStyles = (type: string) => {
+    switch (type) {
       case 'success':
-        return { bg: 'rgba(46, 204, 113, 0.15)', border: 'rgba(46, 204, 113, 0.3)', icon: '✓' }
+        return {
+          bg: 'rgba(34, 197, 94, 0.1)',
+          border: 'rgba(34, 197, 94, 0.3)',
+          icon: <Check size={16} style={{ color: '#22c55e' }} />
+        }
       case 'warning':
-        return { bg: 'rgba(241, 196, 15, 0.15)', border: 'rgba(241, 196, 15, 0.3)', icon: '⚠' }
+        return {
+          bg: 'rgba(251, 191, 36, 0.1)',
+          border: 'rgba(251, 191, 36, 0.3)',
+          icon: <AlertCircle size={16} style={{ color: '#fbbf24' }} />
+        }
       case 'error':
-        return { bg: 'rgba(231, 76, 60, 0.15)', border: 'rgba(231, 76, 60, 0.3)', icon: '✕' }
+        return {
+          bg: 'rgba(239, 68, 68, 0.1)',
+          border: 'rgba(239, 68, 68, 0.3)',
+          icon: <X size={16} style={{ color: '#ef4444' }} />
+        }
       default:
-        return { bg: 'rgba(108, 92, 231, 0.15)', border: 'rgba(108, 92, 231, 0.3)', icon: 'ℹ' }
+        return {
+          bg: 'rgba(139, 124, 240, 0.1)',
+          border: 'rgba(139, 124, 240, 0.3)',
+          icon: <Bell size={16} style={{ color: '#8b7cf0' }} />
+        }
     }
   }
 
-  const styles = getTypeStyles()
+  const styles = getTypeStyles(notification.type || 'info')
+  
+  const formatTime = (timestamp: Date) => {
+    const now = new Date()
+    const diff = now.getTime() - new Date(timestamp).getTime()
+    const minutes = Math.floor(diff / 60000)
+    
+    if (minutes < 1) return '刚刚'
+    if (minutes < 60) return `${minutes}分钟前`
+    
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${hours}小时前`
+    
+    const days = Math.floor(hours / 24)
+    return `${days}天前`
+  }
 
   return (
     <div
       style={{
-        position: 'relative',
         background: styles.bg,
         border: `1px solid ${styles.border}`,
-        borderRadius: '12px',
-        padding: '16px',
-        marginBottom: '8px',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        transform: isExiting ? 'translateX(100%)' : isVisible ? 'translateX(0)' : 'translateX(100%)',
-        opacity: isExiting ? 0 : isVisible ? 1 : 0,
-        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        overflow: 'hidden',
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 8,
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 12,
+        animation: 'slideIn 0.3s ease',
+        transition: 'all 0.2s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateX(4px)'
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateX(0)'
+        e.currentTarget.style.boxShadow = 'none'
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: '4px',
-          background: styles.border,
-          borderRadius: '12px 0 0 12px',
-        }}
-      />
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-        <div
-          style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: styles.border,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '16px',
-            flexShrink: 0,
-          }}
-        >
-          {notification.icon || styles.icon}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontWeight: 600,
-              fontSize: '14px',
-              marginBottom: '4px',
-              color: 'var(--text-primary)',
-            }}
-          >
+      <div style={{ flexShrink: 0, marginTop: 2 }}>
+        {styles.icon}
+      </div>
+      
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          marginBottom: 4 
+        }}>
+          <div style={{ 
+            fontSize: 13, 
+            fontWeight: 600,
+            color: 'var(--text-primary)'
+          }}>
             {notification.title}
           </div>
-          <div
+          <button
+            onClick={onRemove}
             style={{
-              fontSize: '13px',
+              background: 'transparent',
+              border: 'none',
               color: 'var(--text-secondary)',
-              lineHeight: 1.4,
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 4,
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+              e.currentTarget.style.color = 'var(--text-primary)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--text-secondary)'
             }}
           >
-            {notification.message}
-          </div>
+            <X size={14} />
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setIsExiting(true)
-            setTimeout(() => onClose(notification.id), 300)
-          }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            padding: '4px',
-            borderRadius: '4px',
-            fontSize: '16px',
-            transition: 'all 0.2s',
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-            e.currentTarget.style.color = 'var(--text-primary)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'var(--text-secondary)'
-          }}
-        >
-          ✕
-        </button>
+        
+        <div style={{ 
+          fontSize: 12, 
+          color: 'var(--text-secondary)',
+          lineHeight: 1.4,
+          marginBottom: 6,
+          wordBreak: 'break-word'
+        }}>
+          {notification.message}
+        </div>
+        
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 4,
+          fontSize: 11,
+          color: 'var(--text-secondary)',
+          opacity: 0.7
+        }}>
+          <Clock size={10} />
+          <span>{formatTime(notification.timestamp)}</span>
+        </div>
       </div>
     </div>
   )
 })
 
-interface NotificationCenterProps {
-  isOpen: boolean
-  onClose: () => void
-}
+export default function NotificationSystem() {
+  const notifications = useStore((s) => s.notifications)
+  const removeNotification = useStore((s) => s.removeNotification)
+  const toggleNotificationCenter = useStore((s) => s.toggleNotificationCenter)
+  const notificationCenterOpen = useStore((s) => s.notificationCenterOpen)
+  const [filter, setFilter] = useState<string>('all')
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
 
-export const NotificationCenter = memo(function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
-  const notifications = useStore((s: StoreType) => s.notifications || [])
-  
-  if (!isOpen) return null
+  const filteredNotifications = notifications.filter(n => {
+    if (filter === 'all') return true
+    return n.type === filter
+  })
+
+  const handleClearAll = () => {
+    if (showClearConfirm) {
+      notifications.forEach(n => removeNotification(n.id))
+      setShowClearConfirm(false)
+    } else {
+      setShowClearConfirm(true)
+      setTimeout(() => setShowClearConfirm(false), 3000)
+    }
+  }
+
+  const filterOptions = [
+    { id: 'all', label: '全部', count: notifications.length },
+    { id: 'info', label: '通知', count: notifications.filter(n => !n.type || n.type === 'info').length },
+    { id: 'success', label: '成功', count: notifications.filter(n => n.type === 'success').length },
+    { id: 'warning', label: '警告', count: notifications.filter(n => n.type === 'warning').length },
+    { id: 'error', label: '错误', count: notifications.filter(n => n.type === 'error').length },
+  ]
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '60px',
-        right: '16px',
-        width: '380px',
-        maxHeight: '600px',
-        background: 'var(--panel-bg)',
-        borderRadius: '16px',
-        border: '1px solid var(--border)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)',
-        zIndex: 99998,
-        overflow: 'hidden',
-        animation: 'slideDown 0.3s ease-out',
-      }}
-    >
-      <div
-        style={{
-          padding: '20px',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ fontSize: '16px', fontWeight: 600 }}>通知中心</div>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            fontSize: '20px',
-          }}
-        >
-          ✕
-        </button>
-      </div>
-      <div
-        style={{
-          maxHeight: '500px',
-          overflowY: 'auto',
-          padding: '12px',
-        }}
-      >
-        {notifications.length === 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '40px 20px',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔔</div>
-            <div>暂无通知</div>
-          </div>
-        ) : (
-          notifications.map((notif: NotificationData) => (
-            <NotificationItem
-              key={notif.id}
-              notification={notif}
-              onClose={(id) => {
-                const store = useStore.getState() as StoreType
-                if (store.removeNotification) {
-                  store.removeNotification(id)
-                }
-              }}
-            />
-          ))
-        )}
-      </div>
+    <>
       <style>{`
-        @keyframes slideDown {
+        @keyframes slideIn {
           from {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateX(20px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
           }
         }
+        
+        .notification-center-glass {
+          background: rgba(30, 30, 50, 0.95);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
       `}</style>
-    </div>
+      
+      <div
+        className="notification-center-glass"
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: notificationCenterOpen ? 0 : '-400px',
+          width: 380,
+          height: '100vh',
+          zIndex: 10001,
+          transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: notificationCenterOpen ? '-8px 0 32px rgba(0,0,0,0.4)' : 'none',
+          borderLeft: '1px solid var(--window-border)',
+        }}
+      >
+        <div
+          style={{
+            padding: '20px 20px 16px',
+            borderBottom: '1px solid var(--window-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <h2 style={{ 
+              margin: 0, 
+              fontSize: 18, 
+              fontWeight: 600,
+              color: 'var(--text-primary)'
+            }}>
+              通知中心
+            </h2>
+            <p style={{ 
+              margin: '4px 0 0', 
+              fontSize: 12, 
+              color: 'var(--text-secondary)' 
+            }}>
+              {notifications.length} 条通知
+            </p>
+          </div>
+          
+          <button
+            onClick={toggleNotificationCenter}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              padding: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--titlebar-button-hover)'
+              e.currentTarget.style.color = 'var(--text-primary)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--text-secondary)'
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div style={{
+          padding: '12px 20px',
+          borderBottom: '1px solid var(--window-border)',
+          display: 'flex',
+          gap: 8,
+          overflowX: 'auto'
+        }}>
+          {filterOptions.map(opt => (
+            <button
+              key={opt.id}
+              onClick={() => setFilter(opt.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 16,
+                border: 'none',
+                background: filter === opt.id ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                color: filter === opt.id ? '#fff' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: filter === opt.id ? 600 : 400,
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              {opt.label}
+              {opt.count > 0 && (
+                <span style={{
+                  background: filter === opt.id ? 'rgba(255,255,255,0.2)' : 'var(--accent-bg)',
+                  padding: '2px 6px',
+                  borderRadius: 10,
+                  fontSize: 10,
+                  fontWeight: 600
+                }}>
+                  {opt.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: 16,
+          }}
+        >
+          {filteredNotifications.length === 0 ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                color: 'var(--text-secondary)',
+                textAlign: 'center',
+                padding: 40
+              }}
+            >
+              <Bell size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
+              <p style={{ fontSize: 14, margin: 0 }}>
+                {filter === 'all' ? '暂无通知' : `暂无${filterOptions.find(o => o.id === filter)?.label}`}
+              </p>
+              <p style={{ fontSize: 12, marginTop: 8, opacity: 0.7 }}>
+                你收到的新通知将显示在这里
+              </p>
+            </div>
+          ) : (
+            filteredNotifications.map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onRemove={() => removeNotification(notification.id)}
+              />
+            ))
+          )}
+        </div>
+
+        {notifications.length > 0 && (
+          <div
+            style={{
+              padding: 16,
+              borderTop: '1px solid var(--window-border)',
+              display: 'flex',
+              gap: 8
+            }}
+          >
+            <button
+              onClick={handleClearAll}
+              style={{
+                flex: 1,
+                padding: '10px 16px',
+                borderRadius: 8,
+                border: '1px solid var(--window-border)',
+                background: showClearConfirm ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
+                color: showClearConfirm ? '#ef4444' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8
+              }}
+              onMouseEnter={(e) => {
+                if (!showClearConfirm) {
+                  e.currentTarget.style.background = 'var(--titlebar-button-hover)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!showClearConfirm) {
+                  e.currentTarget.style.background = 'transparent'
+                }
+              }}
+            >
+              <Trash2 size={14} />
+              {showClearConfirm ? '再次点击确认清空' : '清空所有通知'}
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   )
-})
-
-export function useNotifications() {
-  const addNotification = useCallback((data: Omit<NotificationData, 'id' | 'timestamp'>) => {
-    const store = useStore.getState() as StoreType
-    if (store.addNotification) {
-      store.addNotification({
-        ...data,
-        id: `notif-${Date.now()}-${Math.random()}`,
-        timestamp: new Date(),
-      })
-    }
-  }, [])
-
-  return { addNotification }
 }

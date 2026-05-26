@@ -11,7 +11,7 @@ import {
   PaletteIcon, MagnifierIcon, SnakeIcon, TetrisIcon, ChatIcon, BoardIcon,
   ClipboardIcon, LightningIcon, SearchIcon, PomodoroIcon, PetIcon,
   WallpaperIcon, MindMapIcon, StickyNotesIcon, ParticleIcon, WhiteboardIcon, AutomationIcon,
-  VoiceIcon, GraduationCapIcon
+  VoiceIcon, GraduationCapIcon, WrenchIcon
 } from './icons'
 
 function DiceIcon() {
@@ -80,6 +80,7 @@ function CryptoIcon() {
 }
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'quick-tools', name: '快速工具箱', icon: <WrenchIcon />, component: 'RandomTools', category: 'utilities', defaultWidth: 900, defaultHeight: 700, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'learning-platform', name: '学习平台', icon: <GraduationCapIcon />, component: 'LearningPlatform', category: 'utilities', defaultWidth: 1200, defaultHeight: 800, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
   { id: 'crypto-tracker', name: '加密货币追踪器', icon: <CryptoIcon />, component: 'CryptoTracker', category: 'utilities', defaultWidth: 600, defaultHeight: 900, minWidth: 450, minHeight: 600, resizable: true, multiple: false },
   { id: 'code-snippets', name: '代码片段管理', icon: <CodeSnippetsIcon />, component: 'CodeSnippetsManager', category: 'development', defaultWidth: 1100, defaultHeight: 750, minWidth: 800, minHeight: 500, resizable: true, multiple: false },
