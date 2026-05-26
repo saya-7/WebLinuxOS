@@ -80,7 +80,7 @@ export default function ActivityTracker() {
         // 结束上一个会话
         if (currentSession) {
           const duration = Math.floor((Date.now() - currentSession.startTime) / 1000)
-          if (duration > 5) { // 只记录超过5秒的活动
+          if (duration > 5) {
             const record: ActivityRecord = {
               id: `activity-${Date.now()}`,
               appId: currentSession.appId,
@@ -89,14 +89,13 @@ export default function ActivityTracker() {
               duration,
               date: new Date().toISOString().split('T')[0]
             }
-            setActivities(prev => {
-              const newActivities = [...prev, record]
-              localStorage.setItem('activity-tracker-data', JSON.stringify(newActivities))
-              return newActivities
-            })
+            const saved = localStorage.getItem('activity-tracker-data')
+            const existingActivities = saved ? JSON.parse(saved) : []
+            const newActivities = [...existingActivities, record]
+            localStorage.setItem('activity-tracker-data', JSON.stringify(newActivities))
+            setActivities(newActivities)
           }
         }
-        // 开始新会话
         setCurrentSession({
           appId: focusedWindow.appId,
           startTime: Date.now()

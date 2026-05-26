@@ -355,9 +355,8 @@ function example() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const now = Date.now();
     const userMessage: Message = {
-      id: now.toString(),
+      id: crypto.randomUUID(),
       role: 'user',
       content: input,
       timestamp: new Date(),
@@ -367,10 +366,9 @@ function example() {
     setInput('');
     setIsTyping(true);
 
-    // 使用固定的延迟范围，避免在渲染期间调用 Math.random
-    const delay = 800 + (now % 1200);
+    const delay = 800 + Math.floor(Math.random() * 1200);
     setTimeout(() => {
-      const messageId = Date.now().toString();
+      const messageId = crypto.randomUUID();
       const aiResponse = generateResponse(input, messageId);
       setMessages((prev) => [...prev, aiResponse]);
       setIsTyping(false);
