@@ -1987,6 +1987,295 @@ Server:
 ✓ 临时文件已删除
 缓存清除完成!`
         break
+      case 'dig':
+        output = `dig: DNS 查询工具
+用法: dig [@server] [domain] [type]
+
+示例:
+  dig example.com
+  dig @8.8.8.8 example.com A`
+        break
+      case 'nc':
+        output = `nc: 网络连接工具
+用法: nc [-options] hostname port[s]
+
+示例:
+  nc -zv example.com 80
+  nc -l -p 1234`
+        break
+      case 'file': {
+        if (args.length === 0) {
+          output = 'file: 缺少操作数\n用法: file 文件名'
+        } else {
+          const resolved = resolvePath(cwd, args[0])
+          const node = findNodeByPath(files, resolved)
+          if (node) {
+            if (node.type === 'folder') {
+              output = `${args[0]}: directory`
+            } else {
+              const ext = node.name.split('.').pop()?.toLowerCase() || ''
+              const types: Record<string, string> = {
+                txt: 'text/plain',
+                md: 'text/markdown',
+                js: 'application/javascript',
+                ts: 'text/typescript',
+                json: 'application/json',
+                html: 'text/html',
+                css: 'text/css',
+                py: 'text/python',
+              }
+              output = `${args[0]}: ${types[ext] || 'application/octet-stream'}`
+            }
+          } else {
+            output = `file: ${args[0]}: 没有那个文件或目录`
+          }
+        }
+        break
+      }
+      case 'stat': {
+        if (args.length === 0) {
+          output = 'stat: 缺少操作数\n用法: stat 文件或目录'
+        } else {
+          const resolved = resolvePath(cwd, args[0])
+          const node = findNodeByPath(files, resolved)
+          if (node) {
+            const now = new Date()
+            output = [
+              ` 文件: ${args[0]}`,
+              ` 大小: ${JSON.stringify(node).length} 字节`,
+              ` 类型: ${node.type === 'folder' ? '目录' : '常规文件'}`,
+              ` 修改时间: ${now.toLocaleString('zh-CN')}`,
+              ` 访问时间: ${now.toLocaleString('zh-CN')}`,
+            ].join('\n')
+          } else {
+            output = `stat: 无法获取 '${args[0]}' 的状态: 没有那个文件或目录`
+          }
+        }
+        break
+      }
+      case 'chmod': {
+        if (args.length < 2) {
+          output = 'chmod: 缺少操作数\n用法: chmod 权限 文件'
+        } else {
+          const mode = args[0]
+          const resolved = resolvePath(cwd, args[1])
+          const node = findNodeByPath(files, resolved)
+          if (node) {
+            output = `chmod: 已将 '${args[1]}' 的权限设为 ${mode}`
+          } else {
+            output = `chmod: 无法访问 '${args[1]}': 没有那个文件或目录`
+          }
+        }
+        break
+      }
+      case 'chown': {
+        if (args.length < 2) {
+          output = 'chown: 缺少操作数\n用法: chown 用户:组 文件'
+        } else {
+          const owner = args[0]
+          const resolved = resolvePath(cwd, args[1])
+          const node = findNodeByPath(files, resolved)
+          if (node) {
+            output = `chown: 已将 '${args[1]}' 的所有者设为 ${owner}`
+          } else {
+            output = `chown: 无法访问 '${args[1]}': 没有那个文件或目录`
+          }
+        }
+        break
+      }
+      case 'hostnamectl': {
+        if (args[0] === 'set-hostname') {
+          output = `hostnamectl: 已将主机名设为 ${args[1] || 'web-linux'}`
+        } else {
+          output = [
+            '   Static hostname: web-linux',
+            '         Icon name: computer',
+            '           Chassis: vm',
+            '        Machine ID: abc123',
+            '           Boot ID: def456',
+            '  Operating System: WebLinuxOS 2.9',
+            '            Kernel: Linux 6.15.0-web',
+            '      Architecture: x86-64',
+          ].join('\n')
+        }
+        break
+      }
+      case 'timedatectl': {
+        if (args[0] === 'set-timezone') {
+          output = `timedatectl: 已将时区设为 ${args[1] || 'Asia/Shanghai'}`
+        } else {
+          const now = new Date()
+          output = [
+            '      Local time: ' + now.toLocaleString('zh-CN'),
+            '  Universal time: ' + now.toISOString(),
+            '            RTC time: n/a',
+            '           Time zone: Asia/Shanghai (CST, +0800)',
+            '         NTP enabled: yes',
+            'NTP synchronized: yes',
+            ' RTC in local TZ: no',
+            '        DST active: n/a',
+          ].join('\n')
+        }
+        break
+      }
+      case 'ip': {
+        if (args[0] === 'addr' || args[0] === 'a') {
+          output = `1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 192.168.1.100/24 brd 192.168.1.255 scope global dynamic noprefixroute eth0
+       valid_lft 86400sec preferred_lft 86400sec
+    inet6 fe80::a00:27ff:fe8e:8aa8/64 scope link 
+       valid_lft forever preferred_lft forever`
+        } else if (args[0] === 'route' || args[0] === 'r') {
+          output = `default via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.100 metric 100 
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100 metric 100`
+        } else {
+          output = `ip: 网络配置工具
+用法: ip [OPTIONS] OBJECT {COMMAND | help}
+
+对象:
+  addr        网络地址管理
+  route       路由管理  
+  link        网络设备管理
+  neigh       邻居管理`
+        }
+        break
+      }
+      case 'cheat': {
+        if (args.length === 0) {
+          output = `cheat: 命令速查
+用法: cheat <命令>
+
+支持的命令: ls, cd, cat, grep, sed, awk, git, docker, kubectl
+
+示例:
+  cheat ls
+  cheat git`
+        } else {
+          const cheats: Record<string, string> = {
+            ls: `ls - 列出目录内容
+
+常用选项:
+  -a, --all       显示所有文件（包括隐藏文件）
+  -l              长格式显示
+  -h, --human     人类可读的文件大小
+  -t              按修改时间排序
+  -r, --reverse   逆序排列
+
+示例:
+  ls
+  ls -la
+  ls -lh
+  ls -ltr`,
+            cd: `cd - 切换目录
+
+用法:
+  cd                回到家目录
+  cd ~              回到家目录
+  cd ..             回到上级目录
+  cd /path/to/dir   切换到指定目录
+  cd -              切换到上一次所在目录`,
+            cat: `cat - 连接并显示文件
+
+常用选项:
+  -n              显示行号
+  -b              显示非空行的行号
+  -s              压缩连续空行
+  -E              在每行末尾显示$
+
+示例:
+  cat file.txt
+  cat -n file.txt
+  cat file1.txt file2.txt`,
+            grep: `grep - 搜索文本模式
+
+常用选项:
+  -i              忽略大小写
+  -v              反向匹配
+  -n              显示行号
+  -r, -R          递归搜索目录
+  -l              只显示文件名
+
+示例:
+  grep "pattern" file.txt
+  grep -i "pattern" file.txt
+  grep -rn "pattern" /path`,
+            git: `git - 版本控制
+
+常用命令:
+  git init        初始化仓库
+  git add .       添加所有修改
+  git commit -m "msg"  提交
+  git push        推送到远程
+  git pull        拉取更新
+  git status      查看状态
+  git log         查看提交历史
+  git branch      管理分支
+  git checkout    切换分支`,
+            docker: `docker - 容器管理
+
+常用命令:
+  docker run      运行容器
+  docker ps       查看运行中的容器
+  docker images   查看镜像
+  docker build    构建镜像
+  docker stop     停止容器
+  docker rm       删除容器
+  docker rmi      删除镜像`,
+          }
+          output = cheats[args[0]] || `cheat: 没有找到 '${args[0]}' 的速查信息`
+        }
+        break
+      }
+      case 'envsubst': {
+        if (args.length === 0) {
+          output = 'envsubst: 缺少操作数\n用法: envsubst <文本>'
+        } else {
+          const text = args.join(' ')
+          const substituted = text
+            .replace(/\$HOME/g, `/home/${username}`)
+            .replace(/\$USER/g, username)
+            .replace(/\$PWD/g, cwd)
+            .replace(/\$HOSTNAME/g, hostname)
+          output = substituted
+        }
+        break
+      }
+      case 'tty':
+        output = '/dev/pts/0'
+        break
+      case 'who':
+        output = `${username}     pts/0        ${new Date().toLocaleString('zh-CN')}`
+        break
+      case 'w':
+        output = ` 12:34:56 up ${Math.floor(Math.random() * 24)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')},  1 user,  load average: ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+${username}  pts/0    :0               10:00    0.00s  0.02s  0.00s -bash`
+        break
+      case 'last':
+        output = `${username}     pts/0        :0               ${new Date().toLocaleDateString('zh-CN')} 10:00   still logged in
+${username}     pts/0        :0               ${new Date(Date.now() - 86400000).toLocaleDateString('zh-CN')} 14:30 - 16:45  (02:15)
+reboot    system boot  6.15.0-web        ${new Date(Date.now() - 86400000).toLocaleDateString('zh-CN')} 09:00`
+        break
+      case 'wget':
+        if (args.length === 0) {
+          output = 'wget: 缺少URL参数\n用法: wget <URL>'
+        } else {
+          output = `--2024-01-15 12:34:56--  ${args[0]}
+正在连接... 已连接。
+HTTP 请求已发送，正在等待回应... 200 OK
+长度: 未知 [text/html]
+正在保存至: \`index.html\`
+
+index.html           [ <=>                ]   1.23K  --.-KB/s    in 0.001s  
+
+2024-01-15 12:34:56 (1.23 MB/s) - \`index.html\` 已保存 [1234]`
+        }
+        break
       case 'kubectl':
         output = `kubectl: command not found (需要Kubernetes环境)`
         break

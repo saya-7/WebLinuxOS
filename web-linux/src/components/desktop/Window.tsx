@@ -20,6 +20,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
   const [resizing, setResizing] = useState<'bottom' | 'right' | 'left' | 'corner' | null>(null)
   const [isClosing, setIsClosing] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [dragOpacity, setDragOpacity] = useState(1)
   const stateRef = useRef({
     startX: 0,
     startY: 0,
@@ -38,6 +39,47 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     const timer = setTimeout(() => setIsOpening(false), 300)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (dragging) {
+      setDragOpacity(0.85)
+      document.body.style.cursor = 'grabbing'
+      document.body.style.userSelect = 'none'
+    } else {
+      setDragOpacity(1)
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+    return () => {
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+  }, [dragging])
+
+  useEffect(() => {
+    if (resizing) {
+      document.body.style.userSelect = 'none'
+      switch (resizing) {
+        case 'corner':
+          document.body.style.cursor = 'nwse-resize'
+          break
+        case 'bottom':
+          document.body.style.cursor = 'ns-resize'
+          break
+        case 'right':
+        case 'left':
+          document.body.style.cursor = 'ew-resize'
+          break
+      }
+    } else {
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+    return () => {
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+  }, [resizing])
 
   const handleClose = useCallback(() => {
     setIsClosing(true)
@@ -217,10 +259,12 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
       backdropFilter: 'blur(20px) saturate(180%)',
       border: win.focused ? '1px solid rgba(139, 124, 240, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
       transform: 'translateZ(0)',
-      willChange: dragging || resizing ? 'transform' : 'auto',
+      willChange: dragging || resizing ? 'transform, opacity' : 'auto',
       contain: 'strict',
       backfaceVisibility: 'hidden',
       perspective: '1000px',
+      opacity: dragOpacity,
+      transition: dragging || resizing ? 'opacity 0.15s ease' : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     }
 
     if (win.focused && !win.maximized) {
@@ -232,7 +276,7 @@ const Window = memo(function Window({ window: win, children }: WindowProps) {
     }
 
     return baseStyle
-  }, [win, isHovered, dragging, resizing])
+  }, [win, isHovered, dragging, resizing, dragOpacity])
 
   return (
     <div

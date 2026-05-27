@@ -6,7 +6,6 @@ import {
   ClipboardIcon, LightningIcon, SearchIcon
 } from './icons'
 
-// 持久化键
 const STORAGE_KEYS = {
   FILES: 'weblinux-files',
   THEME: 'weblinux-theme',
@@ -18,6 +17,7 @@ const STORAGE_KEYS = {
   DESKTOP_ICONS: 'weblinux-desktop-icons',
   FAVORITES: 'weblinux-favorites',
   PINNED_APPS: 'weblinux-pinned-apps',
+  RECENT_FILES: 'weblinux-recent-files',
 }
 
 // 文件树操作辅助函数
@@ -83,7 +83,7 @@ function traverseTree(nodes: FileNode[], callback: (node: FileNode, parent?: Fil
 }
 
 function copyNodeWithNewParent(node: FileNode, newParentId: string, newId?: string): FileNode {
-  const id = newId || `file-${Date.now()}-copy`
+  const id = newId || `file-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
   const newNode: FileNode = {
     ...node,
     id,
@@ -181,12 +181,14 @@ const defaultFiles: FileNode[] = [
   ] },
 ]
 
-// 从 localStorage 加载数据
 function loadFromStorage<T>(key: string, defaultValue: T): T {
   try {
     const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : defaultValue
-  } catch {
+    if (!stored) return defaultValue
+    const parsed = JSON.parse(stored)
+    return parsed as T
+  } catch (e) {
+    console.warn(`Failed to load from localStorage for key "${key}":`, e)
     return defaultValue
   }
 }
@@ -203,12 +205,12 @@ function debouncedSaveToStorage(key: string, value: unknown, delay: number = 500
   }, delay)
 }
 
-// 保存到 localStorage
 function saveToStorage(key: string, value: unknown) {
   try {
-    localStorage.setItem(key, JSON.stringify(value))
+    const serialized = JSON.stringify(value)
+    localStorage.setItem(key, serialized)
   } catch (e) {
-    console.warn('Failed to save to localStorage:', e)
+    console.warn(`Failed to save to localStorage for key "${key}":`, e)
   }
 }
 
@@ -223,6 +225,7 @@ const initialFiles: FileNode[] = loadFromStorage(STORAGE_KEYS.FILES, defaultFile
 const initialDesktopIcons: DesktopIcon[] = loadFromStorage(STORAGE_KEYS.DESKTOP_ICONS, defaultIcons)
 const initialFavorites: string[] = loadFromStorage(STORAGE_KEYS.FAVORITES, [])
 const initialPinnedApps: string[] = loadFromStorage(STORAGE_KEYS.PINNED_APPS, ['terminal', 'files', 'browser', 'settings'])
+const initialRecentFiles: FileNode[] = loadFromStorage(STORAGE_KEYS.RECENT_FILES, [])
 
 interface FileOperation {
   type: 'add' | 'delete' | 'update' | 'rename' | 'move' | 'copy'
@@ -347,7 +350,7 @@ export const useStore = create<Store>((set, get) => ({
   notifications: [],
   notificationCenterOpen: false,
   searchQuery: '',
-  recentFiles: [],
+  recentFiles: initialRecentFiles,
   favorites: initialFavorites,
   pinnedApps: initialPinnedApps,
 
@@ -383,12 +386,14 @@ export const useStore = create<Store>((set, get) => ({
   },
 
   addRecentFile: (file: FileNode) => {
-    set((s) => ({
-      recentFiles: [
+    set((s) => {
+      const newRecentFiles = [
         file,
         ...s.recentFiles.filter(f => f.id !== file.id)
       ].slice(0, 10)
-    }))
+      saveToStorage(STORAGE_KEYS.RECENT_FILES, newRecentFiles)
+      return { recentFiles: newRecentFiles }
+    })
   },
 
   toggleFavorite: (fileId: string) => {
