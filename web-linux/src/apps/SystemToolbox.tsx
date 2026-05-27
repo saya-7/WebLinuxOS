@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calculator, Globe, Code, FileText, Image, Link, Terminal, Shield, Database } from 'lucide-react'
+import { Globe, Code, Link, Terminal, Shield } from 'lucide-react'
 
 export default function SystemToolbox() {
   const [activeTab, setActiveTab] = useState('tools')

@@ -155,7 +155,7 @@ export default function SystemMonitor() {
         model: 'WebAssembly Virtual CPU'
       }))
 
-      setMemory(prev => ({
+      setMemory(() => ({
         total: 16384,
         used: Math.floor(16384 * newMemUsage / 100),
         free: Math.floor(16384 * (100 - newMemUsage) / 100),
