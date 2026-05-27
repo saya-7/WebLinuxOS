@@ -426,34 +426,7 @@ button, input, textarea {
   transform: scale(0.9);
 }
 
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
+/* 重复动画定义已移除 */
 
 .enhanced-interaction {
   position: relative;
@@ -1067,24 +1040,6 @@ button, input, textarea {
   animation: gradientShift 3s ease infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
@@ -1105,17 +1060,6 @@ button, input, textarea {
   100% {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
   }
 }
 
@@ -2316,15 +2260,6 @@ textarea:focus-visible {
   background: #3d3d3d;
 }
 
-@keyframes taskbarBounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
 .taskbar-button.notify {
   animation: taskbarBounce 0.3s ease-in-out;
 }
@@ -2374,12 +2309,6 @@ textarea:focus-visible {
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @keyframes backgroundShift {
@@ -2677,23 +2606,6 @@ button, input, textarea, select {
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 5px var(--accent);
-  }
-  50% {
-    box-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent);
-  }
-}
 /* Enhanced Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 10px;
@@ -3064,24 +2976,4 @@ a:hover {
 .app-preview-icon {
   font-size: 48px;
   margin-bottom: 12px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
