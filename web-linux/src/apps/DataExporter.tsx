@@ -2,14 +2,20 @@ import { useState, useCallback } from 'react'
 import { Download, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react'
 import { useStore } from '../store'
 
+type BackupSettings = {
+  theme: 'dark' | 'light'
+  currentDesktop: number
+  totalDesktops: number
+}
+
 type BackupData = {
   version: string
   timestamp: number
-  files: any
-  notes: any
-  settings: any
-  activities: any
-  [key: string]: any
+  files?: unknown
+  notes?: unknown
+  settings?: BackupSettings
+  activities?: unknown
+  [key: string]: unknown
 }
 
 export default function DataExporter() {
@@ -26,14 +32,14 @@ export default function DataExporter() {
       const data: BackupData = {
         version: '1.0.0',
         timestamp: Date.now(),
-        files: (store as any).fileSystem || {},
-        notes: (store as any).notes || [],
+        files: store.files || [],
+        notes: (store as unknown as Record<string, unknown>).notes || [],
         settings: {
           theme: store.theme,
           currentDesktop: store.currentDesktop,
           totalDesktops: store.totalDesktops
         },
-        activities: (store as any).activities || []
+        activities: (store as unknown as Record<string, unknown>).activities || []
       }
 
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -66,7 +72,10 @@ export default function DataExporter() {
         if (!data.version) throw new Error('无效的备份文件')
 
         if (data.files) {
-          (store as any).setFileSystem?.(data.files)
+          const storeAsRecord = store as unknown as Record<string, unknown>
+          if (typeof storeAsRecord.setFileSystem === 'function') {
+            (storeAsRecord.setFileSystem as (files: unknown) => void)(data.files)
+          }
         }
         if (data.settings) {
           if (data.settings.theme) store.setTheme(data.settings.theme)

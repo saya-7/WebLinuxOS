@@ -1170,35 +1170,7 @@ export default function Terminal() {
         ].join('\n')
         break
       }
-      case 'password':
-        if (args.length === 0 || args[0] === '--help') {
-          output = [
-            `🔐 密码生成器`,
-            ``,
-            `用法: password [长度]`,
-            ``,
-            `示例:`,
-            `  password          # 生成16位密码`,
-            `  password 32      # 生成32位密码`,
-            ``,
-          ].join('\n')
-        } else {
-          const length = parseInt(args[0]) || 16
-          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
-          let password = ''
-          for (let i = 0; i < Math.min(length, 64); i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length))
-          }
-          output = [
-            `🔐 生成的密码:`,
-            ``,
-            `${password}`,
-            ``,
-            `长度: ${password.length} 字符`,
-            `强度: ${length >= 16 ? '强' : length >= 8 ? '中等' : '弱'}`,
-          ].join('\n')
-        }
-        break
+
       case 'color':
         if (args.length === 0 || args[0] === '--help') {
           output = [

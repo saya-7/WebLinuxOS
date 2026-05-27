@@ -347,7 +347,9 @@ export default function Weather() {
         : [...prev, cityToSave]
       try {
         localStorage.setItem('weblinux-saved-cities', JSON.stringify(newCities))
-      } catch {}
+      } catch (error) {
+        console.error('Failed to save cities to localStorage:', error)
+      }
       return newCities
     })
   }
