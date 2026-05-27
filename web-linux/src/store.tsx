@@ -200,7 +200,12 @@ function debouncedSaveToStorage(key: string, value: unknown, delay: number = 500
     clearTimeout(saveTimeout)
   }
   saveTimeout = setTimeout(() => {
-    saveToStorage(key, value)
+    try {
+      const serialized = JSON.stringify(value)
+      localStorage.setItem(key, serialized)
+    } catch (e) {
+      console.warn(`Failed to save to localStorage for key "${key}":`, e)
+    }
     saveTimeout = null
   }, delay)
 }

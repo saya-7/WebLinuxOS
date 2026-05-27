@@ -1,16 +1,14 @@
 # WebLinuxOS
 
-A complete Linux desktop environment running entirely in the browser. Experience the power of a full operating system with 100+ applications, all accessible from any modern web browser.
+A complete Linux desktop environment running entirely in the browser. Experience the power of a full operating system without any installation required.
 
 ![WebLinuxOS Screenshot](https://raw.githubusercontent.com/saya-ch/WebLinuxOS/main/assets/screenshot.png)
 
 ## Overview
 
-WebLinuxOS is a feature-rich web-based Linux desktop environment that brings the power of a full operating system experience directly to your browser. No installation required - simply visit the live demo and start using it immediately.
+WebLinuxOS is a feature-rich web-based Linux desktop environment that brings the power of a full operating system experience directly to your browser. Built with modern web technologies, it provides a comprehensive desktop experience with window management, file system, terminal emulator, and over 90 applications.
 
-This project demonstrates advanced web technologies including React 19, TypeScript, and modern CSS to create an immersive desktop experience that rivals native applications.
-
-## Key Features
+## Features
 
 ### Desktop Environment
 
@@ -25,62 +23,44 @@ This project demonstrates advanced web technologies including React 19, TypeScri
 ### Terminal Emulator
 
 - **80+ Built-in Commands** - Comprehensive Linux command coverage
-- **Python 3 Runtime** - Full Python support via Pyodide (in-browser execution)
+- **Python 3 Runtime** - Full Python support via Pyodide
 - **Command History** - Persistent history with arrow key navigation
-- **Auto-completion** - Smart tab completion for commands and file paths
+- **Auto-completion** - Smart tab completion for commands and files
 - **Advanced Commands** - dig, nc, file, stat, chmod, chown, hostnamectl, timedatectl, ip, cheat sheets
-- **Fun Commands** - cowsay, fortune, sl, matrix, asciiart
+- **Fun Commands** - cowsay, fortune, sl, matrix for entertainment
 
 ### Virtual File System
 
-- **Persistent Storage** - Data saved to localStorage
-- **Complete File Operations** - Create, read, write, rename, copy, move, delete
-- **Undo/Redo** - Full operation history
+- **Persistent Storage** - Data saved to localStorage automatically
+- **Complete File Operations** - Create, read, write, rename, copy, move, delete with full support
+- **Undo/Redo** - Full operation history with Ctrl+Z and Ctrl+Y
 - **File Search** - Global file search functionality
-- **File Associations** - Open files with appropriate applications
+- **File Associations** - Open files with appropriate applications automatically
 
-### Applications (100+)
+### Applications (90+)
 
-#### System Tools
-File Manager, Terminal, System Monitor, Settings, Software Center, Disk Analyzer, Task Manager, Process Monitor, Network Monitor, Firewall, User Manager, Backup Tool, Archive Manager, System Dashboard, Performance Monitor, Log Viewer, System Health Check, System Toolbox, System Info, Power Manager
+**System Tools**: File Manager, Terminal, System Monitor, Settings, Software Center, Disk Analyzer, Task Manager, Process Monitor, Network Monitor, Firewall, User Manager, Backup Tool, Archive Manager, System Dashboard, Performance Monitor, Log Viewer, System Health Check
 
-#### Development
-Code Editor, Code Playground, Code Studio, API Tester, JSON Formatter, Regex Builder, Regex Tester, GitHub Trending, Code Snippets Manager, Data Visualization, Quick Commands, Command Reference, Task Automation, Developer Toolkit, Code Diff Viewer, Code Reviewer
+**Development**: Code Editor, Code Playground, Code Studio, API Tester, JSON Formatter, Regex Builder, GitHub Trending, Code Snippets Manager, Data Visualization, Quick Commands, Command Reference, Task Automation, Developer Toolkit
 
-#### Office
-Text Editor, Markdown Editor, Spreadsheet, Presentation, Calendar, Todo List, Notes, Mind Map, Sticky Notes Wall, Kanban Board, Project Manager, Task Dashboard, Activity Tracker, Dictionary, Translator, Character Map
+**Office**: Text Editor, Markdown Editor, Spreadsheet, Presentation, Calendar, Todo List, Notes, Mind Map, Sticky Notes Wall, Kanban Board, Project Manager, Task Dashboard, Activity Tracker, Dictionary, Translator, Character Map
 
-#### Network
-Browser, IP & DNS Lookup, Weather, News Reader, Cryptocurrency Tracker, Cloud Sync, Email Client, Chat, AI Helper, Learning Platform
+**Network**: Browser, IP & DNS Lookup, Weather, News Reader, Cryptocurrency Tracker, Cloud Sync, Email Client, Chat, AI Helper, Learning Platform
 
-#### Multimedia
-Music Player, Video Player, Paint, Image Viewer, Music Visualizer, Camera, Sound Recorder, Screen Recorder, PDF Viewer, Whiteboard
+**Multimedia**: Music Player, Video Player, Paint, Image Viewer, Music Visualizer, Camera, Sound Recorder, Screen Recorder, PDF Viewer, Whiteboard
 
-#### Utilities
-Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Currency Converter, Voice Transcriber, Magnifier, Font Viewer, System Toolbox, Focus Mode, Quick Launcher, Clipboard Manager, Clipboard History
+**Utilities**: Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Currency Converter, Voice Transcriber, Magnifier, Font Viewer, System Toolbox, Focus Mode
 
-#### Games
-Snake, Tetris, Virtual Pet, Particle System
-
-### API Integrations
-
-WebLinuxOS integrates several public APIs for real-time data:
-
-- **Open-Meteo** - Weather data and forecasts
-- **ipapi.co** - IP geolocation services
-- **Cloudflare DNS** - DNS query tools
-- **GitHub API** - GitHub trending repositories
-- **ExchangeRate-API** - Currency exchange rates
+**Games**: Snake, Tetris, Virtual Pet, Particle System
 
 ## Technology Stack
 
 - **React 19** - UI component framework with latest features
 - **TypeScript 6** - Type-safe development
-- **Zustand 5** - Lightweight state management
-- **Vite 8** - Lightning-fast build tool
+- **Zustand 5** - State management
+- **Vite 8** - Build tool for fast development
 - **Pyodide 0.26** - In-browser Python runtime
-- **Lucide React** - Consistent icon library
-- **Terser** - Code minification and optimization
+- **Lucide React** - Beautiful icon library
 
 ## Quick Start
 
@@ -108,7 +88,7 @@ npm run deploy
 
 | Shortcut | Action |
 |----------|--------|
-| `Super` | Open launcher |
+| `Super` or `Ctrl+Shift+L` | Open launcher |
 | `Super + T` | Open terminal |
 | `Super + E` | Open file manager |
 | `Super + B` | Open browser |
@@ -123,9 +103,19 @@ npm run deploy
 | `F11` | Toggle fullscreen |
 | `PrintScreen` | Screenshot |
 
+## API Integrations
+
+WebLinuxOS integrates several public APIs for enhanced functionality:
+
+- **Open-Meteo** - Weather data and forecasts
+- **ipapi.co** - IP geolocation services
+- **Cloudflare DNS** - DNS query resolution
+- **GitHub API** - GitHub trending repositories
+- **ExchangeRate-API** - Currency exchange rates
+
 ## Browser Compatibility
 
-- Chrome 90+
+- Chrome 90+ (Recommended)
 - Firefox 88+
 - Safari 14+
 - Edge 90+
@@ -134,42 +124,70 @@ npm run deploy
 
 ```
 web-linux/
-├── public/              # Static assets and manifest
+├── public/              # Static assets
 ├── src/
-│   ├── apps/            # 100+ application components
-│   ├── components/      # Core UI components
-│   │   └── desktop/     # Desktop, Taskbar, StartMenu, WindowManager
-│   ├── icons/          # Custom SVG icons
-│   ├── types/          # TypeScript type definitions
-│   ├── App.tsx         # Main application component
-│   ├── main.tsx        # Entry point
-│   ├── store.tsx       # Zustand state management
-│   ├── apps.tsx        # Application registry
-│   └── index.css       # Global styles
+│   ├── apps/            # Application components (90+ apps)
+│   ├── components/      # UI components
+│   │   └── desktop/     # Desktop environment components
+│   ├── icons/           # Custom icons
+│   ├── types/           # TypeScript type definitions
+│   ├── App.tsx          # Main application component
+│   ├── main.tsx         # Entry point
+│   ├── store.tsx        # Zustand state management
+│   ├── apps.tsx         # Application registry
+│   └── index.css        # Global styles
 ├── index.html
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts
 ```
 
-## Performance Optimizations
+## Performance Optimization
 
-WebLinuxOS implements several performance optimizations:
+WebLinuxOS includes several performance optimizations:
 
-- **Code Splitting** - Each application is loaded on-demand
-- **GPU Acceleration** - CSS transforms and transitions use GPU
-- **Debounced State Updates** - Efficient localStorage persistence
-- **Virtualized Lists** - Large data sets render efficiently
-- **Lazy Loading** - Heavy components load when needed
-- **Content Visibility** - Automatic rendering optimization
+- GPU-accelerated animations and transitions
+- Code splitting for faster initial load
+- Lazy loading for application components
+- Virtualized lists for improved rendering performance
+- Optimized CSS with hardware acceleration
+- FPS-limited particle animations for smooth performance
+- Focus trap for proper keyboard shortcut handling
 
 ## Accessibility
 
-- Screen reader friendly with ARIA labels
 - Keyboard navigation support
+- ARIA labels for screen readers
 - High contrast mode support
-- Focus management
-- Semantic HTML structure
+- Reduced motion preference respected
+- Focus indicators for all interactive elements
+
+## Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Start development server
+npm run build            # Build for production
+
+# Code Quality
+npm run lint             # Run ESLint
+npm run typecheck        # Run TypeScript type checking
+npm run format           # Format code with Prettier
+
+# Deployment
+npm run deploy           # Build and deploy to GitHub Pages
+```
+
+### Building
+
+The project uses Vite for building and includes special configuration for GitHub Pages deployment:
+
+- Automatic code splitting by application
+- Vendor chunking for React, Zustand, and Pyodide
+- CSS minification and optimization
+- Source maps disabled for production
 
 ## Contributing
 
@@ -178,7 +196,7 @@ Contributions are welcome! Please feel free to submit issues and pull requests. 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run tests and linting
+4. Run lint and typecheck
 5. Submit a pull request
 
 ## License
@@ -187,24 +205,17 @@ MIT License - See LICENSE file for details
 
 ## Acknowledgments
 
+Special thanks to the following projects and communities:
+
 - [Lucide Icons](https://lucide.dev/) - Beautiful open-source icons
 - [Pyodide](https://pyodide.org/) - Python in the browser
 - [Open-Meteo](https://open-meteo.com/) - Free weather API
-- [Vite](https://vitejs.dev/) - Next generation frontend tooling
 - All open source contributors
-
-## Support
-
-If you encounter any issues or have suggestions:
-
-- Open an issue on GitHub
-- Check the documentation
-- Join our community discussions
 
 ## Live Demo
 
-**Experience WebLinuxOS**: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
+Visit the live demo at: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
 
 ---
 
-Built with modern web technologies. No installation required. Works everywhere.
+**Status**: Production Ready | **Version**: 4.0.0 | **License**: MIT

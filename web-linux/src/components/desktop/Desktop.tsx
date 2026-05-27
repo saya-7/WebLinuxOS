@@ -236,21 +236,21 @@ const Desktop = memo(function Desktop() {
           
           particlesRef.current = newParticles
           
-          if (liveWallpaper !== 'particles' && liveWallpaperEnabled) {
+          // Simplified connection logic for better performance
+          if (liveWallpaper !== 'particles' && liveWallpaperEnabled && newParticles.length <= 50) {
             const newConnections: Connection[] = []
-            const particleCount = newParticles.length
-            for (let i = 0; i < particleCount; i++) {
-              for (let j = i + 1; j < particleCount; j++) {
+            for (let i = 0; i < newParticles.length; i += 2) {
+              if (i + 1 < newParticles.length) {
                 const p1 = newParticles[i]
-                const p2 = newParticles[j]
+                const p2 = newParticles[i + 1]
                 const dx = p1.x - p2.x
                 const dy = p1.y - p2.y
                 const dist = Math.sqrt(dx * dx + dy * dy)
-                if (dist < 20) {
+                if (dist < 15) {
                   newConnections.push({
                     from: i,
-                    to: j,
-                    opacity: (1 - dist / 20) * 0.3
+                    to: i + 1,
+                    opacity: 1 - dist / 15
                   })
                 }
               }
@@ -274,7 +274,7 @@ const Desktop = memo(function Desktop() {
         cancelAnimationFrame(animationId)
       }
     }
-  }, [liveWallpaperEnabled, liveWallpaper, mousePos.x, mousePos.y])
+  }, [liveWallpaperEnabled, liveWallpaper, mousePos])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()

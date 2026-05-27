@@ -163,7 +163,16 @@ const App = memo(function App() {
         return
       }
 
-      // 桌面切换快捷键
+      // Focus trap check - don't process shortcuts when typing in input fields
+      const activeElement = document.activeElement
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true')) {
+        if (e.key === 'Escape') {
+          (activeElement as HTMLElement).blur()
+        }
+        return
+      }
+
+      // Desktop switching shortcuts
       if (e.ctrlKey && e.altKey && e.key >= '1' && e.key <= '9') {
         e.preventDefault()
         const desktopNum = parseInt(e.key)
@@ -211,7 +220,7 @@ const App = memo(function App() {
         return
       }
 
-      // 移动窗口到上一个桌面并跟随
+      // Move window to previous desktop and follow
       if (e.ctrlKey && e.shiftKey && e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault()
         const { moveWindowToPrevDesktop } = useStore.getState()
@@ -219,6 +228,7 @@ const App = memo(function App() {
         return
       }
 
+      // Switch to same app window (Ctrl+Shift+ArrowUp/Down)
       if (e.ctrlKey && e.shiftKey && e.key === 'ArrowUp') {
         e.preventDefault()
         const focusedWindow = getFocusedWindow()
@@ -241,6 +251,7 @@ const App = memo(function App() {
         return
       }
 
+      // Alt+Tab window switching
       if (e.altKey && e.key === 'Tab') {
         e.preventDefault()
         cycleWindows(false)
@@ -253,6 +264,7 @@ const App = memo(function App() {
         return
       }
 
+      // Process system shortcuts
       for (const { config, action } of Object.values(systemShortcuts)) {
         if (matchesShortcut(config, isMod, isShift, isAlt, key)) {
           e.preventDefault()
@@ -261,6 +273,7 @@ const App = memo(function App() {
         }
       }
 
+      // Process app launch shortcuts
       if (isMod) {
         for (const { config, appId } of Object.values(appShortcuts)) {
           if (matchesShortcut(config, isMod, isShift, isAlt, key)) {
