@@ -34,24 +34,6 @@ export default function FocusMode() {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }
 
-  const startTimer = useCallback(() => {
-    if (isRunning) {
-      if (timerRef.current) clearInterval(timerRef.current)
-      setIsRunning(false)
-    } else {
-      setIsRunning(true)
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleTimerComplete()
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-  }, [isRunning])
-
   const handleTimerComplete = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current)
     setIsRunning(false)
@@ -76,6 +58,24 @@ export default function FocusMode() {
       audioRef.current.play()
     }
   }, [mode, cyclesCompleted])
+
+  const startTimer = useCallback(() => {
+    if (isRunning) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      setIsRunning(false)
+    } else {
+      setIsRunning(true)
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            handleTimerComplete()
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+  }, [isRunning, handleTimerComplete])
 
   const switchMode = useCallback((newMode: 'pomodoro' | 'shortBreak' | 'longBreak') => {
     setMode(newMode)
@@ -189,13 +189,13 @@ export default function FocusMode() {
             borderRadius: '12px'
           }}>
             {[
-              { id: 'pomodoro', label: '专注', icon: '🍅' },
-              { id: 'shortBreak', label: '短休息', icon: '☕' },
-              { id: 'longBreak', label: '长休息', icon: '😌' }
+              { id: 'pomodoro' as const, label: '专注', icon: '🍅' },
+              { id: 'shortBreak' as const, label: '短休息', icon: '☕' },
+              { id: 'longBreak' as const, label: '长休息', icon: '😌' }
             ].map(({ id, label, icon }) => (
               <button
                 key={id}
-                onClick={() => switchMode(id as any)}
+                onClick={() => switchMode(id)}
                 style={{
                   padding: '10px 20px',
                   border: 'none',

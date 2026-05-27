@@ -1148,7 +1148,7 @@ export default function Terminal() {
           }
         }
         break
-      case 'uuid':
+      case 'uuid': {
         const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
           const r = Math.random() * 16 | 0
           const v = c === 'x' ? r : (r & 0x3 | 0x8)
@@ -1163,6 +1163,7 @@ export default function Terminal() {
           `类型: UUID v4 (随机生成)`,
         ].join('\n')
         break
+      }
       case 'password':
         if (args.length === 0 || args[0] === '--help') {
           output = [

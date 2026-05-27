@@ -30,7 +30,7 @@ const courses: Course[] = [
       {
         id: 'js-1',
         title: '变量与数据类型',
-        content: '# JavaScript 变量\n\nJavaScript 有三种声明变量的方式：var、let 和 const。\n\n## let 和 const\n- `let` 用于声明可重新赋值的变量\n- `const` 用于声明常量，值不能改变\n\n```javascript\nlet name = \"WebLinux\"\nconst PI = 3.14159\n```',
+        content: '# JavaScript 变量\n\nJavaScript 有三种声明变量的方式：var、let 和 const。\n\n## let 和 const\n- `let` 用于声明可重新赋值的变量\n- `const` 用于声明常量，值不能改变\n\n```javascript\nlet name = "WebLinux"\nconst PI = 3.14159\n```',
         code: '// 尝试在这里写一些代码\nlet message = "Hello, WebLinux!";\nconsole.log(message);',
         completed: true
       },

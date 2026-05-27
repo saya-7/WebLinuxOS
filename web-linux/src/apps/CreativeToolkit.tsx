@@ -90,7 +90,7 @@ const CreativeToolkit = () => {
       } else {
         setBase64Output(decodeURIComponent(escape(atob(base64Input))))
       }
-    } catch (e) {
+    } catch {
       setBase64Output('错误：无效的输入')
     }
   }
@@ -126,7 +126,7 @@ UTC 时间: ${date.toUTCString()}
 日期: ${date.toLocaleDateString('zh-CN')}
 时间: ${date.toLocaleTimeString('zh-CN')}
       `.trim())
-    } catch (e) {
+    } catch {
       setTimestampOutput('错误：无效的时间戳')
     }
   }

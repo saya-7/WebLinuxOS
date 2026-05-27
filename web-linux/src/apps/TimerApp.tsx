@@ -89,13 +89,13 @@ const TimerApp = () => {
         }}
       >
         {[
-          { id: 'countdown', label: '⏱️ 倒计时' },
-          { id: 'stopwatch', label: '⏲️ 秒表' },
+          { id: 'countdown' as const, label: '⏱️ 倒计时' },
+          { id: 'stopwatch' as const, label: '⏲️ 秒表' },
         ].map((m) => (
           <button
             key={m.id}
             onClick={() => {
-              setMode(m.id as any)
+              setMode(m.id)
               reset()
             }}
             style={{

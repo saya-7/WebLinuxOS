@@ -174,7 +174,7 @@ export default function ImageOptimizer() {
           <label style={{ fontSize: 13, color: 'var(--text-secondary)' }}>格式:</label>
           <select
             value={format}
-            onChange={(e) => setFormat(e.target.value as any)}
+            onChange={(e) => setFormat(e.target.value as 'jpeg' | 'png' | 'webp')}
             style={{
               padding: '6px 8px',
               borderRadius: 6,

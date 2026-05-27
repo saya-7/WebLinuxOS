@@ -15,6 +15,20 @@ const TOOLS: ToolTab[] = [
   { id: 'color', name: '颜色转换', icon: '🎨' },
 ]
 
+const ColorPreview = ({ output }: { output: string }) => {
+  const hexMatch = output.match(/#[a-fA-F0-9]{6}/)
+  return hexMatch ? (
+    <div style={{ 
+      width: '100%', 
+      height: '80px', 
+      background: hexMatch[0],
+      borderRadius: '8px',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+      marginBottom: '12px'
+    }} />
+  ) : null
+}
+
 export default function DevTools() {
   const [activeTab, setActiveTab] = useState('json')
   const [input, setInput] = useState('')
@@ -35,10 +49,11 @@ export default function DevTools() {
     try {
       let result = ''
       switch (activeTab) {
-        case 'json':
+        case 'json': {
           const parsed = JSON.parse(input)
           result = JSON.stringify(parsed, null, 2)
           break
+        }
         case 'base64':
           try {
             result = atob(input)
@@ -53,11 +68,12 @@ export default function DevTools() {
             result = encodeURIComponent(input)
           }
           break
-        case 'hash':
+        case 'hash': {
           const encoder = new TextEncoder()
           const data = encoder.encode(input)
           result = Array.from(new Uint8Array(data)).map(b => b.toString(16).padStart(2, '0')).join('')
           break
+        }
         case 'uuid':
           result = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             const r = (Math.random() * 16) | 0
@@ -65,7 +81,7 @@ export default function DevTools() {
             return v.toString(16)
           })
           break
-        case 'color':
+        case 'color': {
           const hexMatch = input.match(/^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/)
           if (hexMatch) {
             const hex = hexMatch[1]
@@ -83,6 +99,7 @@ export default function DevTools() {
             }
           }
           break
+        }
       }
       setOutput(result)
     } catch (e) {
@@ -94,7 +111,7 @@ export default function DevTools() {
   const rgbToHsl = (r: number, g: number, b: number): string => {
     r /= 255; g /= 255; b /= 255
     const max = Math.max(r, g, b), min = Math.min(r, g, b)
-    let h = 0, s = 0, l = (max + min) / 2
+    let h = 0, s = 0; const l = (max + min) / 2
     if (max !== min) {
       const d = max - min
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
@@ -127,20 +144,6 @@ export default function DevTools() {
       })
     )
     setOutput(uuids.join('\n'))
-  }
-
-  const ColorPreview = () => {
-    const hexMatch = output.match(/#[a-fA-F0-9]{6}/)
-    return hexMatch ? (
-      <div style={{ 
-        width: '100%', 
-        height: '80px', 
-        background: hexMatch[0],
-        borderRadius: '8px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        marginBottom: '12px'
-      }} />
-    ) : null
   }
 
   const currentToolConfig = useMemo(() => {
@@ -361,7 +364,7 @@ export default function DevTools() {
               </button>
             )}
           </div>
-          {currentToolConfig.showPreview && <ColorPreview />}
+          {currentToolConfig.showPreview && <ColorPreview output={output} />}
           {error ? (
             <div style={{ 
               flex: 1,

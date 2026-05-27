@@ -31,7 +31,7 @@ export default memo(function ClipboardHistory() {
           
           const type: 'text' | 'code' | 'url' = 
             /^https?:\/\//.test(text) ? 'url' :
-            /[{}\[\]();]/.test(text) ? 'code' : 'text'
+            /[{}[\]();]/.test(text) ? 'code' : 'text'
           
           const newItem: ClipboardItem = {
             id: Date.now().toString(),
@@ -140,7 +140,7 @@ export default memo(function ClipboardHistory() {
         
         <select
           value={filter}
-          onChange={(e) => setFilter(e.target.value as any)}
+          onChange={(e) => setFilter(e.target.value as 'all' | 'starred' | 'text' | 'code' | 'url')}
           style={{
             padding: '8px 12px',
             background: 'var(--input-bg)',

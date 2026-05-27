@@ -1,5 +1,9 @@
 import { useState, useRef } from 'react'
 
+interface NodeConfig {
+  [key: string]: string | number | boolean | undefined
+}
+
 interface Node {
   id: string
   type: 'trigger' | 'action' | 'condition' | 'output'
@@ -7,7 +11,7 @@ interface Node {
   y: number
   label: string
   icon: string
-  config?: any
+  config?: NodeConfig
 }
 
 interface Connection {

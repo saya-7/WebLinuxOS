@@ -21,6 +21,49 @@ interface NewsItem {
   time: string
 }
 
+interface StatCardProps {
+  icon: string
+  label: string
+  value: string | number
+  color: string
+  progress?: number
+}
+
+function StatCard({ icon, label, value, color, progress }: StatCardProps) {
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+      borderRadius: 16,
+      padding: 20,
+      border: '1px solid rgba(255,255,255,0.08)',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontSize: 24 }}>{icon}</span>
+        <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>{label}</span>
+      </div>
+      <div style={{ fontSize: 32, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
+        {value}
+      </div>
+      {progress !== undefined && (
+        <div style={{
+          height: 6,
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${progress}%`,
+            background: `linear-gradient(90deg, ${color} 0%, ${color}88 100%)`,
+            borderRadius: 3,
+            transition: 'width 0.5s ease',
+          }} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function SmartDashboard() {
   const [weather, setWeather] = useState<WeatherData>({
     temp: 22,
@@ -82,39 +125,6 @@ export default function SmartDashboard() {
     if (hour < 18) return '下午好 🌤️'
     return '晚上好 🌆'
   }
-  
-  const StatCard = ({ icon, label, value, color, progress }: any) => (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
-      borderRadius: 16,
-      padding: 20,
-      border: '1px solid rgba(255,255,255,0.08)',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontSize: 24 }}>{icon}</span>
-        <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>{label}</span>
-      </div>
-      <div style={{ fontSize: 32, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
-        {value}
-      </div>
-      {progress !== undefined && (
-        <div style={{
-          height: 6,
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: 3,
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${progress}%`,
-            background: `linear-gradient(90deg, ${color} 0%, ${color}88 100%)`,
-            borderRadius: 3,
-            transition: 'width 0.5s ease',
-          }} />
-        </div>
-      )}
-    </div>
-  )
   
   return (
     <div 

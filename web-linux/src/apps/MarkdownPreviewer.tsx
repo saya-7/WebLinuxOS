@@ -22,7 +22,7 @@ const MarkdownPreviewer = () => {
       // Inline code
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       // Links
-      .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       // Blockquotes
       .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
       // Lists

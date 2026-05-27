@@ -15,11 +15,26 @@ const TOOLS = [
   { id: 'random', name: '随机数生成', icon: '🎲', category: '实用工具' },
 ]
 
+interface ToolOptions {
+  size?: number
+  algorithm?: string
+  format?: string
+  decode?: boolean
+  length?: number
+  uppercase?: boolean
+  lowercase?: boolean
+  numbers?: boolean
+  symbols?: boolean
+  min?: number
+  max?: number
+  count?: number
+}
+
 export default memo(function SystemToolbox() {
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
-  const [options] = useState<Record<string, any>>({})
+  const [options] = useState<ToolOptions>({})
 
   const generateUUID = useCallback(() => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -79,7 +94,8 @@ export default memo(function SystemToolbox() {
       const b = parseInt(hex.substring(4, 6), 16) / 255
       const max = Math.max(r, g, b)
       const min = Math.min(r, g, b)
-      let h = 0, s = 0, l = (max + min) / 2
+      let h = 0, s = 0
+      const l = (max + min) / 2
       if (max !== min) {
         const d = max - min
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min)

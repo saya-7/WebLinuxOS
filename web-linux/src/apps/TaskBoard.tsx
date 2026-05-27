@@ -544,7 +544,7 @@ export default function TaskBoard() {
                   </label>
                   <select
                     value={newTask.status}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as any }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as 'todo' | 'inprogress' | 'done' }))}
                     style={{
                       width: '100%',
                       padding: '10px 14px',
@@ -568,7 +568,7 @@ export default function TaskBoard() {
                   </label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as any }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' }))}
                     style={{
                       width: '100%',
                       padding: '10px 14px',

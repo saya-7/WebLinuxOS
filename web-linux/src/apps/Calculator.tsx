@@ -11,7 +11,7 @@ const InteractiveButton = ({ style, children, onClick, disabled = false }: {
   const [isHovered, setIsHovered] = useState(false)
   
   const getButtonStyle = () => {
-    let baseStyle = { ...style }
+    const baseStyle = { ...style }
     
     if (isHovered && !disabled) {
       baseStyle.transform = 'translateY(-2px)'
@@ -578,22 +578,18 @@ export default function Calculator() {
 
   const handleMemoryAdd = useCallback(() => {
     if (display === 'Error') return
-    try {
-      const val = parseFloat(display)
-      if (!isNaN(val)) {
-        setMemory(prev => prev + val)
-      }
-    } catch {}
+    const val = parseFloat(display)
+    if (!isNaN(val)) {
+      setMemory(prev => prev + val)
+    }
   }, [display])
 
   const handleMemorySubtract = useCallback(() => {
     if (display === 'Error') return
-    try {
-      const val = parseFloat(display)
-      if (!isNaN(val)) {
-        setMemory(prev => prev - val)
-      }
-    } catch {}
+    const val = parseFloat(display)
+    if (!isNaN(val)) {
+      setMemory(prev => prev - val)
+    }
   }, [display])
 
   const handleMemoryRecall = useCallback(() => {

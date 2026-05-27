@@ -1,12 +1,13 @@
 import { useState, memo } from 'react'
 import { useStore } from '../store'
+import type { Notification } from '../types'
 import { X, Bell, Check, Trash2, Clock, AlertCircle } from 'lucide-react'
 
 const NotificationItem = memo(function NotificationItem({ 
   notification, 
   onRemove 
 }: { 
-  notification: any
+  notification: Notification
   onRemove: () => void 
 }) {
   const getTypeStyles = (type: string) => {
@@ -142,7 +143,7 @@ const NotificationItem = memo(function NotificationItem({
           opacity: 0.7
         }}>
           <Clock size={10} />
-          <span>{formatTime(notification.timestamp)}</span>
+          <span>{formatTime(notification.timestamp || new Date())}</span>
         </div>
       </div>
     </div>

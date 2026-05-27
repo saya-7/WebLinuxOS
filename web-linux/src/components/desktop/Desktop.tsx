@@ -47,10 +47,10 @@ const DesktopIcon = memo(function DesktopIcon({
   onClick, 
   onDoubleClick 
 }: { 
-  icon: any
+  icon: { id: string; x: number; y: number; name: string; icon: React.ReactNode }
   selectedIconId: string | null
-  onClick: (e: React.MouseEvent) => void
-  onDoubleClick: (e: React.MouseEvent) => void
+  onClick: (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void
+  onDoubleClick: (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void
 }) {
   return (
     <div
@@ -62,9 +62,9 @@ const DesktopIcon = memo(function DesktopIcon({
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           if (selectedIconId === icon.id) {
-            onDoubleClick(e as any)
+            onDoubleClick(e)
           } else {
-            onClick(e as any)
+            onClick(e)
           }
         }
         if (e.key === 'Delete' && selectedIconId === icon.id) {
@@ -82,12 +82,24 @@ const DesktopIcon = memo(function DesktopIcon({
   )
 })
 
+interface MenuItem {
+  label: string
+  icon: string
+  action: () => void
+}
+
+interface MenuSeparator {
+  type: 'separator'
+}
+
+type MenuEntry = MenuItem | MenuSeparator
+
 const ContextMenu = memo(function ContextMenu({ 
   menuItems, 
   position, 
   onClose 
 }: { 
-  menuItems: any[]
+  menuItems: MenuEntry[]
   position: { x: number; y: number }
   onClose: () => void
 }) {
@@ -127,18 +139,6 @@ const ContextMenu = memo(function ContextMenu({
     </div>
   )
 })
-
-interface MenuItem {
-  label: string
-  icon: string
-  action: () => void
-}
-
-interface MenuSeparator {
-  type: 'separator'
-}
-
-type MenuEntry = MenuItem | MenuSeparator
 
 const Desktop = memo(function Desktop() {
   const desktopIcons = useStore((s) => s.desktopIcons)
