@@ -54,7 +54,7 @@ WebLinuxOS is a comprehensive web-based Linux desktop environment that brings th
 
 **Multimedia**: Music Player, Video Player, Paint, Image Viewer, Music Visualizer, Camera, Sound Recorder, Screen Recorder, PDF Viewer, Whiteboard, Creative Toolkit
 
-**Utilities**: Calculator, Password Manager, Smart Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Currency Converter, Voice Transcriber, Magnifier, System Toolbox, Focus Mode, Quick Launcher, Timer App, Clipboard Manager, Clipboard History, Random Tools, Text Formatter, Web Services Toolbox
+**Utilities**: Calculator, Password Manager, Smart Password Manager, Password Security Center, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Currency Converter, Voice Transcriber, Magnifier, System Toolbox, Focus Mode, Quick Launcher, Timer App, Clipboard Manager, Clipboard History, Random Tools, Text Formatter, Web Services Toolbox
 
 **Games**: Snake, Tetris, Virtual Pet, Particle System
 
@@ -71,6 +71,7 @@ WebLinuxOS is a comprehensive web-based Linux desktop environment that brings th
 
 ### Recently Added Applications
 
+- **Password Security Center** - Password strength checker and secure password generator
 - **Quick Markdown Preview** - Fast markdown preview with live rendering
 - **Notes App** - Full-featured note-taking with tags and search
 - **Clipboard Manager** - Automatic clipboard history with search and organization
@@ -105,6 +106,7 @@ npm run deploy
 
 ## What's New in Latest Update
 
+- Added **Password Security Center** - comprehensive password strength checker and secure password generator
 - Added markdown preview functionality with `marked` library integration
 - Enhanced notes application with tags and search
 - Improved clipboard manager with auto-tracking
@@ -253,4 +255,4 @@ Visit the live demo at: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.
 
 ---
 
-**Status**: Production Ready | **Version**: 4.1.0 | **License**: MIT
+**Status**: Production Ready | **Version**: 4.3.0 | **License**: MIT
