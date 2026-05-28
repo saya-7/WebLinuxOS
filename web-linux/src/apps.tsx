@@ -226,7 +226,22 @@ function FlashcardsIcon() {
   );
 }
 
+function SmartProjectHubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <line x1="9" y1="3" x2="9" y2="21" />
+      <circle cx="6" cy="6" r="1" fill="currentColor" />
+      <circle cx="15" cy="6" r="1" fill="currentColor" />
+      <circle cx="15" cy="15" r="1" fill="currentColor" />
+      <circle cx="6" cy="15" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
 export const appRegistry: AppDefinition[] = [
+  { id: 'smart-project-hub', name: '智能项目管理', icon: <SmartProjectHubIcon />, component: 'SmartProjectHub', category: 'office', defaultWidth: 1200, defaultHeight: 850, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
   { id: 'flashcards', name: '学习卡片', icon: <FlashcardsIcon />, component: 'Flashcards', category: 'utilities', defaultWidth: 1000, defaultHeight: 800, minWidth: 700, minHeight: 600, resizable: true, multiple: false },
   { id: 'daily-inspo', name: '每日灵感', icon: <SparklesIcon />, component: 'DailyInspo', category: 'utilities', defaultWidth: 700, defaultHeight: 850, minWidth: 500, minHeight: 600, resizable: true, multiple: false },
   { id: 'ai-code-assistant', name: 'AI代码助手', icon: <CpuIcon />, component: 'AICodeAssistant', category: 'development', defaultWidth: 1100, defaultHeight: 800, minWidth: 800, minHeight: 500, resizable: true, multiple: false },
