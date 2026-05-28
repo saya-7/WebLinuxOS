@@ -354,4 +354,6 @@ export const appRegistry: AppDefinition[] = [
   { id: 'system-toolbox', name: '系统工具箱', icon: '🔧', component: 'SystemToolbox', category: 'utilities', defaultWidth: 900, defaultHeight: 700, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'dev-tools', name: '开发者工具箱', icon: <WrenchIcon />, component: 'DevTools', category: 'development', defaultWidth: 800, defaultHeight: 700, minWidth: 600, minHeight: 500, resizable: true, multiple: false },
   { id: 'regex-builder', name: '正则表达式构建器', icon: <RegexIcon />, component: 'RegexBuilder', category: 'development', defaultWidth: 900, defaultHeight: 800, minWidth: 700, minHeight: 600, resizable: true, multiple: false },
+  { id: 'ai-generator', name: 'AI文本生成器', icon: '🤖', component: 'AIGenerator', category: 'utilities', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
+  { id: 'collaborative-whiteboard', name: '实时协作白板', icon: '🎨', component: 'CollaborativeWhiteboard', category: 'office', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
 ]
