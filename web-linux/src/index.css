@@ -165,7 +165,7 @@ button, input, textarea {
 @keyframes windowOpen {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(10px);
+    transform: scale(0.92) translateY(12px);
   }
   to {
     opacity: 1;
@@ -180,7 +180,7 @@ button, input, textarea {
   }
   to {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.92);
   }
 }
 
@@ -2352,17 +2352,13 @@ textarea:focus-visible {
     transform: translate(0, 0) scale(1);
     opacity: 0.4;
   }
-  25% {
-    transform: translate(30px, -20px) scale(1.1);
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
     opacity: 0.6;
   }
-  50% {
-    transform: translate(-20px, 30px) scale(0.95);
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
     opacity: 0.5;
-  }
-  75% {
-    transform: translate(20px, 10px) scale(1.05);
-    opacity: 0.7;
   }
 }
 
