@@ -186,9 +186,9 @@ export default function NetworkSpeedTest() {
 
   return (
     <div className="app-container" style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 0 }}>
-      <div style={{ padding: 20, borderBottom: '1px solid var(--border-color)', textAlign: 'center' }}>
+      <div style={{ padding: 20, borderBottom: '1px solid var(--window-border)', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
-          <Wifi size={32} style={{ color: 'var(--accent-color)' }} />
+          <Wifi size={32} style={{ color: 'var(--accent)' }} />
           <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>网络速度测试</h2>
         </div>
 
@@ -197,7 +197,7 @@ export default function NetworkSpeedTest() {
           fontWeight: 200,
           margin: '20px 0',
           fontFamily: 'monospace',
-          color: phase === 'idle' ? 'var(--text-primary)' : 'var(--accent-color)',
+          color: phase === 'idle' ? 'var(--text-primary)' : 'var(--accent)',
         }}>
           {formatSpeed(testing ? currentSpeed : results[0]?.download || 0)}
         </div>
@@ -224,7 +224,7 @@ export default function NetworkSpeedTest() {
             </div>
           )}
           {phase === 'done' && results[0] && (
-            <div style={{ fontSize: 14, color: 'var(--accent-color)', fontWeight: 600 }}>
+            <div style={{ fontSize: 14, color: 'var(--accent)', fontWeight: 600 }}>
               测试完成! 您的网络 {getSpeedRating(results[0].download).label}
             </div>
           )}
@@ -234,14 +234,14 @@ export default function NetworkSpeedTest() {
           <div style={{ marginBottom: 20 }}>
             <div style={{
               height: 6,
-              background: 'var(--bg-secondary)',
+              background: '#2a2a3e',
               borderRadius: 3,
               overflow: 'hidden',
             }}>
               <div style={{
                 height: '100%',
                 width: `${progress}%`,
-                background: 'var(--accent-color)',
+                background: 'var(--accent)',
                 transition: 'width 0.3s ease',
               }} />
             </div>
@@ -252,7 +252,7 @@ export default function NetworkSpeedTest() {
           onClick={testing ? stopTest : runTest}
           style={{
             padding: '12px 32px',
-            background: testing ? '#e74c3c' : 'var(--button-primary)',
+            background: testing ? '#e74c3c' : 'var(--accent)',
             border: 'none',
             borderRadius: 8,
             color: 'white',
@@ -279,12 +279,12 @@ export default function NetworkSpeedTest() {
       </div>
 
       {results[0] && (
-        <div style={{ padding: 20, borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ padding: 20, borderBottom: '1px solid var(--window-border)' }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>测试结果</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             <div style={{
               padding: 16,
-              background: 'var(--bg-secondary)',
+              background: '#2a2a3e',
               borderRadius: 8,
               textAlign: 'center',
             }}>
@@ -296,7 +296,7 @@ export default function NetworkSpeedTest() {
 
             <div style={{
               padding: 16,
-              background: 'var(--bg-secondary)',
+              background: '#2a2a3e',
               borderRadius: 8,
               textAlign: 'center',
             }}>
@@ -308,7 +308,7 @@ export default function NetworkSpeedTest() {
 
             <div style={{
               padding: 16,
-              background: 'var(--bg-secondary)',
+              background: '#2a2a3e',
               borderRadius: 8,
               textAlign: 'center',
             }}>
@@ -329,7 +329,7 @@ export default function NetworkSpeedTest() {
               onClick={clearHistory}
               style={{
                 padding: '6px 12px',
-                background: 'var(--button-secondary)',
+                background: '#3a3a4e',
                 border: 'none',
                 borderRadius: 4,
                 cursor: 'pointer',
@@ -346,7 +346,7 @@ export default function NetworkSpeedTest() {
                 key={i}
                 style={{
                   padding: 12,
-                  background: 'var(--bg-secondary)',
+                  background: '#2a2a3e',
                   borderRadius: 6,
                   display: 'flex',
                   justifyContent: 'space-between',

@@ -141,13 +141,13 @@ export default function CryptoTracker() {
   }
 
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%)' }}>
+    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'var(--window-bg)' }}>
       {/* Header */}
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--window-border)', background: 'var(--titlebar-bg)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <div>
-            <h2 style={{ color: '#fff', margin: 0, fontSize: '20px' }}>🪙 加密货币追踪器</h2>
-            <p style={{ color: '#888', margin: '4px 0 0 0', fontSize: '12px' }}>
+            <h2 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '20px' }}>🪙 加密货币追踪器</h2>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: '12px' }}>
               {lastUpdated ? `最后更新: ${formatDate(lastUpdated)}` : '加载中...'}
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function CryptoTracker() {
               padding: '8px 16px',
               borderRadius: '8px',
               border: 'none',
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              background: 'var(--accent)',
               color: '#fff',
               cursor: 'pointer',
               fontSize: '12px',
@@ -179,9 +179,9 @@ export default function CryptoTracker() {
             width: '100%',
             padding: '10px 14px',
             borderRadius: '10px',
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.05)',
-            color: '#fff',
+            border: '1px solid var(--window-border)',
+            background: '#2a2a3e',
+            color: 'var(--text-primary)',
             fontSize: '14px',
             outline: 'none'
           }}
@@ -190,11 +190,11 @@ export default function CryptoTracker() {
 
       {/* Portfolio Summary */}
       {Object.keys(portfolio).length > 0 && (
-        <div style={{ padding: '16px 20px', background: 'rgba(240, 147, 251, 0.1)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '16px 20px', background: 'var(--accent-bg)', borderBottom: '1px solid var(--window-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>💼 投资组合价值</div>
-              <div style={{ color: '#fff', fontSize: '24px', fontWeight: '700' }}>{formatCurrency(portfolioValue)}</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginBottom: '4px' }}>💼 投资组合价值</div>
+              <div style={{ color: 'var(--text-primary)', fontSize: '24px', fontWeight: '700' }}>{formatCurrency(portfolioValue)}</div>
             </div>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function CryptoTracker() {
         {/* Portfolio Section */}
         {Object.keys(portfolio).length > 0 && (
           <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ color: '#fff', margin: '0 0 12px 0', fontSize: '14px' }}>📊 我的持仓</h3>
+            <h3 style={{ color: 'var(--text-primary)', margin: '0 0 12px 0', fontSize: '14px' }}>📊 我的持仓</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {Object.entries(portfolio).map(([id, amount]) => {
                 const crypto = cryptos.find(c => c.id === id)
@@ -215,13 +215,13 @@ export default function CryptoTracker() {
                   <div
                     key={id}
                     style={{
-                      background: 'rgba(255,255,255,0.05)',
+                      background: '#2a2a3e',
                       borderRadius: '12px',
                       padding: '14px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      border: '1px solid rgba(255,255,255,0.08)'
+                      border: '1px solid var(--window-border)'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -229,13 +229,13 @@ export default function CryptoTracker() {
                         <img src={crypto.image} alt={crypto.name} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                       )}
                       <div>
-                        <div style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{crypto.name}</div>
-                        <div style={{ color: '#888', fontSize: '12px' }}>{amount} {crypto.symbol}</div>
+                        <div style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '14px' }}>{crypto.name}</div>
+                        <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{amount} {crypto.symbol}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ color: '#fff', fontWeight: '600' }}>{formatCurrency(value)}</div>
+                        <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{formatCurrency(value)}</div>
                         <div style={{ 
                           color: crypto.change24h >= 0 ? '#4ade80' : '#f87171',
                           fontSize: '12px'
@@ -267,7 +267,7 @@ export default function CryptoTracker() {
 
         {/* Market Data */}
         <div>
-          <h3 style={{ color: '#fff', margin: '0 0 12px 0', fontSize: '14px' }}>🌍 市场行情</h3>
+          <h3 style={{ color: 'var(--text-primary)', margin: '0 0 12px 0', fontSize: '14px' }}>🌍 市场行情</h3>
           
           {loading ? (
             <div style={{ 
@@ -276,7 +276,7 @@ export default function CryptoTracker() {
               alignItems: 'center', 
               justifyContent: 'center',
               padding: '40px',
-              color: '#888'
+              color: 'var(--text-secondary)'
             }}>
               <div style={{ fontSize: '32px', marginBottom: '8px', animation: 'spin 1s linear infinite' }}>🪙</div>
               <div>加载中...</div>
@@ -299,7 +299,7 @@ export default function CryptoTracker() {
                   padding: '8px 24px',
                   border: 'none',
                   borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  background: 'var(--accent)',
                   color: '#fff',
                   cursor: 'pointer'
                 }}
@@ -314,21 +314,21 @@ export default function CryptoTracker() {
                   key={crypto.id}
                   onClick={() => setSelectedCrypto(crypto)}
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
+                    background: '#2a2a3e',
                     borderRadius: '12px',
                     padding: '14px',
                     cursor: 'pointer',
                     transition: 'background 0.2s ease',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    border: '1px solid var(--window-border)',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                    e.currentTarget.style.background = '#3a3a4e'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                    e.currentTarget.style.background = '#2a2a3e'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -336,13 +336,13 @@ export default function CryptoTracker() {
                       <img src={crypto.image} alt={crypto.name} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
                     )}
                     <div>
-                      <div style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{crypto.name}</div>
-                      <div style={{ color: '#888', fontSize: '12px' }}>{crypto.symbol}</div>
+                      <div style={{ color: 'var(--text-primary)', fontWeight: '600', fontSize: '14px' }}>{crypto.name}</div>
+                      <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{crypto.symbol}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ color: '#fff', fontWeight: '600' }}>{formatCurrency(crypto.price)}</div>
+                      <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{formatCurrency(crypto.price)}</div>
                       <div style={{ 
                         color: crypto.change24h >= 0 ? '#4ade80' : '#f87171',
                         fontSize: '12px'
@@ -360,7 +360,7 @@ export default function CryptoTracker() {
                         padding: '6px 12px',
                         borderRadius: '8px',
                         border: 'none',
-                        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        background: 'var(--accent)',
                         color: '#fff',
                         cursor: 'pointer',
                         fontSize: '12px'
@@ -389,11 +389,12 @@ export default function CryptoTracker() {
           padding: '20px',
         }} onClick={() => setSelectedCrypto(null)}>
           <div style={{
-            background: '#1a1a2e',
+            background: 'var(--window-bg)',
             borderRadius: '16px',
             maxWidth: '500px',
             width: '100%',
             overflow: 'hidden',
+            border: '1px solid var(--window-border)'
           }} onClick={(e) => e.stopPropagation()}>
             <div style={{ padding: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -402,8 +403,8 @@ export default function CryptoTracker() {
                     <img src={selectedCrypto.image} alt={selectedCrypto.name} style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
                   )}
                   <div>
-                    <h3 style={{ color: '#fff', margin: 0, fontSize: '20px' }}>{selectedCrypto.name}</h3>
-                    <div style={{ color: '#888', fontSize: '14px' }}>{selectedCrypto.symbol}</div>
+                    <h3 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '20px' }}>{selectedCrypto.name}</h3>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{selectedCrypto.symbol}</div>
                   </div>
                 </div>
                 <button
@@ -413,8 +414,8 @@ export default function CryptoTracker() {
                     height: '36px',
                     borderRadius: '50%',
                     border: 'none',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
+                    background: '#3a3a4e',
+                    color: 'var(--text-primary)',
                     cursor: 'pointer',
                     fontSize: '18px'
                   }}
@@ -424,7 +425,7 @@ export default function CryptoTracker() {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <div style={{ fontSize: '32px', fontWeight: '700', color: '#fff', marginBottom: '8px' }}>
+                <div style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '8px' }}>
                   {formatCurrency(selectedCrypto.price)}
                 </div>
                 <div style={{ 
@@ -437,13 +438,13 @@ export default function CryptoTracker() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '14px', borderRadius: '10px' }}>
-                  <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>市值</div>
-                  <div style={{ color: '#fff', fontWeight: '600' }}>{formatCurrency(selectedCrypto.marketCap)}</div>
+                <div style={{ background: '#2a2a3e', padding: '14px', borderRadius: '10px', border: '1px solid var(--window-border)' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginBottom: '4px' }}>市值</div>
+                  <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{formatCurrency(selectedCrypto.marketCap)}</div>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '14px', borderRadius: '10px' }}>
-                  <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>24h交易量</div>
-                  <div style={{ color: '#fff', fontWeight: '600' }}>{formatCurrency(selectedCrypto.volume24h)}</div>
+                <div style={{ background: '#2a2a3e', padding: '14px', borderRadius: '10px', border: '1px solid var(--window-border)' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginBottom: '4px' }}>24h交易量</div>
+                  <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{formatCurrency(selectedCrypto.volume24h)}</div>
                 </div>
               </div>
 
@@ -456,7 +457,7 @@ export default function CryptoTracker() {
                   padding: '14px',
                   borderRadius: '10px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  background: 'var(--accent)',
                   color: '#fff',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -483,17 +484,18 @@ export default function CryptoTracker() {
           padding: '20px',
         }} onClick={() => setShowAddCrypto(false)}>
           <div style={{
-            background: '#1a1a2e',
+            background: 'var(--window-bg)',
             borderRadius: '16px',
             maxWidth: '400px',
             width: '100%',
             overflow: 'hidden',
+            border: '1px solid var(--window-border)'
           }} onClick={(e) => e.stopPropagation()}>
             <div style={{ padding: '24px' }}>
-              <h3 style={{ color: '#fff', margin: '0 0 20px 0' }}>添加到投资组合</h3>
+              <h3 style={{ color: 'var(--text-primary)', margin: '0 0 20px 0' }}>添加到投资组合</h3>
               
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ color: '#aaa', fontSize: '12px', display: 'block', marginBottom: '8px' }}>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '12px', display: 'block', marginBottom: '8px' }}>
                   数量
                 </label>
                 <input
@@ -506,9 +508,9 @@ export default function CryptoTracker() {
                     width: '100%',
                     padding: '12px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#fff',
+                    border: '1px solid var(--window-border)',
+                    background: '#2a2a3e',
+                    color: 'var(--text-primary)',
                     fontSize: '16px',
                     outline: 'none'
                   }}
@@ -522,9 +524,9 @@ export default function CryptoTracker() {
                     flex: 1,
                     padding: '12px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    background: 'transparent',
-                    color: '#fff',
+                    border: '1px solid var(--window-border)',
+                    background: '#2a2a3e',
+                    color: 'var(--text-primary)',
                     cursor: 'pointer',
                     fontSize: '14px'
                   }}
@@ -544,7 +546,7 @@ export default function CryptoTracker() {
                     padding: '12px',
                     borderRadius: '10px',
                     border: 'none',
-                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    background: 'var(--accent)',
                     color: '#fff',
                     cursor: 'pointer',
                     fontSize: '14px',
