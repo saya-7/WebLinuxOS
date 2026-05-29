@@ -1,905 +1,619 @@
-import { useState, useCallback } from 'react'
-import { 
-  Plus, Edit, Trash2, Shuffle, CheckCircle2, 
-  XCircle, ChevronLeft, BookOpen, 
-  FolderPlus, FileText 
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 interface Flashcard {
   id: string
-  question: string
-  answer: string
-  category: string
+  front: string
+  back: string
+  tags: string[]
   difficulty: 'easy' | 'medium' | 'hard'
-  lastReviewed?: string
-  reviewCount: number
+  lastReviewed: number | null
+  nextReview: number | null
   correctCount: number
+  totalCount: number
 }
 
 interface Deck {
   id: string
   name: string
-  description: string
-  cards: Flashcard[]
-  createdAt: string
+  flashcards: Flashcard[]
+  createdAt: number
 }
 
-function Flashcards() {
+export default function Flashcards() {
   const [decks, setDecks] = useState<Deck[]>(() => {
     try {
-      const saved = localStorage.getItem('flashcards-decks')
-      return saved ? JSON.parse(saved) : [
+      const saved = localStorage.getItem('weblinux-flashcards')
+      if (saved) {
+        return JSON.parse(saved)
+      }
+      // 初始示例卡片组
+      return [
         {
-          id: '1',
-          name: '编程基础',
-          description: 'JavaScript 和 Web 开发的基础知识',
-          cards: [
-            { id: '1', question: '什么是闭包？', answer: '闭包是一个函数，它可以访问其外部函数作用域中的变量，即使外部函数已经执行完毕。', category: 'JavaScript', difficulty: 'medium', reviewCount: 0, correctCount: 0 },
-            { id: '2', question: '什么是 Promise？', answer: 'Promise 是异步编程的一种解决方案，表示一个异步操作的最终完成（或失败）及其结果值。', category: 'JavaScript', difficulty: 'hard', reviewCount: 0, correctCount: 0 },
-            { id: '3', question: 'HTML 代表什么？', answer: 'HyperText Markup Language（超文本标记语言）', category: 'HTML', difficulty: 'easy', reviewCount: 0, correctCount: 0 },
-            { id: '4', question: 'CSS 代表什么？', answer: 'Cascading Style Sheets（层叠样式表）', category: 'CSS', difficulty: 'easy', reviewCount: 0, correctCount: 0 },
-            { id: '5', question: '什么是 React Hooks？', answer: 'React Hooks 是 React 16.8 引入的函数，允许你在函数组件中使用状态和其他 React 特性。', category: 'React', difficulty: 'medium', reviewCount: 0, correctCount: 0 }
-          ],
-          createdAt: new Date().toISOString()
+          id: 'default-1',
+          name: '英语词汇',
+          createdAt: Date.now(),
+          flashcards: [
+            { id: 'c1', front: 'Hello', back: '你好', tags: ['基础'], difficulty: 'easy', lastReviewed: null, nextReview: null, correctCount: 0, totalCount: 0 },
+            { id: 'c2', front: 'Thank you', back: '谢谢', tags: ['基础'], difficulty: 'easy', lastReviewed: null, nextReview: null, correctCount: 0, totalCount: 0 },
+            { id: 'c3', front: 'Good morning', back: '早上好', tags: ['基础'], difficulty: 'easy', lastReviewed: null, nextReview: null, correctCount: 0, totalCount: 0 },
+            { id: 'c4', front: 'Computer', back: '计算机', tags: ['科技'], difficulty: 'medium', lastReviewed: null, nextReview: null, correctCount: 0, totalCount: 0 },
+            { id: 'c5', front: 'Programming', back: '编程', tags: ['科技'], difficulty: 'medium', lastReviewed: null, nextReview: null, correctCount: 0, totalCount: 0 },
+          ]
         }
       ]
     } catch {
       return []
     }
   })
-  
-  const [currentDeck, setCurrentDeck] = useState<Deck | null>(null)
+
+  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'study' | 'create'>('list')
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
-  const [isReviewing, setIsReviewing] = useState(false)
-  const [showAddDeck, setShowAddDeck] = useState(false)
-  const [showAddCard, setShowAddCard] = useState(false)
-  const [editingDeck, setEditingDeck] = useState<Deck | null>(null)
-  const [editingCard, setEditingCard] = useState<Flashcard | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // 新增卡片表单
+  const [newCardFront, setNewCardFront] = useState('')
+  const [newCardBack, setNewCardBack] = useState('')
+  const [newCardTags, setNewCardTags] = useState('')
+  const [newCardDifficulty, setNewCardDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
+
+  // 新增卡片组表单
   const [newDeckName, setNewDeckName] = useState('')
-  const [newDeckDescription, setNewDeckDescription] = useState('')
-  const [newQuestion, setNewQuestion] = useState('')
-  const [newAnswer, setNewAnswer] = useState('')
-  const [newCategory, setNewCategory] = useState('')
-  const [newDifficulty, setNewDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
+  const [showCreateDeck, setShowCreateDeck] = useState(false)
 
-  const saveDecks = useCallback((updatedDecks: Deck[]) => {
-    localStorage.setItem('flashcards-decks', JSON.stringify(updatedDecks))
-    setDecks(updatedDecks)
-  }, [])
-
-  const handleAddDeck = () => {
-    if (!newDeckName.trim()) return
-    
-    const newDeck: Deck = {
-      id: Date.now().toString(),
-      name: newDeckName.trim(),
-      description: newDeckDescription.trim(),
-      cards: [],
-      createdAt: new Date().toISOString()
+  useEffect(() => {
+    try {
+      localStorage.setItem('weblinux-flashcards', JSON.stringify(decks))
+    } catch (error) {
+      console.error('Failed to save flashcards:', error)
     }
-    
-    saveDecks([...decks, newDeck])
-    setNewDeckName('')
-    setNewDeckDescription('')
-    setShowAddDeck(false)
-  }
+  }, [decks])
 
-  const handleDeleteDeck = (deckId: string) => {
-    if (confirm('确定要删除这个卡组吗？')) {
-      saveDecks(decks.filter(d => d.id !== deckId))
-      if (currentDeck?.id === deckId) {
-        setCurrentDeck(null)
-        setIsReviewing(false)
+  const selectedDeck = selectedDeckId ? decks.find(d => d.id === selectedDeckId) : null
+
+  const createDeck = () => {
+    if (newDeckName.trim()) {
+      const newDeck: Deck = {
+        id: Date.now().toString(),
+        name: newDeckName.trim(),
+        createdAt: Date.now(),
+        flashcards: []
       }
+      setDecks(prev => [...prev, newDeck])
+      setNewDeckName('')
+      setShowCreateDeck(false)
     }
   }
 
-  const handleEditDeck = (deck: Deck) => {
-    setEditingDeck(deck)
-    setNewDeckName(deck.name)
-    setNewDeckDescription(deck.description)
-    setShowAddDeck(true)
-  }
-
-  const handleUpdateDeck = () => {
-    if (!editingDeck || !newDeckName.trim()) return
-    
-    const updatedDecks = decks.map(d => 
-      d.id === editingDeck.id 
-        ? { ...d, name: newDeckName.trim(), description: newDeckDescription.trim() }
-        : d
-    )
-    
-    saveDecks(updatedDecks)
-    if (currentDeck?.id === editingDeck.id) {
-      setCurrentDeck(updatedDecks.find(d => d.id === editingDeck.id) || null)
+  const deleteDeck = (id: string) => {
+    setDecks(prev => prev.filter(d => d.id !== id))
+    if (selectedDeckId === id) {
+      setSelectedDeckId(null)
+      setViewMode('list')
     }
-    setEditingDeck(null)
-    setShowAddDeck(false)
-    setNewDeckName('')
-    setNewDeckDescription('')
   }
 
-  const handleAddCard = () => {
-    if (!currentDeck || !newQuestion.trim() || !newAnswer.trim()) return
+  const addCard = () => {
+    if (!selectedDeckId || !newCardFront.trim() || !newCardBack.trim()) return
     
+    const tags = newCardTags.split(',').map(t => t.trim()).filter(Boolean)
     const newCard: Flashcard = {
       id: Date.now().toString(),
-      question: newQuestion.trim(),
-      answer: newAnswer.trim(),
-      category: newCategory.trim(),
-      difficulty: newDifficulty,
-      reviewCount: 0,
-      correctCount: 0
+      front: newCardFront.trim(),
+      back: newCardBack.trim(),
+      tags,
+      difficulty: newCardDifficulty,
+      lastReviewed: null,
+      nextReview: null,
+      correctCount: 0,
+      totalCount: 0
     }
-    
-    const updatedDeck = { ...currentDeck, cards: [...currentDeck.cards, newCard] }
-    const updatedDecks = decks.map(d => d.id === currentDeck.id ? updatedDeck : d)
-    saveDecks(updatedDecks)
-    setCurrentDeck(updatedDeck)
-    setNewQuestion('')
-    setNewAnswer('')
-    setNewCategory('')
-    setNewDifficulty('medium')
-    setShowAddCard(false)
+
+    setDecks(prev => prev.map(d => 
+      d.id === selectedDeckId 
+        ? { ...d, flashcards: [...d.flashcards, newCard] }
+        : d
+    ))
+
+    setNewCardFront('')
+    setNewCardBack('')
+    setNewCardTags('')
+    setNewCardDifficulty('medium')
   }
 
-  const handleEditCard = (card: Flashcard) => {
-    setEditingCard(card)
-    setNewQuestion(card.question)
-    setNewAnswer(card.answer)
-    setNewCategory(card.category)
-    setNewDifficulty(card.difficulty)
-    setShowAddCard(true)
+  const deleteCard = (cardId: string) => {
+    if (!selectedDeckId) return
+    setDecks(prev => prev.map(d => 
+      d.id === selectedDeckId 
+        ? { ...d, flashcards: d.flashcards.filter(c => c.id !== cardId) }
+        : d
+    ))
   }
 
-  const handleUpdateCard = () => {
-    if (!currentDeck || !editingCard || !newQuestion.trim() || !newAnswer.trim()) return
-    
-    const updatedCards = currentDeck.cards.map(c => 
-      c.id === editingCard.id 
-        ? { 
-            ...c, 
-            question: newQuestion.trim(), 
-            answer: newAnswer.trim(), 
-            category: newCategory.trim(),
-            difficulty: newDifficulty 
-          }
-        : c
-    )
-    
-    const updatedDeck = { ...currentDeck, cards: updatedCards }
-    const updatedDecks = decks.map(d => d.id === currentDeck.id ? updatedDeck : d)
-    saveDecks(updatedDecks)
-    setCurrentDeck(updatedDeck)
-    setEditingCard(null)
-    setShowAddCard(false)
-    setNewQuestion('')
-    setNewAnswer('')
-    setNewCategory('')
-  }
-
-  const handleDeleteCard = (cardId: string) => {
-    if (!currentDeck || !confirm('确定要删除这张卡片吗？')) return
-    
-    const updatedDeck = { ...currentDeck, cards: currentDeck.cards.filter(c => c.id !== cardId) }
-    const updatedDecks = decks.map(d => d.id === currentDeck.id ? updatedDeck : d)
-    saveDecks(updatedDecks)
-    setCurrentDeck(updatedDeck)
-  }
-
-  const startReview = (deck: Deck) => {
-    setCurrentDeck(deck)
+  const startStudy = () => {
+    if (!selectedDeck || selectedDeck.flashcards.length === 0) return
     setCurrentCardIndex(0)
     setIsFlipped(false)
-    setIsReviewing(true)
+    setViewMode('study')
   }
 
-  const handleReviewResult = (correct: boolean) => {
-    if (!currentDeck) return
+  const markAnswer = (correct: boolean) => {
+    if (!selectedDeck) return
     
-    const updatedCards = [...currentDeck.cards]
-    const card = updatedCards[currentCardIndex]
-    card.reviewCount = (card.reviewCount || 0) + 1
-    if (correct) {
-      card.correctCount = (card.correctCount || 0) + 1
-    }
-    card.lastReviewed = new Date().toISOString()
+    // 更新卡片统计
+    const updatedDecks = decks.map(d => {
+      if (d.id !== selectedDeckId) return d
+      const updatedCards = d.flashcards.map((c, idx) => {
+        if (idx !== currentCardIndex) return c
+        return {
+          ...c,
+          lastReviewed: Date.now(),
+          totalCount: c.totalCount + 1,
+          correctCount: correct ? c.correctCount + 1 : c.correctCount
+        }
+      })
+      return { ...d, flashcards: updatedCards }
+    })
     
-    const updatedDeck = { ...currentDeck, cards: updatedCards }
-    const updatedDecks = decks.map(d => d.id === currentDeck.id ? updatedDeck : d)
-    saveDecks(updatedDecks)
-    setCurrentDeck(updatedDeck)
-    
-    if (currentCardIndex < updatedCards.length - 1) {
+    setDecks(updatedDecks)
+
+    // 下一张卡片
+    if (currentCardIndex < selectedDeck.flashcards.length - 1) {
       setCurrentCardIndex(prev => prev + 1)
       setIsFlipped(false)
     } else {
-      alert('复习完成！🎉')
-      setIsReviewing(false)
+      // 学习完成
+      setViewMode('list')
     }
   }
 
-  const shuffleDeck = () => {
-    if (!currentDeck) return
-    
-    const shuffledCards = [...currentDeck.cards].sort(() => Math.random() - 0.5)
-    const updatedDeck = { ...currentDeck, cards: shuffledCards }
-    const updatedDecks = decks.map(d => d.id === currentDeck.id ? updatedDeck : d)
-    saveDecks(updatedDecks)
-    setCurrentDeck(updatedDeck)
-    setCurrentCardIndex(0)
-    setIsFlipped(false)
-  }
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'text-green-600 bg-green-100'
-      case 'medium': return 'text-yellow-600 bg-yellow-100'
-      case 'hard': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
+  const getDifficultyColor = (diff: string) => {
+    switch (diff) {
+      case 'easy': return '#22c55e'
+      case 'medium': return '#f59e0b'
+      case 'hard': return '#ef4444'
+      default: return '#6b7280'
     }
   }
+
+  const getDifficultyText = (diff: string) => {
+    switch (diff) {
+      case 'easy': return '简单'
+      case 'medium': return '中等'
+      case 'hard': return '困难'
+      default: return '未知'
+    }
+  }
+
+  const filteredDecks = decks.filter(deck => 
+    deck.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
-    <div className="app-container" style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--window-bg)' }}>
-      {!isReviewing ? (
-        <>
-          {/* Header */}
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--window-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--window-header)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <BookOpen style={{ color: 'var(--accent)' }} />
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>学习卡片</h2>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button 
-                onClick={() => setShowAddDeck(true)}
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100%', 
+      background: '#1e1e2e', 
+      color: '#cdd6f4',
+      overflow: 'hidden'
+    }}>
+      {/* 顶部导航 */}
+      <div style={{ 
+        padding: '16px 20px', 
+        borderBottom: '1px solid #313244', 
+        background: 'linear-gradient(135deg, #181825 0%, #1e1e2e 100%)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>📚 单词记忆卡片</h2>
+          {viewMode === 'list' && (
+            <button 
+              onClick={() => setShowCreateDeck(!showCreateDeck)}
+              style={{
+                padding: '8px 16px',
+                background: 'linear-gradient(135deg, #89b4fa 0%, #60a5fa 100%)',
+                border: 'none',
+                borderRadius: 8,
+                color: '#1e1e2e',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: 13
+              }}
+            >
+              + 新建卡组
+            </button>
+          )}
+        </div>
+        
+        {/* 搜索框 */}
+        {viewMode === 'list' && (
+          <input
+            type="text"
+            placeholder="搜索卡组..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: 8,
+              border: '1px solid #45475a',
+              background: '#313244',
+              color: '#cdd6f4',
+              fontSize: 13
+            }}
+          />
+        )}
+
+        {/* 新建卡组表单 */}
+        {showCreateDeck && (
+          <div style={{ marginTop: 12, padding: 12, background: '#313244', borderRadius: 8 }}>
+            <input
+              type="text"
+              placeholder="输入卡组名称..."
+              value={newDeckName}
+              onChange={(e) => setNewDeckName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && createDeck()}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 6,
+                border: '1px solid #45475a',
+                background: '#1e1e2e',
+                color: '#cdd6f4',
+                fontSize: 13,
+                marginBottom: 8
+              }}
+            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={createDeck}
+                disabled={!newDeckName.trim()}
                 style={{
+                  flex: 1,
                   padding: '8px 16px',
+                  background: newDeckName.trim() ? '#22c55e' : '#45475a',
                   border: 'none',
-                  borderRadius: '8px',
-                  background: 'var(--accent)',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.2s'
+                  borderRadius: 6,
+                  color: '#fff',
+                  cursor: newDeckName.trim() ? 'pointer' : 'not-allowed',
+                  fontWeight: 600,
+                  fontSize: 13
                 }}
               >
-                <FolderPlus size={16} /> 新建卡组
+                创建
+              </button>
+              <button
+                onClick={() => setShowCreateDeck(false)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#45475a',
+                  border: 'none',
+                  borderRadius: 6,
+                  color: '#cdd6f4',
+                  cursor: 'pointer',
+                  fontSize: 13
+                }}
+              >
+                取消
               </button>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Content */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '20px', display: 'flex', gap: '24px' }}>
-            {/* Decks List */}
-            <div style={{ width: '300px', flexShrink: 0 }}>
-              <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>我的卡组</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {decks.map(deck => (
-                  <div key={deck.id} style={{
-                    padding: '16px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '12px',
-                    background: currentDeck?.id === deck.id ? 'rgba(var(--accent-rgb), 0.1)' : 'var(--window-header)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }} onClick={() => setCurrentDeck(deck)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ flex: 1, marginRight: '12px' }}>
-                        <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 600 }}>{deck.name}</h4>
-                        <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>{deck.description}</p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>
-                          <span><FileText size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {deck.cards.length} 张卡片</span>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleEditDeck(deck); }}
-                          style={{
-                            padding: '4px',
-                            border: 'none',
-                            background: 'transparent',
-                            cursor: 'pointer',
-                            color: 'var(--text-secondary)',
-                            borderRadius: '4px',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleDeleteDeck(deck.id); }}
-                          style={{
-                            padding: '4px',
-                            border: 'none',
-                            background: 'transparent',
-                            cursor: 'pointer',
-                            color: 'var(--text-secondary)',
-                            borderRadius: '4px',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    {deck.cards.length > 0 && (
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); startReview(deck); }}
-                        style={{
-                          marginTop: '12px',
-                          padding: '8px 16px',
-                          border: 'none',
-                          borderRadius: '8px',
-                          background: 'var(--accent)',
-                          color: 'white',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          width: '100%',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        开始复习
-                      </button>
-                    )}
-                  </div>
-                ))}
-                
-                {decks.length === 0 && (
-                  <div style={{
-                    padding: '40px 20px',
-                    textAlign: 'center',
-                    color: 'var(--text-secondary)',
-                    fontSize: '14px'
-                  }}>
-                    <BookOpen size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                    <p>还没有卡组，点击上方按钮创建一个吧！</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Deck Details */}
-            {currentDeck && (
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>{currentDeck.name}</h3>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>{currentDeck.description}</p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    {currentDeck.cards.length > 1 && (
-                      <button 
-                        onClick={shuffleDeck}
-                        style={{
-                          padding: '8px 16px',
-                          border: '1px solid var(--window-border)',
-                          borderRadius: '8px',
-                          background: 'var(--window-header)',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        <Shuffle size={16} /> 随机顺序
-                      </button>
-                    )}
-                    {currentDeck.cards.length > 0 && (
-                      <button 
-                        onClick={() => startReview(currentDeck)}
-                        style={{
-                          padding: '8px 16px',
-                          border: 'none',
-                          borderRadius: '8px',
-                          background: 'var(--accent)',
-                          color: 'white',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        <BookOpen size={16} /> 开始复习
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => setShowAddCard(true)}
-                      style={{
-                        padding: '8px 16px',
-                        border: 'none',
-                        borderRadius: '8px',
-                        background: 'var(--accent)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <Plus size={16} /> 添加卡片
-                    </button>
-                  </div>
-                </div>
-
-                {/* Cards List */}
-                {currentDeck.cards.length > 0 ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                    {currentDeck.cards.map((card) => (
-                      <div key={card.id} style={{
-                        padding: '16px',
-                        border: '1px solid var(--window-border)',
-                        borderRadius: '12px',
-                        background: 'var(--window-header)',
-                        transition: 'all 0.2s'
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {card.category && (
-                              <span style={{
-                                padding: '2px 8px',
-                                borderRadius: '12px',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                background: 'var(--hover-bg)',
-                                color: 'var(--text-secondary)'
-                              }}>
-                                {card.category}
-                              </span>
-                            )}
-                            <span style={{
-                              padding: '2px 8px',
-                              borderRadius: '12px',
-                              fontSize: '11px',
-                              fontWeight: 500,
-                              background: getDifficultyColor(card.difficulty)
-                            }}>
-                              {card.difficulty === 'easy' ? '简单' : card.difficulty === 'medium' ? '中等' : '困难'}
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', gap: '4px' }}>
-                            <button 
-                              onClick={() => handleEditCard(card)}
-                              style={{
-                                padding: '4px',
-                                border: 'none',
-                                background: 'transparent',
-                                cursor: 'pointer',
-                                color: 'var(--text-secondary)',
-                                borderRadius: '4px',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              <Edit size={16} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteCard(card.id)}
-                              style={{
-                                padding: '4px',
-                                border: 'none',
-                                background: 'transparent',
-                                cursor: 'pointer',
-                                color: 'var(--text-secondary)',
-                                borderRadius: '4px',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                        <p style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{card.question}</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>{card.answer}</p>
-                        {card.reviewCount > 0 && (
-                          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--window-border)', display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)' }}>
-                            <span>复习次数: {card.reviewCount}</span>
-                            <span>正确率: {card.reviewCount > 0 ? Math.round((card.correctCount / card.reviewCount) * 100) : 0}%</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{
-                    padding: '60px 20px',
-                    textAlign: 'center',
-                    color: 'var(--text-secondary)',
-                    fontSize: '14px',
-                    border: '2px dashed var(--window-border)',
-                    borderRadius: '16px'
-                  }}>
-                    <FileText size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                    <p>这个卡组还没有卡片</p>
-                    <button 
-                      onClick={() => setShowAddCard(true)}
-                      style={{
-                        marginTop: '16px',
-                        padding: '10px 24px',
-                        border: 'none',
-                        borderRadius: '8px',
-                        background: 'var(--accent)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      添加第一张卡片
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        currentDeck && (
-          /* Review Mode */
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--window-bg)' }}>
-            {/* Review Header */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--window-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--window-header)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <button 
-                  onClick={() => setIsReviewing(false)}
+      {/* 内容区域 */}
+      <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+        {/* 列表视图 */}
+        {viewMode === 'list' && !selectedDeckId && (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+              {filteredDecks.map(deck => (
+                <div 
+                  key={deck.id}
+                  onClick={() => { setSelectedDeckId(deck.id); setViewMode('list'); }}
                   style={{
-                    padding: '6px 12px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    background: 'transparent',
+                    padding: 16,
+                    background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)',
+                    borderRadius: 12,
                     cursor: 'pointer',
-                    fontSize: '13px',
-                    fontWeight: 500,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s'
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)' }}
                 >
-                  <ChevronLeft size={16} /> 返回
-                </button>
-                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>复习: {currentDeck.name}</h2>
-              </div>
-              <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                {currentCardIndex + 1} / {currentDeck.cards.length}
-              </span>
-            </div>
-
-            {/* Review Content */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px' }}>
-              <div 
-                onClick={() => setIsFlipped(!isFlipped)}
-                style={{
-                  width: '100%',
-                  maxWidth: '700px',
-                  aspectRatio: '16 / 9',
-                  perspective: '1000px',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  transition: 'transform 0.6s',
-                  transformStyle: 'preserve-3d',
-                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                }}>
-                  {/* Front Side */}
-                  <div style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backfaceVisibility: 'hidden',
-                    background: 'linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%)',
-                    borderRadius: '20px',
-                    padding: '40px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color: 'white',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)'
-                  }}>
-                    <div style={{ marginBottom: '20px', fontSize: '14px', opacity: 0.9 }}>问题</div>
-                    <div style={{ fontSize: '24px', fontWeight: 600, textAlign: 'center', lineHeight: 1.5 }}>
-                      {currentDeck.cards[currentCardIndex].question}
-                    </div>
-                    <div style={{ marginTop: '30px', fontSize: '13px', opacity: 0.7 }}>点击卡片查看答案</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                    <h3 style={{ margin: 0, fontSize: 16, color: '#cdd6f4' }}>{deck.name}</h3>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); deleteDeck(deck.id); }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#ef4444',
+                        cursor: 'pointer',
+                        fontSize: 16
+                      }}
+                    >
+                      🗑️
+                    </button>
                   </div>
-                  
-                  {/* Back Side */}
-                  <div style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backfaceVisibility: 'hidden',
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    borderRadius: '20px',
-                    padding: '40px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color: 'white',
-                    transform: 'rotateY(180deg)',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)'
-                  }}>
-                    <div style={{ marginBottom: '20px', fontSize: '14px', opacity: 0.9 }}>答案</div>
-                    <div style={{ fontSize: '20px', fontWeight: 500, textAlign: 'center', lineHeight: 1.6 }}>
-                      {currentDeck.cards[currentCardIndex].answer}
-                    </div>
-                    <div style={{ marginTop: '30px', fontSize: '13px', opacity: 0.7 }}>点击卡片返回问题</div>
+                  <div style={{ fontSize: 13, color: '#a6adc8', marginBottom: 12 }}>
+                    {deck.flashcards.length} 张卡片
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSelectedDeckId(deck.id); setViewMode('create'); }}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        background: '#45475a',
+                        border: 'none',
+                        borderRadius: 6,
+                        color: '#cdd6f4',
+                        cursor: 'pointer',
+                        fontSize: 12
+                      }}
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSelectedDeckId(deck.id); startStudy(); }}
+                      disabled={deck.flashcards.length === 0}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        background: deck.flashcards.length > 0 ? 'linear-gradient(135deg, #89b4fa 0%, #60a5fa 100%)' : '#45475a',
+                        border: 'none',
+                        borderRadius: 6,
+                        color: deck.flashcards.length > 0 ? '#1e1e2e' : '#6c7086',
+                        cursor: deck.flashcards.length > 0 ? 'pointer' : 'not-allowed',
+                        fontWeight: 600,
+                        fontSize: 12
+                      }}
+                    >
+                      开始学习
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Review Buttons */}
-              {isFlipped && (
-                <div style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
-                  <button 
-                    onClick={() => handleReviewResult(false)}
-                    style={{
-                      padding: '14px 32px',
-                      border: '2px solid #ef4444',
-                      borderRadius: '12px',
-                      background: 'transparent',
-                      color: '#ef4444',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <XCircle size={20} /> 忘记了
-                  </button>
-                  <button 
-                    onClick={() => handleReviewResult(true)}
-                    style={{
-                      padding: '14px 32px',
-                      border: 'none',
-                      borderRadius: '12px',
-                      background: '#10b981',
-                      color: 'white',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <CheckCircle2 size={20} /> 记住了
-                  </button>
+              ))}
+              {filteredDecks.length === 0 && (
+                <div style={{ 
+                  gridColumn: '1 / -1', 
+                  textAlign: 'center', 
+                  padding: '40px 20px', 
+                  color: '#6c7086',
+                  fontSize: 14
+                }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>📚</div>
+                  <div>还没有卡组，点击"新建卡组"开始吧！</div>
                 </div>
               )}
             </div>
           </div>
-        )
-      )}
+        )}
 
-      {/* Add Deck Modal */}
-      {showAddDeck && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }} onClick={() => setShowAddDeck(false)}>
-          <div style={{
-            background: 'var(--window-bg)',
-            borderRadius: '16px',
-            padding: '24px',
-            width: '450px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 600 }}>
-              {editingDeck ? '编辑卡组' : '新建卡组'}
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>卡组名称</label>
-                <input 
-                  type="text" 
-                  value={newDeckName}
-                  onChange={(e) => setNewDeckName(e.target.value)}
-                  placeholder="输入卡组名称..."
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'var(--window-header)',
-                    color: 'var(--text-primary)',
-                    outline: 'none'
-                  }}
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>描述（可选）</label>
-                <textarea 
-                  value={newDeckDescription}
-                  onChange={(e) => setNewDeckDescription(e.target.value)}
-                  placeholder="简单描述一下这个卡组..."
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'var(--window-header)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                <button 
-                  onClick={() => {
-                    setShowAddDeck(false)
-                    setEditingDeck(null)
-                    setNewDeckName('')
-                    setNewDeckDescription('')
-                  }}
-                  style={{
-                    padding: '10px 20px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  取消
-                </button>
-                <button 
-                  onClick={editingDeck ? handleUpdateDeck : handleAddDeck}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    background: 'var(--accent)',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {editingDeck ? '更新' : '创建'}
-                </button>
+        {/* 选中卡组的详情视图 */}
+        {viewMode === 'list' && selectedDeck && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <button 
+                onClick={() => setSelectedDeckId(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#89b4fa',
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginBottom: 12
+                }}
+              >
+                ← 返回
+              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ margin: 0, fontSize: 18 }}>{selectedDeck.name}</h3>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => setViewMode('create')}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#45475a',
+                      border: 'none',
+                      borderRadius: 8,
+                      color: '#cdd6f4',
+                      cursor: 'pointer',
+                      fontSize: 13
+                    }}
+                  >
+                    + 添加卡片
+                  </button>
+                  <button
+                    onClick={startStudy}
+                    disabled={selectedDeck.flashcards.length === 0}
+                    style={{
+                      padding: '8px 16px',
+                      background: selectedDeck.flashcards.length > 0 ? 'linear-gradient(135deg, #89b4fa 0%, #60a5fa 100%)' : '#45475a',
+                      border: 'none',
+                      borderRadius: 8,
+                      color: selectedDeck.flashcards.length > 0 ? '#1e1e2e' : '#6c7086',
+                      cursor: selectedDeck.flashcards.length > 0 ? 'pointer' : 'not-allowed',
+                      fontWeight: 600,
+                      fontSize: 13
+                    }}
+                  >
+                    开始学习
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Add Card Modal */}
-      {showAddCard && currentDeck && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }} onClick={() => setShowAddCard(false)}>
-          <div style={{
-            background: 'var(--window-bg)',
-            borderRadius: '16px',
-            padding: '24px',
-            width: '500px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 600 }}>
-              {editingCard ? '编辑卡片' : '添加新卡片'}
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>问题</label>
-                <textarea 
-                  value={newQuestion}
-                  onChange={(e) => setNewQuestion(e.target.value)}
-                  placeholder="输入问题..."
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {selectedDeck.flashcards.map(card => (
+                <div key={card.id} style={{
+                  background: '#313244',
+                  borderRadius: 10,
+                  padding: 14,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'start'
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{card.front}</div>
+                    <div style={{ fontSize: 13, color: '#a6adc8', marginBottom: 8 }}>{card.back}</div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ 
+                        padding: '2px 8px', 
+                        background: getDifficultyColor(card.difficulty) + '20', 
+                        color: getDifficultyColor(card.difficulty),
+                        borderRadius: 4, 
+                        fontSize: 11 
+                      }}>
+                        {getDifficultyText(card.difficulty)}
+                      </span>
+                      {card.tags.map(tag => (
+                        <span key={tag} style={{ 
+                          padding: '2px 8px', 
+                          background: '#45475a', 
+                          borderRadius: 4, 
+                          fontSize: 11,
+                          color: '#a6adc8'
+                        }}>
+                          #{tag}
+                        </span>
+                      ))}
+                      {card.totalCount > 0 && (
+                        <span style={{ fontSize: 11, color: '#6c7086' }}>
+                          正确率: {card.totalCount > 0 ? Math.round((card.correctCount / card.totalCount) * 100) : 0}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => deleteCard(card.id)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ef4444',
+                      cursor: 'pointer',
+                      fontSize: 16,
+                      padding: 4
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+              {selectedDeck.flashcards.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6c7086' }}>
+                  这个卡组还没有卡片，点击"添加卡片"开始添加吧！
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 创建卡片视图 */}
+        {viewMode === 'create' && selectedDeck && (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <button 
+                onClick={() => setViewMode('list')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#89b4fa',
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginBottom: 12
+                }}
+              >
+                ← 返回
+              </button>
+              <h3 style={{ margin: 0, fontSize: 18 }}>添加新卡片到 {selectedDeck.name}</h3>
+            </div>
+
+            <div style={{
+              background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)',
+              borderRadius: 12,
+              padding: 20
+            }}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 13, color: '#a6adc8', marginBottom: 6 }}>正面（问题/单词）</label>
+                <input
+                  type="text"
+                  value={newCardFront}
+                  onChange={(e) => setNewCardFront(e.target.value)}
+                  placeholder="例如：Hello"
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #45475a',
+                    background: '#1e1e2e',
+                    color: '#cdd6f4',
+                    fontSize: 14
+                  }}
+                />
+              </div>
+              
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 13, color: '#a6adc8', marginBottom: 6 }}>背面（答案/释义）</label>
+                <textarea
+                  value={newCardBack}
+                  onChange={(e) => setNewCardBack(e.target.value)}
+                  placeholder="例如：你好"
                   rows={3}
                   style={{
                     width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'var(--window-header)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>答案</label>
-                <textarea 
-                  value={newAnswer}
-                  onChange={(e) => setNewAnswer(e.target.value)}
-                  placeholder="输入答案..."
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: 'var(--window-header)',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    resize: 'none'
+                    padding: '12px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #45475a',
+                    background: '#1e1e2e',
+                    color: '#cdd6f4',
+                    fontSize: 14,
+                    resize: 'vertical'
                   }}
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>分类（可选）</label>
-                  <input 
-                    type="text" 
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    placeholder="例如：JavaScript"
+                  <label style={{ display: 'block', fontSize: 13, color: '#a6adc8', marginBottom: 6 }}>标签（用逗号分隔）</label>
+                  <input
+                    type="text"
+                    value={newCardTags}
+                    onChange={(e) => setNewCardTags(e.target.value)}
+                    placeholder="例如：基础, 科技"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
-                      border: '1px solid var(--window-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      background: 'var(--window-header)',
-                      color: 'var(--text-primary)',
-                      outline: 'none'
+                      borderRadius: 8,
+                      border: '1px solid #45475a',
+                      background: '#1e1e2e',
+                      color: '#cdd6f4',
+                      fontSize: 13
                     }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 500 }}>难度</label>
-                  <select 
-                    value={newDifficulty}
-                    onChange={(e) => setNewDifficulty(e.target.value as 'easy' | 'medium' | 'hard')}
+                  <label style={{ display: 'block', fontSize: 13, color: '#a6adc8', marginBottom: 6 }}>难度</label>
+                  <select
+                    value={newCardDifficulty}
+                    onChange={(e) => setNewCardDifficulty(e.target.value as any)}
                     style={{
                       width: '100%',
                       padding: '10px 14px',
-                      border: '1px solid var(--window-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      background: 'var(--window-header)',
-                      color: 'var(--text-primary)',
-                      outline: 'none'
+                      borderRadius: 8,
+                      border: '1px solid #45475a',
+                      background: '#1e1e2e',
+                      color: '#cdd6f4',
+                      fontSize: 13
                     }}
                   >
                     <option value="easy">简单</option>
@@ -908,51 +622,169 @@ function Flashcards() {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
-                <button 
-                  onClick={() => {
-                    setShowAddCard(false)
-                    setEditingCard(null)
-                    setNewQuestion('')
-                    setNewAnswer('')
-                    setNewCategory('')
-                  }}
-                  style={{
-                    padding: '10px 20px',
-                    border: '1px solid var(--window-border)',
-                    borderRadius: '8px',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  取消
-                </button>
-                <button 
-                  onClick={editingCard ? handleUpdateCard : handleAddCard}
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    background: 'var(--accent)',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {editingCard ? '更新' : '添加'}
-                </button>
-              </div>
+
+              <button
+                onClick={addCard}
+                disabled={!newCardFront.trim() || !newCardBack.trim()}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: newCardFront.trim() && newCardBack.trim() ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : '#45475a',
+                  border: 'none',
+                  borderRadius: 8,
+                  color: newCardFront.trim() && newCardBack.trim() ? '#fff' : '#6c7086',
+                  cursor: newCardFront.trim() && newCardBack.trim() ? 'pointer' : 'not-allowed',
+                  fontWeight: 600,
+                  fontSize: 14
+                }}
+              >
+                添加卡片
+              </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* 学习视图 */}
+        {viewMode === 'study' && selectedDeck && (
+          <div>
+            <div style={{ marginBottom: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: '#a6adc8', marginBottom: 8 }}>
+                卡片 {currentCardIndex + 1} / {selectedDeck.flashcards.length}
+              </div>
+              <div style={{ 
+                height: 6, 
+                background: '#313244', 
+                borderRadius: 3, 
+                overflow: 'hidden' 
+              }}>
+                <div style={{ 
+                  height: '100%', 
+                  width: `${((currentCardIndex + 1) / selectedDeck.flashcards.length) * 100}%`,
+                  background: 'linear-gradient(90deg, #89b4fa, #60a5fa)',
+                  transition: 'width 0.3s'
+                }} />
+              </div>
+            </div>
+
+            {/* 卡片 */}
+            <div 
+              onClick={() => setIsFlipped(!isFlipped)}
+              style={{
+                perspective: '1000px',
+                height: 320,
+                marginBottom: 20
+              }}
+            >
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                transition: 'transform 0.6s',
+                transformStyle: 'preserve-3d',
+                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0)'
+              }}>
+                {/* 正面 */}
+                <div style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  backfaceVisibility: 'hidden',
+                  background: 'linear-gradient(135deg, #313244 0%, #45475a 100%)',
+                  borderRadius: 16,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 24,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  cursor: 'pointer'
+                }}>
+                  <div style={{ fontSize: 12, color: '#6c7086', marginBottom: 16 }}>点击翻转</div>
+                  <div style={{ fontSize: 32, fontWeight: 600, textAlign: 'center' }}>
+                    {selectedDeck.flashcards[currentCardIndex].front}
+                  </div>
+                </div>
+                {/* 背面 */}
+                <div style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  backfaceVisibility: 'hidden',
+                  background: 'linear-gradient(135deg, #45475a 0%, #585b70 100%)',
+                  borderRadius: 16,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 24,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  transform: 'rotateY(180deg)',
+                  cursor: 'pointer'
+                }}>
+                  <div style={{ fontSize: 12, color: '#6c7086', marginBottom: 16 }}>答案</div>
+                  <div style={{ fontSize: 28, fontWeight: 600, textAlign: 'center', color: '#89b4fa' }}>
+                    {selectedDeck.flashcards[currentCardIndex].back}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {isFlipped && (
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  onClick={() => markAnswer(false)}
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    border: 'none',
+                    borderRadius: 10,
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: 15
+                  }}
+                >
+                  ❌ 记错了
+                </button>
+                <button
+                  onClick={() => markAnswer(true)}
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                    border: 'none',
+                    borderRadius: 10,
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: 15
+                  }}
+                >
+                  ✅ 记对了
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={() => setViewMode('list')}
+              style={{
+                width: '100%',
+                marginTop: 12,
+                padding: '10px',
+                background: '#45475a',
+                border: 'none',
+                borderRadius: 8,
+                color: '#cdd6f4',
+                cursor: 'pointer',
+                fontSize: 13
+              }}
+            >
+              退出学习
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-
-export default Flashcards

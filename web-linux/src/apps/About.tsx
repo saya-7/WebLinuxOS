@@ -93,10 +93,10 @@ export default function About() {
 
   const specs = [
     { label: '系统名称', value: 'Web Linux' },
-    { label: '版本号', value: '3.7.0' },
+    { label: '版本号', value: '4.3.0' },
     { label: '内核版本', value: 'Web Linux 6.15.0' },
     { label: '架构', value: 'x86_64 (Browser)' },
-    { label: '桌面环境', value: 'Web DE 3.7' },
+    { label: '桌面环境', value: 'Web DE 4.3' },
     { label: '窗口系统', value: 'Web Window Manager' },
     { label: '浏览器', value: `${ua.browser} ${ua.version}` },
     { label: '操作系统', value: ua.os },
@@ -164,7 +164,7 @@ export default function About() {
       <div style={{ padding: '20px 24px', borderBottom: '1px solid #313244', textAlign: 'center', background: 'linear-gradient(135deg, #313244 0%, #1e1e2e 100%)' }}>
         <div style={{ fontSize: '48px', marginBottom: '8px', filter: 'drop-shadow(0 0 10px rgba(137, 180, 250, 0.3))' }}>🐧</div>
         <h1 style={{ margin: '0 0 4px', fontSize: '26px', fontWeight: 700, background: 'linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Web Linux</h1>
-        <div style={{ fontSize: '13px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v3.7.0</div>
+        <div style={{ fontSize: '13px', color: '#a6adc8' }}>浏览器中的 Linux 桌面环境 · v4.3.0</div>
         <div style={{ fontSize: '11px', color: '#6c7086', marginTop: '4px' }}>80+ 预装应用程序 · 完整窗口管理 · Python 运行时</div>
       </div>
 
