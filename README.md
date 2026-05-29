@@ -57,7 +57,7 @@ Browser, Weather, News Reader, Cryptocurrency Tracker, Email Client, Chat, AI He
 Music Player, Video Player, Paint, Image Viewer, Camera, Sound Recorder, Screen Recorder, PDF Viewer, Whiteboard, **音乐可视化**
 
 ### Utilities
-Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Voice Transcriber, Clipboard Manager, Quick Launcher, **番茄工作法**, **专注模式**, **任务自动化**, **智能仪表盘**, **便签墙**, **灵感速记**
+Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Voice Transcriber, Clipboard Manager, Quick Launcher, **番茄工作法**, **专注模式**, **任务自动化**, **智能仪表盘**, **便签墙**, **灵感速记**, **单词记忆卡片**
 
 ### Games
 Snake, Tetris, Virtual Pet, Particle System
@@ -184,6 +184,19 @@ npm run deploy           # Deploy to GitHub Pages
 - **音乐可视化**: Audio visualization with animations
 - Enhanced keyboard shortcuts for better productivity
 - Improved 60 FPS desktop animations
+
+## New Features (v4.3.0)
+
+- **单词记忆卡片**: Interactive flashcards application for language learning
+  - Create custom decks with front/back cards
+  - Add tags and difficulty levels (easy/medium/hard)
+  - Interactive study mode with card flipping
+  - Track learning progress with correct/incorrect answers
+  - Local storage for persistence between sessions
+  - Built-in example English vocabulary deck
+- Unified version number across all system components
+- Fixed TypeScript issues
+- Enhanced user interface improvements
 
 ## Contributing
 
