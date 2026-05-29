@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, memo, useCallback } from 'react'
 import { useStore } from '../store'
 import { SearchIcon, CalculatorIcon, TerminalIcon, FileIcon, FolderIcon, AppIcon } from '../icons'
+import type { FileNode } from '../types'
 
 interface SearchResult {
   id: string
@@ -43,7 +44,7 @@ const QuickActions = memo(function QuickActions() {
     const results: SearchResult[] = []
     const lowerQuery = query.toLowerCase()
 
-    const searchNode = (node: any) => {
+    const searchNode = (node: FileNode) => {
       if (node.name.toLowerCase().includes(lowerQuery)) {
         results.push({
           id: node.id,
@@ -154,7 +155,7 @@ const QuickActions = memo(function QuickActions() {
     const appResults = searchApps(input)
     const commandResults = searchCommands(input)
 
-    let allResults: SearchResult[] = [
+    const allResults: SearchResult[] = [
       ...appResults,
       ...fileResults,
       ...commandResults,

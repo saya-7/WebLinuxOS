@@ -8,10 +8,12 @@ const JSONYAMLConverter: React.FC = () => {
   const [direction, setDirection] = useState<'json2yaml' | 'yaml2json'>('json2yaml')
   const [error, setError] = useState<string | null>(null)
 
-  const jsonToYaml = (jsonStr: string): string => {
-    const obj = JSON.parse(jsonStr)
+  type JSONValue = string | number | boolean | null | JSONValue[] | { [key: string]: JSONValue }
+
+const jsonToYaml = (jsonStr: string): string => {
+    const obj = JSON.parse(jsonStr) as JSONValue
     
-    const convert = (value: any, indent: number = 0): string => {
+    const convert = (value: JSONValue, indent: number = 0): string => {
       const spaces = '  '.repeat(indent)
       
       if (value === null) return 'null'
@@ -45,10 +47,15 @@ const JSONYAMLConverter: React.FC = () => {
     return convert(obj)
   }
 
+  interface StackItem {
+    obj: Record<string, JSONValue> | JSONValue[]
+    indent: number
+  }
+  
   const yamlToJson = (yamlStr: string): string => {
     const lines = yamlStr.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'))
-    const result: any = {}
-    const stack: any[] = [{ obj: result, indent: -1 }]
+    const result: Record<string, JSONValue> = {}
+    const stack: StackItem[] = [{ obj: result, indent: -1 }]
     
     for (const line of lines) {
       const indent = line.search(/\S/)
@@ -66,9 +73,10 @@ const JSONYAMLConverter: React.FC = () => {
         const value = content.slice(2).trim()
         if (!Array.isArray(current.obj)) {
           const parent = stack[stack.length - 2]
-          const lastKey = Object.keys(parent.obj).pop()!
-          parent.obj[lastKey] = []
-          current.obj = parent.obj[lastKey]
+          const parentObj = parent.obj as Record<string, JSONValue>
+          const lastKey = Object.keys(parentObj).pop()!
+          parentObj[lastKey] = []
+          current.obj = parentObj[lastKey] as JSONValue[]
         }
         current.obj.push(parseValue(value))
       } else if (content.includes(':')) {
@@ -76,11 +84,19 @@ const JSONYAMLConverter: React.FC = () => {
         const key = content.slice(0, colonIndex).trim()
         const value = content.slice(colonIndex + 1).trim()
         
-        const newObj: any = {}
-        current.obj[key] = value ? parseValue(value) : newObj
-        
-        if (!value) {
-          stack.push({ obj: newObj, indent })
+        const newObj: Record<string, JSONValue> = {}
+        if (Array.isArray(current.obj)) {
+          const arrValue: Record<string, JSONValue> = value ? { _value: parseValue(value) } : newObj
+          current.obj.push(arrValue)
+          if (!value) {
+            stack.push({ obj: newObj, indent })
+          }
+        } else {
+          const currentObj = current.obj as Record<string, JSONValue>
+          currentObj[key] = value ? parseValue(value) : newObj
+          if (!value) {
+            stack.push({ obj: newObj, indent })
+          }
         }
       }
     }
@@ -88,7 +104,7 @@ const JSONYAMLConverter: React.FC = () => {
     return JSON.stringify(result, null, 2)
   }
 
-  const parseValue = (value: string): any => {
+  const parseValue = (value: string): JSONValue => {
     if (value === 'true') return true
     if (value === 'false') return false
     if (value === 'null') return null
@@ -109,7 +125,7 @@ const JSONYAMLConverter: React.FC = () => {
         const json = yamlToJson(input)
         setOutput(json)
       }
-    } catch (e) {
+    } catch {
       setError(direction === 'json2yaml' ? 'JSON 解析错误' : 'YAML 解析错误')
     }
   }

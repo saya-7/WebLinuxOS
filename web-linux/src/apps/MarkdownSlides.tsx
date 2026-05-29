@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 
 // Default sample presentation
@@ -44,46 +44,9 @@ export default function MarkdownSlides() {
   const [markdown, setMarkdown] = useState(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const slidesRef = useRef<string[]>([]);
   
-  // Split markdown into slides by '---' separator
   const slides = markdown.split(/^---\s*$/m);
-  slidesRef.current = slides;
-  
   const totalSlides = slides.length;
-  
-  // Render markdown to HTML
-  const renderSlide = (slideIndex: number) => {
-    if (slideIndex < 0 || slideIndex >= slides.length) return '';
-    return marked.parse(slides[slideIndex], { breaks: true, gfm: true }) as string;
-  };
-  
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isFullscreen) {
-        switch (e.key) {
-          case 'ArrowRight':
-          case 'Space':
-          case 'PageDown':
-            e.preventDefault();
-            nextSlide();
-            break;
-          case 'ArrowLeft':
-          case 'PageUp':
-            e.preventDefault();
-            prevSlide();
-            break;
-          case 'Escape':
-            setIsFullscreen(false);
-            break;
-        }
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, currentSlide, totalSlides]);
   
   const nextSlide = () => {
     if (currentSlide < totalSlides - 1) {
@@ -102,6 +65,37 @@ export default function MarkdownSlides() {
       setCurrentSlide(index);
     }
   };
+  
+  const renderSlide = (slideIndex: number) => {
+    if (slideIndex < 0 || slideIndex >= slides.length) return '';
+    return marked.parse(slides[slideIndex], { breaks: true, gfm: true }) as string;
+  };
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isFullscreen) return;
+      
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'Space':
+        case 'PageDown':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Escape':
+          setIsFullscreen(false);
+          break;
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen, currentSlide, totalSlides]);
   
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);

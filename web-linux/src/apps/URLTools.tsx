@@ -11,7 +11,7 @@ const URLTools: React.FC = () => {
     try {
       const encoded = encodeURIComponent(url)
       setResult(encoded)
-    } catch (e) {
+    } catch {
       setResult('编码错误: 请检查输入')
     }
   }
@@ -20,7 +20,7 @@ const URLTools: React.FC = () => {
     try {
       const decoded = decodeURIComponent(url)
       setResult(decoded)
-    } catch (e) {
+    } catch {
       setResult('解码错误: 无效的 URL 编码')
     }
   }
@@ -39,7 +39,7 @@ const URLTools: React.FC = () => {
         params: Object.fromEntries(parsed.searchParams),
       }
       setResult(JSON.stringify(info, null, 2))
-    } catch (e) {
+    } catch {
       setResult('解析错误: 无效的 URL')
     }
   }

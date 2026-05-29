@@ -286,7 +286,7 @@ export default function RecipeBook() {
               ].map(filter => (
                 <button
                   key={filter.key}
-                  onClick={() => setActiveFilter(filter.key as any)}
+                  onClick={() => setActiveFilter(filter.key as 'all' | 'quick' | 'vegetarian')}
                   style={{
                     padding: '6px 14px',
                     background: activeFilter === filter.key 

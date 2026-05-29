@@ -85,11 +85,16 @@ export default function KanbanBoard() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterPriority, setFilterPriority] = useState<'all' | 'low' | 'medium' | 'high'>('all')
   
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<{
+    title: string
+    description: string
+    priority: 'low' | 'medium' | 'high'
+    tags: string[]
+  }>({
     title: '',
     description: '',
-    priority: 'medium' as const,
-    tags: [] as string[]
+    priority: 'medium',
+    tags: []
   })
   const [tagInput, setTagInput] = useState('')
 
@@ -215,7 +220,7 @@ export default function KanbanBoard() {
           />
           <select
             value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value as any)}
+            onChange={(e) => setFilterPriority(e.target.value as 'all' | 'low' | 'medium' | 'high')}
             style={{
               padding: '6px 12px',
               borderRadius: '8px',
@@ -487,7 +492,7 @@ export default function KanbanBoard() {
                 </label>
                 <select
                   value={newTask.priority}
-                  onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
+                  onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' })}
                   style={{
                     width: '100%',
                     padding: '8px 12px',

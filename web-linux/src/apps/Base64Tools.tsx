@@ -11,7 +11,7 @@ const Base64Tools: React.FC = () => {
     try {
       const encoded = btoa(unescape(encodeURIComponent(inputText)))
       setOutputText(encoded)
-    } catch (e) {
+    } catch {
       setOutputText('编码错误')
     }
   }
@@ -20,7 +20,7 @@ const Base64Tools: React.FC = () => {
     try {
       const decoded = decodeURIComponent(escape(atob(inputText)))
       setOutputText(decoded)
-    } catch (e) {
+    } catch {
       setOutputText('解码错误: 无效的 Base64 字符串')
     }
   }

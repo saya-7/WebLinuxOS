@@ -63,7 +63,7 @@ function JSONFormatter() {
       const parsed = JSON.parse(input)
       setOutput(JSON.stringify(parsed, null, 2))
       setError('')
-    } catch (e) {
+    } catch {
       setError('JSON格式错误')
       setOutput('')
     }
@@ -74,7 +74,7 @@ function JSONFormatter() {
       const parsed = JSON.parse(input)
       setOutput(JSON.stringify(parsed))
       setError('')
-    } catch (e) {
+    } catch {
       setError('JSON格式错误')
       setOutput('')
     }
@@ -362,7 +362,7 @@ function Base64Tool() {
         const decoded = atob(input)
         setOutput(decoded)
       }
-    } catch (e) {
+    } catch {
       setOutput('转换错误')
     }
   }
@@ -415,7 +415,7 @@ function URLTool() {
         const decoded = decodeURIComponent(input)
         setOutput(decoded)
       }
-    } catch (e) {
+    } catch {
       setOutput('转换错误')
     }
   }

@@ -7,6 +7,8 @@ interface Language {
   nativeName: string;
 }
 
+
+
 const languages: Language[] = [
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
   { code: 'en', name: 'English', nativeName: 'English' },
@@ -47,7 +49,7 @@ export default function RealTimeTranslator() {
     }
   });
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<unknown>(null);
 
   const isDark = theme === 'dark';
   const bg = isDark ? '#1e1e2e' : '#f7f7fa';
@@ -117,27 +119,30 @@ export default function RealTimeTranslator() {
 
   const startRecording = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
+      const SpeechRecognitionClass = window.SpeechRecognition || (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition;
+      if (!SpeechRecognitionClass) return;
       
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = sourceLang;
+      const recognition = new SpeechRecognitionClass();
+      recognitionRef.current = recognition;
       
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = Array.from(event.results)
-          .map((result: any) => result[0])
-          .map((result) => result.transcript)
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = sourceLang;
+      
+      recognition.onresult = (event: Event) => {
+        const speechEvent = event as SpeechRecognitionEvent;
+        const transcript = Array.from(speechEvent.results)
+          .map((result) => result[0].transcript)
           .join('');
         
         setSourceText(transcript);
       };
       
-      recognitionRef.current.onend = () => {
+      recognition.onend = () => {
         setIsRecording(false);
       };
       
-      recognitionRef.current.start();
+      recognition.start();
       setIsRecording(true);
     } else {
       alert('您的浏览器不支持语音识别功能');
@@ -145,8 +150,10 @@ export default function RealTimeTranslator() {
   };
 
   const stopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+    const recognition = recognitionRef.current as { stop?: () => void; abort?: () => void } | null;
+    if (recognition) {
+      recognition.stop?.();
+      recognition.abort?.();
       setIsRecording(false);
     }
   };
