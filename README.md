@@ -1,77 +1,83 @@
 # WebLinuxOS
 
-A fully-featured Linux desktop environment running entirely in the browser. Experience a complete operating system without installation.
+A fully functional web-based Linux desktop operating system simulation built with React, TypeScript, and Zustand.
 
-## Overview
-
-WebLinuxOS brings the power of a Linux desktop to your browser. Built with modern web technologies, it delivers a native-like desktop experience with window management, file system, terminal emulator, and over 100 applications.
-
-## Key Features
+## Features
 
 ### Desktop Environment
-- Multi virtual desktops (up to 9 workspaces)
-- Advanced window management with smooth animations
-- Dynamic live wallpapers with particle effects
-- Start menu with Super key support
-- Taskbar with window switching and system tray
-- Context menus and global keyboard shortcuts
-- Optimized 60 FPS particle animations for smooth performance
+- **Multi-window Management**: Drag, resize, minimize, maximize, and close windows
+- **Virtual Desktop**: Multiple virtual desktops with wallpapers
+- **Taskbar**: Quick access to running applications and system tray
+- **Start Menu**: Application launcher with categories
+- **System Tray**: Network, volume, battery, and notification indicators
+- **Global Search**: Quick app launcher and file search
+- **Command Palette**: Keyboard-driven command execution
+
+### Applications (120+)
+- **Productivity**: Notepad, TextEditor, CodeEditor, MarkdownEditor, Notes, TodoList, Calendar, Contacts
+- **Developer Tools**: CodeStudio, CodePlayground, Terminal, DevTools, RegexTester, ApiTester, PackageManager
+- **Media**: MusicPlayer, VideoPlayer, ImageViewer, Camera, Screenshot, ScreenRecorder, PictureInPicture
+- **Communication**: Chat, Email, VideoConference, Translator
+- **System**: FileManager, TaskManager, SystemMonitor, SystemSettings, ProcessMonitor, DiskUtility
+- **Utilities**: Calculator, ColorPicker, QRGenerator, UnitConverter, CurrencyConverter, PasswordGenerator
+- **Graphics**: Paint, Whiteboard, MindMap, DiagramEditor
+- **Learning**: Flashcards, Dictionary, LearningPlatform, CommandReference
+- **AI Integration**: ChatAI, AIGenerator, AICodeAssistant, SmartSearch
+- **Entertainment**: Games, Weather, NewsReader, StockTracker, CryptoTracker
+- **Creative**: Presentation, MarkdownSlides, RecipeBook, IdeaCapture
 
 ### Terminal Emulator
-- 90+ built-in Linux commands
-- Full Python 3 runtime via Pyodide
-- Command history with arrow key navigation
-- Smart tab completion
-- System monitoring tools (vmstat, iostat, df, free, ps, top)
-- Entertainment commands (cowsay, fortune, sl, matrix, figlet)
+100+ built-in commands including:
+- **File Operations**: ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree, find, grep
+- **System Monitoring**: top, htop, ps, df, free, uptime, vmstat, iostat, iotop
+- **Network Tools**: ping, curl, wget, nmap, traceroute, nslookup, tcpdump
+- **Process Management**: systemctl, journalctl, cron, at, strace
+- **Text Processing**: sed, awk, sort, uniq, head, tail, wc, diff
+- **Encoding Tools**: base64, urlencode, hash, uuid
+- **System Info**: neofetch, uname, hostname, lsb_release
+- **Fun Commands**: cowsay, fortune, matrix, starwars, asciiart
+- **Mathematics**: calc, prime, factor, bc, expr
+- **And many more...**
 
-### Virtual File System
-- Persistent storage using localStorage
-- Complete file operations (create, read, write, rename, copy, move, delete)
-- Undo/redo support (Ctrl+Z/Ctrl+Y)
-- Global file search
-- File associations
+### Technical Stack
+- React 19.2.6 - UI framework
+- TypeScript - Type system
+- Zustand 5 - State management
+- Vite 8 - Build tool
+- Pyodide - Python runtime (browser-based)
+- Lucide React - Icon library
 
-### Web Services Integration
-- Real-time weather forecasts
-- IP geolocation
-- World clock with multiple timezones
-- Real-time currency conversion
-- Cryptocurrency tracking
+## Keyboard Shortcuts
 
-## Applications
+### Global Shortcuts
+- `Ctrl+Shift+L` - Open Launcher
+- `Ctrl+Shift+S` - Open Settings
+- `Ctrl+Shift+F` - Open File Manager
+- `Ctrl+Shift+T` - Open Terminal
+- `Ctrl+M` - Maximize/Restore Window
+- `Ctrl+N` - New Terminal
+- `Ctrl+W` - Close Window
+- `Ctrl+Shift+K` - Open Smart Search
+- `F11` - Fullscreen Toggle
+- `PrintScreen` - Screenshot
 
-### System Tools
-File Manager, Terminal, System Monitor, Settings, Software Center, Disk Analyzer, Task Manager, Network Monitor, Firewall, Backup Tool, Archive Manager, Performance Monitor, Log Viewer, System Health Check, **API 文档中心**
+### Desktop Switching
+- `Ctrl+Alt+1-9` - Switch to Desktop N
+- `Ctrl+Alt+Left/Right` - Switch to Previous/Next Desktop
+- `Ctrl+Shift+Alt+1-9` - Move Window to Desktop N
 
-### Development
-Code Editor, Code Playground, API Tester, JSON Formatter, Regex Builder, GitHub Trending, Code Snippets Manager, Data Visualization, AI Code Assistant, Code Generator, **API 文档中心**, Web Services Toolbox, Command Reference
+### Window Management
+- `Alt+Tab` - Cycle Windows
+- `Alt+Shift+Tab` - Cycle Windows (Reverse)
+- `Ctrl+Shift+Arrow Up/Down` - Switch to Same App Window
 
-### Office
-Text Editor, Markdown Editor, Spreadsheet, Presentation, Calendar, Todo List, Notes, Mind Map, Kanban Board, Project Planner, Translator, Dictionary, **Markdown 幻灯片**, **智能项目管理**, **项目规划器**
+## Development
 
-### Network
-Browser, Weather, News Reader, Cryptocurrency Tracker, Email Client, Chat, AI Helper, Learning Platform, **GitHub 热门**, **股票市场追踪器**
+### Prerequisites
+- Node.js 18+
+- npm 9+
 
-### Multimedia
-Music Player, Video Player, Paint, Image Viewer, Camera, Sound Recorder, Screen Recorder, PDF Viewer, Whiteboard, **音乐可视化**
-
-### Utilities
-Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Voice Transcriber, Clipboard Manager, Quick Launcher, **番茄工作法**, **专注模式**, **任务自动化**, **智能仪表盘**, **便签墙**, **灵感速记**, **单词记忆卡片**
-
-### Games
-Snake, Tetris, Virtual Pet, Particle System
-
-## Technology Stack
-
-- React 19 with Concurrent Features
-- TypeScript 6
-- Zustand 5 (state management)
-- Vite 8 (build tool)
-- Pyodide 0.26 (Python runtime)
-- Lucide React (icons)
-
-## Quick Start
+### Installation
 
 ```bash
 # Clone the repository
@@ -88,142 +94,71 @@ npm run dev
 
 # Build for production
 npm run build
-
-# Deploy to GitHub Pages
-npm run deploy
 ```
 
-## Keyboard Shortcuts
+### Available Scripts
 
-| Shortcut | Action |
-|----------|--------|
-| `Super` or `Ctrl+Shift+L` | Open launcher |
-| `Super + T` | Open terminal |
-| `Super + E` | Open file manager |
-| `Super + B` | Open browser |
-| `Super + K` | Global search |
-| `Super + P` | Command palette |
-| `Ctrl + K` | Quick search |
-| `Ctrl + P` | Command palette |
-| `Alt + Tab` | Window switcher |
-| `Ctrl + Alt + Arrow` | Switch desktop |
-| `Ctrl + Alt + [1-9]` | Go to desktop |
-| `Super + Q` | Close window |
-| `Super + M` | Minimize window |
-| `F11` | Toggle fullscreen |
-| `PrintScreen` | Screenshot |
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:github` - Build for GitHub Pages
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
 
-## API Integrations
+## Architecture
 
-WebLinuxOS integrates several public APIs:
+```
+src/
+├── apps/           # Application components
+├── components/      # Reusable UI components
+│   └── desktop/    # Desktop environment components
+├── store.tsx       # Zustand state management
+├── types.ts        # TypeScript type definitions
+├── apps.tsx        # Application registry
+└── main.tsx        # Application entry point
+```
 
-- Open-Meteo (weather data)
-- ipapi.co (IP geolocation)
-- Cloudflare DNS (DNS resolution)
-- GitHub API (trending repositories)
-- ExchangeRate-API (currency exchange)
-- CoinGecko (cryptocurrency prices)
+### State Management
 
-## Browser Compatibility
+The application uses Zustand for global state management:
+- `windows` - Window state (position, size, z-index, visibility)
+- `files` - Virtual file system
+- `theme` - Theme settings (light/dark)
+- `wallpaper` - Desktop wallpaper
+- `apps` - Registered applications
 
-- Chrome 90+ (Recommended)
+## Browser Support
+
+- Chrome 90+
 - Firefox 88+
 - Safari 14+
 - Edge 90+
-
-## Project Structure
-
-```
-web-linux/
-├── public/              # Static assets
-├── src/
-│   ├── apps/            # Application components (100+ apps)
-│   ├── components/      # UI components
-│   │   └── desktop/    # Desktop environment components
-│   ├── icons/          # Custom icons
-│   ├── App.tsx         # Main application component
-│   ├── main.tsx        # Entry point
-│   ├── store.tsx       # Zustand state management
-│   ├── apps.tsx        # Application registry
-│   └── index.css       # Global styles
-├── index.html
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
-```
-
-## Development
-
-### Scripts
-
-```bash
-npm run dev              # Start development server
-npm run build            # Build for production
-npm run lint             # Run ESLint
-npm run typecheck        # Run TypeScript type checking
-npm run format           # Format code with Prettier
-npm run deploy           # Deploy to GitHub Pages
-```
-
-## Performance Optimizations
-
-- 60 FPS smooth particle animations
-- Lazy loading for application components
-- Optimized localStorage operations with debouncing
-- Component memoization for better rendering performance
-- Efficient state management with Zustand
-
-## New Features (v4.4.0)
-
-- **API 文档中心**: Comprehensive API documentation viewer with examples for Open-Meteo, GitHub API, CoinGecko, and more
-- **智能项目管理**: Advanced project management with task tracking
-- **Markdown 幻灯片**: Create presentations from Markdown files
-- **项目规划器**: Visual project planning tools
-- **专注模式**: Distraction-free work environment
-- **股票市场追踪器**: Real-time stock market monitoring
-- **音乐可视化**: Audio visualization with animations
-- Enhanced keyboard shortcuts for better productivity
-- Improved 60 FPS desktop animations
-
-## New Features (v4.3.0)
-
-- **单词记忆卡片**: Interactive flashcards application for language learning
-  - Create custom decks with front/back cards
-  - Add tags and difficulty levels (easy/medium/hard)
-  - Interactive study mode with card flipping
-  - Track learning progress with correct/incorrect answers
-  - Local storage for persistence between sessions
-  - Built-in example English vocabulary deck
-- Unified version number across all system components
-- Fixed TypeScript issues
-- Enhanced user interface improvements
-
-## Contributing
-
-Contributions are welcome. Please submit issues and pull requests following these steps:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes
-4. Run lint and typecheck
-5. Submit a pull request
 
 ## License
 
 MIT License
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
 ## Acknowledgments
 
-Special thanks to:
-- Lucide Icons (https://lucide.dev/)
-- Pyodide (https://pyodide.org/)
-- Open-Meteo (https://open-meteo.com/)
-- CoinGecko (https://coingecko.com/)
+- React team for the amazing UI framework
+- Vite team for the fast build tool
+- All open source libraries used in this project
+- All contributors and users of WebLinuxOS
 
-## Live Demo
+## Statistics
 
-Visit the live demo at: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
+- 120+ Pre-installed applications
+- 100+ Terminal commands
+- 500+ TypeScript components
+- Zero external API dependencies (except for some app features)
 
----
+## Tips
 
-Version: 4.4.0 | License: MIT
+1. **Quick App Launch**: Use `Ctrl+Shift+K` to quickly search and launch apps
+2. **Multi-tasking**: Use virtual desktops to organize your workspace
+3. **Terminal Power**: The terminal has 100+ built-in commands - try `help` to explore
+4. **Customization**: Right-click on desktop to access settings and wallpaper options
+5. **Python**: Type `python` in terminal to start an interactive Python session (powered by Pyodide)

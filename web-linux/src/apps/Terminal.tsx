@@ -67,7 +67,12 @@ const COMMANDS = [
   'cowsay', 'cowthink', 'dog', 'fortune', 'sl', 'starwars', 'asciiart', 'matrix', 'figlet', 'banner', 'lolcat', 'bacon',
   'json', 'urlencode', 'urldecode', 'uuid', 'password', 'color', 'currency', 'units', 'timeconv',
   'joke', 'advice', 'flip', 'rps',
-  'chmod', 'chown', 'ln', 'stat', 'du', 'last', 'who', 'w', 'id', 'groups', 'users', 'uptime', 'free', 'vmstat', 'iostat'
+  'chmod', 'chown', 'ln', 'stat', 'du', 'last', 'who', 'w', 'id', 'groups', 'users', 'uptime', 'free', 'vmstat', 'iostat',
+  'htop', 'htop-sim', 'systemctl-list', 'cron', 'at', 'watch', 'nc', 'nmap', 'traceroute', 'nslookup', 'dig', 'tcpdump',
+  'bc', 'expr', 'seq', 'yes', 'printf', 'tty', 'wall', 'write', 'mesg', 'talk', 'strace', 'ltrace',
+  'ldd', 'file', 'strings', 'hexdump', 'od', 'xxd', 'base64', 'uuencode', 'mimencode',
+  'openssl', 'gpg', 'ssh-keygen', 'ssh-copy-id', 'rsync', 'scp', 'sftp',
+  'tmux', 'screen', 'byobu', 'htop-simulated', 'iotop', 'powertop', 'bandwhich', 'btop', 'bashtop'
 ]
 
 function listDir(files: FileNode[], path: string): string {
@@ -2522,6 +2527,524 @@ tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN`
 tcp LISTEN 0 128 *:80 *:* users:(("nginx",pid=1234,fd=6))
 tcp LISTEN 0 128 *:22 *:* users:(("sshd",pid=567,fd=3))`
         break
+      case 'htop':
+      case 'htop-sim':
+      case 'htop-simulated': {
+        const escapeChar = String.fromCharCode(27)
+        const processes = [
+          { pid: 1, user: 'root', cpu: Math.random() * 2, mem: Math.random() * 5 + 1, time: '0:01', cmd: 'systemd' },
+          { pid: Math.floor(Math.random() * 500 + 100), user: 'user', cpu: Math.random() * 15, mem: Math.random() * 10 + 2, time: '0:0' + Math.floor(Math.random() * 10), cmd: 'code-editor' },
+          { pid: Math.floor(Math.random() * 500 + 100), user: 'user', cpu: Math.random() * 10, mem: Math.random() * 8 + 1, time: '0:0' + Math.floor(Math.random() * 10), cmd: 'browser' },
+          { pid: Math.floor(Math.random() * 500 + 100), user: 'user', cpu: Math.random() * 5, mem: Math.random() * 5 + 0.5, time: '0:' + Math.floor(Math.random() * 10) + ':' + Math.floor(Math.random() * 60), cmd: 'terminal' },
+          { pid: Math.floor(Math.random() * 500 + 100), user: 'user', cpu: Math.random() * 3, mem: Math.random() * 3 + 0.5, time: '0:' + Math.floor(Math.random() * 10) + ':' + Math.floor(Math.random() * 60), cmd: 'file-manager' },
+          { pid: Math.floor(Math.random() * 500 + 100), user: 'user', cpu: Math.random() * 8, mem: Math.random() * 6 + 1, time: '0:' + Math.floor(Math.random() * 10) + ':' + Math.floor(Math.random() * 60), cmd: 'music-player' },
+        ]
+        
+        output = [
+          `${escapeChar}[1m${escapeChar}[34m  htop --  System Monitor${escapeChar}[0m`,
+          '',
+          `${escapeChar}[33m  PID   USER    CPU%   MEM%   TIME+  COMMAND${escapeChar}[0m`,
+          '─'.repeat(70),
+          ...processes.map(p => 
+            ` ${p.pid.toString().padStart(4)}  ${p.user.padEnd(6)}  ${p.cpu.toFixed(1).padStart(5)}  ${p.mem.toFixed(1).padStart(5)}  ${p.time.padEnd(8)} ${p.cmd}`
+          ),
+          '─'.repeat(70),
+          `  CPU: [${'#'.repeat(Math.floor(Math.random() * 40))}${' '.repeat(40 - Math.floor(Math.random() * 40))}] ${(Math.random() * 30 + 10).toFixed(1)}%`,
+          `  Mem: [${'#'.repeat(Math.floor(Math.random() * 40))}${' '.repeat(40 - Math.floor(Math.random() * 40))}] ${(Math.random() * 40 + 30).toFixed(1)}%`,
+          '',
+          `  ${processes.length} processes | 1 user | load average: ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}, ${(Math.random() * 2).toFixed(2)}`,
+          '',
+          `${escapeChar}[32mPress q to quit${escapeChar}[0m`,
+        ].join('\n')
+        break
+      }
+      case 'systemctl-list':
+      case 'systemctl': {
+        if (args[0] === 'list-units' || args.length === 0) {
+          const services = [
+            { name: 'ssh.service', load: 'loaded', active: 'active', running: 'OpenSSH server daemon' },
+            { name: 'nginx.service', load: 'loaded', active: 'active', running: 'A nginx HTTP server' },
+            { name: 'docker.service', load: 'loaded', active: 'active', running: 'Docker Application Container Engine' },
+            { name: 'firewalld.service', load: 'loaded', active: 'active', running: 'firewalld - dynamic firewall daemon' },
+            { name: 'cron.service', load: 'loaded', active: 'active', running: 'Regular background program processing daemon' },
+            { name: 'rsyslog.service', load: 'loaded', active: 'active', running: 'System Logging Service' },
+            { name: 'systemd-journald.service', load: 'loaded', active: 'active', running: 'Journal Service' },
+            { name: 'systemd-networkd.service', load: 'loaded', active: 'active', running: 'Network Service' },
+          ]
+          output = [
+            '  UNIT                           LOAD   ACTIVE   SUB     DESCRIPTION',
+            '─'.repeat(75),
+            ...services.map(s => 
+              `  ${s.name.padEnd(30)} ${s.load.padEnd(8)} ${s.active.padEnd(8)} ${s.running}`
+            ),
+            '─'.repeat(75),
+            '',
+            `LOADED = units loaded by the system`,
+            `ACTIVE = high-level unit activation state`,
+            `SUB = low-level unit activation state`,
+          ].join('\n')
+        } else if (args[0] === 'status') {
+          output = `● ${args[1] || 'ssh.service'} - OpenSSH server daemon
+   Loaded: loaded (/usr/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+   Active: ${args[1] ? 'active (running)' : 'inactive (dead)'} since ${new Date().toDateString()}; 2 weeks ago
+ Main PID: ${Math.floor(Math.random() * 1000 + 500)} (sshd)
+   CGroup: /system.slice/ssh.service
+           └─${Math.floor(Math.random() * 1000 + 500)} /usr/sbin/sshd -D`
+        } else if (args[0] === 'start') {
+          output = `Starting ${args[1] || 'service'}...`
+        } else if (args[0] === 'stop') {
+          output = `Stopping ${args[1] || 'service'}...`
+        } else if (args[0] === 'restart') {
+          output = `Restarting ${args[1] || 'service'}...\nJob for ${args[1] || 'service'} done.`
+        } else if (args[0] === 'enable') {
+          output = `Created symlink /etc/systemd/system/multi-user.target.wants/${args[1] || 'service'}.service`
+        } else {
+          output = `systemctl: 操作 '${args[0]}' 不受支持\n用法: systemctl [操作] [服务名]\n操作: list-units, status, start, stop, restart, enable`
+        }
+        break
+      }
+      case 'cron': {
+        if (args[0] === '-l') {
+          output = [
+            '  Crontab for user',
+            '  # Edit this file to introduce tasks to be run by cron.',
+            '  #',
+            '  # m h  dom mon dow   command',
+            '  */5 * * * * /usr/bin/backup.sh',
+            '  0 */2 * * * /usr/bin/logrotate',
+            '  30 4 * * * /usr/bin/updatedb',
+          ].join('\n')
+        } else if (args[0] === '-e') {
+          output = 'crontab: editing crontab (使用默认编辑器: vim)'
+        } else if (args[0] === '-r') {
+          output = 'crontab: really delete user crontab? (y/n)'
+        } else {
+          output = [
+            'crontab: usage: crontab [ -u user ] file',
+            '       crontab [ -u user ] { -l | -r | -e }',
+            '',
+            '选项:',
+            '  -l  显示当前crontab',
+            '  -e  编辑crontab',
+            '  -r  删除当前crontab',
+          ].join('\n')
+        }
+        break
+      }
+      case 'at': {
+        if (args[0] === '-l' || args[0] === '-q') {
+          output = `Job ${Math.floor(Math.random() * 100 + 1)} at ${new Date(Date.now() + 3600000).toLocaleString('zh-CN')}`
+        } else if (args[0] === '-d') {
+          output = `Deleted job ${args[1]}`
+        } else {
+          output = [
+            'at: usage: at [-V] [-q queue] [-f file] [-mMlv] times...',
+            'at: usage: at [-V] [-q queue] [-f file] [-mMlv] -t time',
+            'at: usage: at -c job [job...]',
+            'at: usage: atrm job [job...]',
+            'at: usage: at -l [job...]',
+            '',
+            '示例:',
+            '  at 5pm + 2 days',
+            '  at 10am tomorrow',
+            '  at -l',
+          ].join('\n')
+        }
+        break
+      }
+      case 'watch': {
+        if (args.length === 0) {
+          output = [
+            'watch: usage: watch [-dhnt] [--differences[=cumulative]] [--help] [--interval=<seconds>] [--no-title] [--version] <command>',
+            '',
+            '示例:',
+            '  watch df -h',
+            '  watch -n 5 "ls -l"',
+            '  watch -d free -m',
+          ].join('\n')
+        } else {
+          const interval = args.includes('-n') ? parseInt(args[args.indexOf('-n') + 1]) || 2 : 2
+          output = [
+            `Every ${interval}s: ${args.filter(a => a !== '-n' && !args[args.indexOf('-n') + 1]?.includes(a) || a === args[args.indexOf('-n') + 1]).join(' ')}`,
+            new Date().toLocaleString(),
+            '',
+            `${'─'.repeat(60)}`,
+            `Sample output (模拟)`,
+            `${'─'.repeat(60)}`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'nmap': {
+        if (args[0] === '-sn') {
+          output = [
+            `Starting Nmap 7.94 ( https://nmap.org )`,
+            `Nmap scan report for ${args[1] || 'localhost'} (127.0.0.1)`,
+            `Host is up (0.0003s latency).`,
+            `Nmap done: 1 IP address (1 host up) scanned`,
+          ].join('\n')
+        } else if (args[0] === '-sV') {
+          output = [
+            `Starting Nmap 7.94`,
+            `Nmap scan report for ${args[1] || 'localhost'}`,
+            '',
+            `PORT     STATE  SERVICE  VERSION`,
+            `22/tcp   open   ssh      OpenSSH 8.0`,
+            `80/tcp   open   http     Apache 2.4.41`,
+            `443/tcp  open   https    nginx 1.18.0`,
+            `3306/tcp open   mysql    MySQL 8.0.23`,
+            '',
+            `Service detection performed.`,
+          ].join('\n')
+        } else {
+          output = [
+            `Nmap 7.94 - Network exploration tool and security scanner`,
+            '',
+            `Usage: nmap [Scan Type(s)] [Options] {target specification}`,
+            '',
+            `TARGET SPECIFICATION:`,
+            `  -iL <inputfilename>  Input from list of hosts/networks`,
+            `  -iR <num hosts>       Choose random targets`,
+            '',
+            `SCAN TECHNIQUES:`,
+            `  -sS/sT/sA/sW/sM       TCP SYN/Connect()/ACK/Window/Maimon scans`,
+            `  -sU                   UDP Scan`,
+            `  -sN/sF/sX            TCP Null, FIN, and Xmas scans`,
+            '',
+            `HOST DISCOVERY:`,
+            `  -sn                   Ping Scan - disable port scan`,
+            '',
+            `SERVICE/VERSION DETECTION:`,
+            `  -sV                   Probe open ports to determine service/info`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'traceroute':
+      case 'tracepath': {
+        const target = args[0] || 'localhost'
+        const hops = [
+          { hop: 1, host: '192.168.1.1', latency: (Math.random() * 2 + 0.5).toFixed(3) },
+          { hop: 2, host: '10.0.0.1', latency: (Math.random() * 5 + 1).toFixed(3) },
+          { hop: 3, host: '172.16.0.1', latency: (Math.random() * 10 + 2).toFixed(3) },
+          { hop: 4, host: target, latency: (Math.random() * 20 + 5).toFixed(3) },
+        ]
+        output = [
+          `traceroute to ${target}, 30 hops max`,
+          ...hops.map(h => ` ${h.hop}  ${h.host.padEnd(20)} ${h.latency} ms`),
+          '',
+          `Trace complete.`,
+        ].join('\n')
+        break
+      }
+      case 'nslookup': {
+        const domain = args[0] || 'localhost'
+        output = [
+          `Server:         8.8.8.8`,
+          `Address:        8.8.8.8#53`,
+          '',
+          `Non-authoritative answer:`,
+          `Name:   ${domain}`,
+          `Address:  ${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+        ].join('\n')
+        break
+      }
+      case 'tcpdump': {
+        if (args.includes('-i') || args.includes('--interface')) {
+          const iface = args[args.indexOf('-i') + 1] || args[args.indexOf('--interface') + 1] || 'eth0'
+          const rand1 = Math.floor(Math.random() * 255)
+          const rand2 = Math.floor(Math.random() * 255)
+          const rand3 = Math.floor(Math.random() * 255)
+          const rand4 = Math.floor(Math.random() * 255)
+          const randPort = Math.floor(Math.random() * 65535)
+          output = [
+            `tcpdump: verbose output suppressed, use -v or -vv for full protocol decode`,
+            `listening on ${iface}, link-type EN10MB (Ethernet), capture size 262144 bytes`,
+            '',
+            `${new Date().toISOString()}.${String(Math.floor(Math.random() * 1000)).padStart(3, '0')} IP ${rand1}.${rand2}.${rand3}.${rand4}.${randPort} > ${rand1}.${rand2}.${rand3}.${rand4}.${randPort} UDP, length 52`,
+            `${new Date().toISOString()}.${String(Math.floor(Math.random() * 1000)).padStart(3, '0')} IP ${rand1}.${rand2}.${rand3}.${rand4}.443 > ${rand1}.${rand2}.${rand3}.${rand4}.${randPort} Flags P seq 1:100 ack 1 win 502 length 99`,
+            '',
+            `^C`,
+            `2 packets captured`,
+            `2 packets received by filter`,
+            `0 packets dropped by kernel`,
+          ].join('\n')
+        } else {
+          output = [
+            `tcpdump: usage: tcpdump [-aAdddklLlnOOpqRStuUvxX] [-c count] [-C file_size]`,
+            `          [-E algo:secret] [-F file] [-G seconds] [-i interface]`,
+            `          [-r file] [-s snaplen] [-T type] [-w file] [-W filecount]`,
+            `          [-y datalinktype] [expression]`,
+            '',
+            `示例:`,
+            `  tcpdump -i eth0`,
+            `  tcpdump -i any host example.com`,
+            `  tcpdump -i eth0 port 80`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'bc': {
+        const expression = args.join(' ')
+        if (!expression || args[0] === '-h' || args[0] === '--help') {
+          output = [
+            'bc - An arbitrary precision calculator language',
+            '',
+            '用法: bc [options] [file...]',
+            '',
+            '选项:',
+            '  -l, --mathlib   定义数学库',
+            '  -i, --interactive   强制交互模式',
+            '  -w, --warn   警告 POSIX bc 扩展',
+            '  -s, --standard   POSIX bc 严格模式',
+            '',
+            '示例:',
+            '  echo "scale=2; 10/3" | bc',
+            '  bc -l <<< "s(3.14159)"',
+          ].join('\n')
+        } else {
+          try {
+            const sanitized = expression.replace(/[^0-9+\-*/%.()]/g, '')
+            const result = Function(`'use strict'; return (${sanitized})`)()
+            output = `scale=2\n${expression}\n${Number(result).toFixed(2)}`
+          } catch {
+            output = 'bc: 表达式错误'
+          }
+        }
+        break
+      }
+      case 'expr': {
+        const expression = args.join(' ')
+        if (!expression) {
+          output = 'expr: 缺少操作数'
+        } else {
+          try {
+            const result = Function(`'use strict'; return (${expression})`)()
+            output = String(result)
+          } catch {
+            output = 'expr: 表达式错误'
+          }
+        }
+        break
+      }
+      case 'seq': {
+        const start = parseInt(args[0]) || 1
+        const end = parseInt(args[1]) || parseInt(args[0]) || 10
+        const step = parseInt(args[2]) || 1
+        const results = []
+        for (let i = start; i <= end; i += step) {
+          results.push(i)
+        }
+        output = results.join('\n')
+        break
+      }
+      case 'yes': {
+        const text = args.join(' ') || 'y'
+        output = `${text}\n${text}\n${text}\n... (Ctrl+C to stop)`
+        break
+      }
+      case 'printf': {
+        if (args.length === 0) {
+          output = 'printf: 用法: printf format [arguments...]'
+        } else {
+          const format = args[0]
+          const values = args.slice(1)
+          output = format.replace(/%s/g, () => values.shift() || '')
+          output = output.replace(/%d/g, () => values.shift() || '0')
+        }
+        break
+      }
+      case 'wall': {
+        const message = args.join(' ') || 'Broadcast message from user@web-linux'
+        output = [
+          '',
+          `Broadcast message from user@web-linux (${new Date().toLocaleString()}):`,
+          '',
+          message,
+          '',
+        ].join('\n')
+        break
+      }
+      case 'strace': {
+        if (args.length === 0) {
+          output = 'strace: 用法: strace [-dhi] [-b exec] [-e expr] [-a column] [-o file] [-s strsize] [-f] [-p pid] [command]'
+        } else {
+          output = [
+            `execve("${args[0]}", [${args.join(', ')}], 0x7ffcb3c4e4a0 /* 45 vars */) = 0`,
+            `brk(NULL)                               = 0x55a8b4a00000`,
+            `mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8e4a5b8000`,
+            `access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)`,
+            `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3`,
+            `fstat(3, {st_mode=S_IFREG|0644, st_size=123456, ...}) = 0`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'iotop': {
+        output = [
+          `Total DISK READ:       0.00 B/s | Total DISK WRITE:       0.00 B/s`,
+          `Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       0.00 B/s`,
+          '',
+          `  TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO    COMMAND`,
+          `    1 be/4 root        0.00 B/s    0.00 B/s    0.00 %    0.00 % init`,
+          `  456 be/4 root        0.00 B/s    0.00 B/s    0.00 %    0.00 % sshd`,
+          `  789 be/4 user        0.00 B/s    0.00 B/s    0.00 %    0.00 % bash`,
+        ].join('\n')
+        break
+      }
+      case 'powertop': {
+        output = [
+          `PowerTOP 2.13 --analyze forLinux`,
+          '',
+          `Usage: powertop [--help] [--version] [--quiet] [--html[=filename]]`,
+          `              [--csv[=filename]] [--extech=<device>] [--dev=<device>]`,
+          `              [--time= <int>] [--workload=<file>] [--calibrate]`,
+          `              [--iterations=<int>] [--discard) [--cppc] [--json]`,
+          '',
+          `Idle stats:`,
+          `   Package  | Core 0 | Core 1`,
+          `   C0 (active) |  ${(Math.random() * 30 + 5).toFixed(1)}% | ${(Math.random() * 30 + 5).toFixed(1)}%`,
+          `   C1        |  ${(Math.random() * 20 + 10).toFixed(1)}% | ${(Math.random() * 20 + 10).toFixed(1)}%`,
+          '',
+          `Device stats:`,
+          `  Device  Power state   Usage`,
+          `  CPU sleep            ${(Math.random() * 50 + 20).toFixed(1)}%`,
+          `  Display              ${(Math.random() * 10 + 2).toFixed(1)}%`,
+        ].join('\n')
+        break
+      }
+      case 'btop':
+      case 'bashtop': {
+        output = [
+          `╭─────────────────────────────────────────────────────────────────╮`,
+          `│  ███████╗██╗   ██╗██████╗ ███████╗██╗   ██╗ █████╗ ██╗    │`,
+          `│  ██╔════╝██║   ██║██╔══██╗██╔════╝██║   ██║██╔══██╗██║    │`,
+          `│  ███████╗██║   ██║██████╔╝█████╗  ██║   ██║███████║██║    │`,
+          `│  ╚════██║██║   ██║██╔══██╗██╔══╝  ╚██╗ ██╔╝██╔══██║██║    │`,
+          `│  ███████║╚██████╔╝██║  ██║███████╗ ╚████╔╝ ██║  ██║███████╗│`,
+          `│  ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝│`,
+          `├─────────────────────────────────────────────────────────────────┤`,
+          `│  CPU: ${(Math.random() * 30 + 10).toFixed(1)}%  │  MEM: ${(Math.random() * 40 + 30).toFixed(1)}%  │  NET: ↓${(Math.random() * 50 + 10).toFixed(1)} ↑${(Math.random() * 30 + 5).toFixed(1)}  │  GPU: ${(Math.random() * 20 + 5).toFixed(1)}%  │`,
+          `├─────────────────────────────────────────────────────────────────┤`,
+          `│  Processes: ${Math.floor(Math.random() * 50 + 100)}                                          │`,
+          `│  [PID]  ${(Math.random() * 20).toFixed(1)}% │  4567  code-editor           │`,
+          `│  [PID]  ${(Math.random() * 15).toFixed(1)}% │  1234  browser               │`,
+          `│  [PID]  ${(Math.random() * 10).toFixed(1)}% │  8901  music-player          │`,
+          `╰─────────────────────────────────────────────────────────────────╯`,
+        ].join('\n')
+        break
+      }
+      case 'tmux': {
+        if (args[0] === 'ls') {
+          output = [
+            `0: 1 windows (created ${new Date(Date.now() - 86400000).toDateString()})`,
+            `1: 2 windows (created ${new Date(Date.now() - 172800000).toDateString()})`,
+          ].join('\n')
+        } else if (args[0] === 'new') {
+          output = `[新窗口创建成功] tmux session started`
+        } else {
+          output = [
+            'tmux 3.2 - terminal multiplexer',
+            '',
+            '用法: tmux [-2ClUvV] [-c shell-command] [-f file] [-L socket-name]',
+            '            [-S socket-path] [-T features] [command [flags]]',
+            '',
+            '命令:',
+            '  new      创建新会话',
+            '  ls       列出所有会话',
+            '  attach   连接到一个会话',
+            '  detach   从当前会话分离',
+            '  kill-server  关闭服务器',
+          ].join('\n')
+        }
+        break
+      }
+      case 'screen': {
+        if (args[0] === '-ls') {
+          output = `There is a screen on:
+\t${Math.floor(Math.random() * 10000)}.pts-0.web-linux\t(Attached)
+1 Socket in /run/screen/S-user.`
+        } else if (args[0] === '-S') {
+          output = `[新 screen 会话创建成功]`
+        } else {
+          output = [
+            'Screen version 4.08.00',
+            '',
+            '用法: screen [-opts] [cmd [args]]',
+            '',
+            '选项:',
+            '  -ls         列出所有 screen 会话',
+            '  -S name     创建命名会话',
+            '  -r session  重新连接会话',
+            '  -d session  分离会话',
+          ].join('\n')
+        }
+        break
+      }
+      case 'openssl': {
+        if (args[0] === 'version') {
+          output = 'OpenSSL 3.0.13'
+        } else if (args[0] === 'rand') {
+          const length = parseInt(args[1]) || 32
+          const randomHex = Array.from({ length: length * 2 }, () => 
+            Math.floor(Math.random() * 16).toString(16)
+          ).join('')
+          output = randomHex
+        } else {
+          output = [
+            'OpenSSL 3.0.13',
+            '',
+            'Standard commands:',
+            '  rand, genrsa, rsa, pkcs12, x509, req, dgst',
+            '',
+            'Pass Phrase Options:',
+            '  -pass arg, -passout arg',
+            '',
+            'Examples:',
+            '  openssl rand -hex 32',
+            '  openssl genrsa -out key.pem 2048',
+          ].join('\n')
+        }
+        break
+      }
+      case 'ssh-keygen': {
+        if (args.includes('-t')) {
+          const type = args[args.indexOf('-t') + 1] || 'rsa'
+          output = [
+            `Generating public/private ${type} key pair.`,
+            `Enter file in which to save the key (/home/user/.ssh/id_${type}): `,
+            `Enter passphrase (empty for no passphrase): `,
+            `Enter same passphrase again: `,
+            `Your identification has been saved in /home/user/.ssh/id_${type}`,
+            `Your public key has been saved in /home/user/.ssh/id_${type}.pub`,
+            '',
+            `The key fingerprint is:`,
+            `${Array.from({ length: 47 }, () => Math.floor(Math.random() * 16).toString(16)).join(':')}`,
+            `The key's randomart image is:`,
+            `+---[${type.toUpperCase()} KEY]----+`,
+            `|                 .o.   |`,
+            `|                oo..  |`,
+            `|               oo..   |`,
+            `|              ..o.    |`,
+            `|               S.     |`,
+            `|        .   . .+      |`,
+            `|         o o=+.       |`,
+            `|          B=*O.        |`,
+            `|           **=         |`,
+            `+---[SHA256]----+`,
+          ].join('\n')
+        } else {
+          output = [
+            'ssh-keygen: usage: ssh-keygen [-q] [-b bits] [-t dsa | ecdsa | ed25519 | rsa]',
+            '            [-m key_format] [-f output_keyfile] [-N new_passphrase]',
+            '',
+            '示例:',
+            '  ssh-keygen -t rsa -b 4096',
+            '  ssh-keygen -t ed25519',
+          ].join('\n')
+        }
+        break
+      }
       case 'tar':
         output = `tar: 这似乎是一个归档文件 (使用 -xvf 解压)`
         break
