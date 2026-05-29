@@ -349,6 +349,24 @@ function AIChatAssistantIcon() {
   )
 }
 
+function BookmarkManagerIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  )
+}
+
+function CodeSnippetShareIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+    </svg>
+  )
+}
+
 function TaskManagerProIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
@@ -554,4 +572,6 @@ export const appRegistry: AppDefinition[] = [
   { id: 'ai-generator', name: 'AI文本生成器', icon: '🤖', component: 'AIGenerator', category: 'utilities', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'collaborative-whiteboard', name: '实时协作白板', icon: '🎨', component: 'CollaborativeWhiteboard', category: 'office', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'password-checker', name: '密码安全中心', icon: <ShieldIcon />, component: 'PasswordChecker', category: 'utilities', defaultWidth: 600, defaultHeight: 800, minWidth: 450, minHeight: 600, resizable: true, multiple: false },
+  { id: 'bookmark-manager', name: '网络书签管理', icon: <BookmarkManagerIcon />, component: 'BookmarkManager', category: 'internet', defaultWidth: 1000, defaultHeight: 750, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
+  { id: 'code-snippet-share', name: '代码片段分享', icon: <CodeSnippetShareIcon />, component: 'CodeSnippetShare', category: 'development', defaultWidth: 1200, defaultHeight: 800, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
 ]
