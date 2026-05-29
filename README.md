@@ -1,39 +1,43 @@
 # WebLinuxOS
 
-A fully functional web-based Linux desktop operating system simulation built with React, TypeScript, and Zustand.
+A fully functional web-based Linux desktop operating system simulation built with React, TypeScript, and Zustand. Experience a complete desktop environment right in your browser.
+
+## Demo
+
+Visit the live demo at: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
 
 ## Features
 
 ### Desktop Environment
-- **Multi-window Management**: Drag, resize, minimize, maximize, and close windows
-- **Virtual Desktop**: Multiple virtual desktops with wallpapers
+- **Multi-window Management**: Drag, resize, minimize, maximize, and close windows with smooth animations
+- **Virtual Desktop**: Multiple virtual desktops with customizable wallpapers
 - **Taskbar**: Quick access to running applications and system tray
-- **Start Menu**: Application launcher with categories
+- **Start Menu**: Application launcher with categories and search
 - **System Tray**: Network, volume, battery, and notification indicators
-- **Global Search**: Quick app launcher and file search
+- **Global Search**: Quick app launcher and file search with fuzzy matching
 - **Command Palette**: Keyboard-driven command execution
 
 ### Applications (120+)
 - **Productivity**: Notepad, TextEditor, CodeEditor, MarkdownEditor, Notes, TodoList, Calendar, Contacts
-- **Developer Tools**: CodeStudio, CodePlayground, Terminal, DevTools, RegexTester, ApiTester, PackageManager
-- **Media**: MusicPlayer, VideoPlayer, ImageViewer, Camera, Screenshot, ScreenRecorder, PictureInPicture
-- **Communication**: Chat, Email, VideoConference, Translator
-- **System**: FileManager, TaskManager, SystemMonitor, SystemSettings, ProcessMonitor, DiskUtility
-- **Utilities**: Calculator, ColorPicker, QRGenerator, UnitConverter, CurrencyConverter, PasswordGenerator
-- **Graphics**: Paint, Whiteboard, MindMap, DiagramEditor
-- **Learning**: Flashcards, Dictionary, LearningPlatform, CommandReference
-- **AI Integration**: ChatAI, AIGenerator, AICodeAssistant, SmartSearch
-- **Entertainment**: Games, Weather, NewsReader, StockTracker, CryptoTracker
-- **Creative**: Presentation, MarkdownSlides, RecipeBook, IdeaCapture
+- **Developer Tools**: CodeStudio, CodePlayground, Terminal, DevTools, RegexBuilder, ApiTester
+- **Media**: MusicPlayer, VideoPlayer, ImageViewer, Camera, Screenshot, ScreenRecorder
+- **Communication**: Email, RealTimeTranslator, Translator
+- **System**: FileManager, TaskManager, SystemMonitor, SystemSettings, ProcessMonitor, DiskUsage
+- **Utilities**: Calculator, ColorPicker, QRGenerator, UnitConverter, CurrencyConverter, PasswordManager
+- **Graphics**: Paint, Whiteboard, MindMap
+- **Learning**: Flashcards, Dictionary, LearningPlatform
+- **AI Integration**: ChatAI, AIGenerator, SmartSearch
+- **Entertainment**: Weather, NewsReader, Games
+- **Creative**: MarkdownSlides, RecipeBook, IdeaCapture
 
 ### Terminal Emulator
 100+ built-in commands including:
 - **File Operations**: ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree, find, grep
 - **System Monitoring**: top, htop, ps, df, free, uptime, vmstat, iostat, iotop
-- **Network Tools**: ping, curl, wget, nmap, traceroute, nslookup, tcpdump
+- **Network Tools**: ping, curl, wget, nmap, traceroute, nslookup, tcpdump, host, whois
 - **Process Management**: systemctl, journalctl, cron, at, strace
-- **Text Processing**: sed, awk, sort, uniq, head, tail, wc, diff
-- **Encoding Tools**: base64, urlencode, hash, uuid
+- **Text Processing**: sed, awk, sort, uniq, head, tail, wc, diff, jq
+- **Encoding Tools**: base64, urlencode, hash, uuid, fetch
 - **System Info**: neofetch, uname, hostname, lsb_release
 - **Fun Commands**: cowsay, fortune, matrix, starwars, asciiart
 - **Mathematics**: calc, prime, factor, bc, expr
@@ -44,7 +48,7 @@ A fully functional web-based Linux desktop operating system simulation built wit
 - TypeScript - Type system
 - Zustand 5 - State management
 - Vite 8 - Build tool
-- Pyodide - Python runtime (browser-based)
+- Pyodide 0.26 - Python runtime (browser-based)
 - Lucide React - Icon library
 
 ## Keyboard Shortcuts
@@ -145,6 +149,8 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 - React team for the amazing UI framework
 - Vite team for the fast build tool
+- Pyodide team for enabling Python in the browser
+- Lucide team for the beautiful icons
 - All open source libraries used in this project
 - All contributors and users of WebLinuxOS
 
@@ -153,12 +159,22 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 - 120+ Pre-installed applications
 - 100+ Terminal commands
 - 500+ TypeScript components
-- Zero external API dependencies (except for some app features)
+- Zero external API dependencies (core features)
+- Built-in Python runtime via Pyodide
 
 ## Tips
 
 1. **Quick App Launch**: Use `Ctrl+Shift+K` to quickly search and launch apps
-2. **Multi-tasking**: Use virtual desktops to organize your workspace
+2. **Multi-tasking**: Use virtual desktops (`Ctrl+Alt+1-9`) to organize your workspace
 3. **Terminal Power**: The terminal has 100+ built-in commands - try `help` to explore
 4. **Customization**: Right-click on desktop to access settings and wallpaper options
-5. **Python**: Type `python` in terminal to start an interactive Python session (powered by Pyodide)
+5. **Python**: Type `python` in terminal to start an interactive Python session
+6. **Weather**: Use the weather app or `weather` command to check forecasts
+7. **Translation**: Use the Translator app for multi-language translations
+
+## API Integration
+
+Some applications use external APIs:
+- **Weather**: Open-Meteo API for weather data
+- **Translation**: MyMemory API for multi-language translation
+- **All APIs are free and do not require API keys**

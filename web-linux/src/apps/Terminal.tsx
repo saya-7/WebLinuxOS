@@ -64,7 +64,7 @@ const COMMANDS = [
   'disk-usage', 'process-list', 'network-stats', 'system-info', 'memory-info', 'cpu-info',
   'version', 'credits', 'about', 'todo', 'notes', 'encrypt', 'decrypt',
   'calc', 'prime', 'factor', 'roman', 'base64', 'unbase64', 'hash', 'rev',
-  'cowsay', 'cowthink', 'dog', 'fortune', 'sl', 'starwars', 'asciiart', 'matrix', 'figlet', 'banner', 'lolcat', 'bacon',
+  'cowsay', 'cowthink', 'dog', 'fortune', 'sl', 'starwars', 'asciiart', 'matrix', 'figlet', 'banner', 'lolcat', 'bacon', 'jq', 'whois', 'host', 'fetch',
   'json', 'urlencode', 'urldecode', 'uuid', 'password', 'color', 'currency', 'units', 'timeconv',
   'joke', 'advice', 'flip', 'rps',
   'chmod', 'chown', 'ln', 'stat', 'du', 'last', 'who', 'w', 'id', 'groups', 'users', 'uptime', 'free', 'vmstat', 'iostat',
@@ -1149,6 +1149,208 @@ export default function Terminal() {
           }
         }
         break
+      case 'jq': {
+        if (args.length === 0) {
+          output = [
+            `🔍 jq - JSON 处理器`,
+            ``,
+            `用法: jq <表达式> [JSON字符串]`,
+            ``,
+            `支持的操作:`,
+            `  .key          获取键值`,
+            `  .[]           遍历数组`,
+            `  .key.subkey   获取嵌套值`,
+            `  .[] | .key    管道操作`,
+            ``,
+            `示例:`,
+            `  jq .name '{"name":"test","value":123}'`,
+            `  jq '.items[] | .name' '{"items":[{"name":"a"},{"name":"b"}]}'`,
+            ``,
+            `💡 强大的JSON数据查询和处理工具`,
+          ].join('\n')
+        } else {
+          try {
+            const expr = args[0]
+            const jsonStr = args.slice(1).join(' ')
+            if (!jsonStr) {
+              output = `jq: 需要提供JSON数据`
+              break
+            }
+            const parsed = JSON.parse(jsonStr)
+            let result: any = parsed
+            
+            const path = expr.replace(/\./g, ' ').trim().split(/\s+/).filter(Boolean)
+            for (const part of path) {
+              if (part === '[]') {
+                if (Array.isArray(result)) {
+                  result = result
+                } else {
+                  throw new Error(`无法在非数组上使用 []`)
+                }
+              } else if (part.includes('|')) {
+                const parts = part.split('|').map(p => p.trim())
+                for (const p of parts) {
+                  if (p.startsWith('.')) {
+                    const key = p.slice(1)
+                    if (Array.isArray(result)) {
+                      result = result.map((item: any) => item[key])
+                    } else {
+                      result = result[key]
+                    }
+                  }
+                }
+              } else if (Array.isArray(result)) {
+                result = result.map((item: any) => item[part])
+              } else {
+                result = result[part]
+              }
+            }
+            
+            if (expr.includes('|')) {
+              const pipeParts = expr.split('|').map(p => p.trim())
+              let current = parsed
+              for (const part of pipeParts) {
+                if (part.startsWith('.')) {
+                  const key = part.slice(1)
+                  if (Array.isArray(current)) {
+                    current = current.map((item: any) => item[key])
+                  } else {
+                    current = current[key]
+                  }
+                } else if (part === '.[]') {
+                  if (!Array.isArray(current)) {
+                    current = [current]
+                  }
+                }
+              }
+              result = current
+            }
+            
+            output = typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)
+          } catch (e) {
+            output = `jq: ${(e as Error).message}`
+          }
+        }
+        break
+      }
+      case 'whois': {
+        if (args.length === 0) {
+          output = [
+            `📊 whois - 域名信息查询`,
+            ``,
+            `用法: whois <域名>`,
+            ``,
+            `示例:`,
+            `  whois example.com`,
+            `  whois github.com`,
+            ``,
+            `💡 查询域名注册信息`,
+          ].join('\n')
+        } else {
+          const domain = args[0]
+          const whoisData = {
+            domain: domain,
+            registrar: '模拟注册商',
+            registrant: '模拟用户',
+            created: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000 * 5).toLocaleDateString(),
+            expires: new Date(Date.now() + Math.random() * 365 * 24 * 60 * 60 * 1000 * 2).toLocaleDateString(),
+            status: 'active',
+            nameservers: ['ns1.example.com', 'ns2.example.com'],
+          }
+          output = [
+            `Domain Name: ${whoisData.domain.toUpperCase()}`,
+            `Registry Domain ID: D${Math.floor(Math.random() * 1000000)}`,
+            `Registrar WHOIS Server: whois.example.com`,
+            `Registrar URL: http://www.example.com`,
+            `Updated Date: ${new Date().toLocaleDateString()}`,
+            `Creation Date: ${whoisData.created}`,
+            `Registry Expiry Date: ${whoisData.expires}`,
+            `Registrar: ${whoisData.registrar}`,
+            `Registrant Name: ${whoisData.registrant}`,
+            `Name Server: ${whoisData.nameservers.join(', ')}`,
+            `Status: ${whoisData.status}`,
+            '',
+            `>>> Last update of WHOIS database: ${new Date().toLocaleString()} <<<`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'host': {
+        if (args.length === 0) {
+          output = [
+            `🔍 host - DNS 查询`,
+            ``,
+            `用法: host <域名>`,
+            ``,
+            `示例:`,
+            `  host example.com`,
+            `  host github.com`,
+            ``,
+            `💡 查询域名的DNS记录`,
+          ].join('\n')
+        } else {
+          const domain = args[0]
+          const ip1 = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+          const ip2 = `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+          output = [
+            `${domain} has address ${ip1}`,
+            `${domain} has address ${ip2}`,
+            `${domain} mail is handled by 10 mail.${domain}.`,
+          ].join('\n')
+        }
+        break
+      }
+      case 'fetch': {
+        if (args.length === 0) {
+          output = [
+            `🌐 fetch - HTTP 请求工具`,
+            ``,
+            `用法: fetch <URL> [选项]`,
+            ``,
+            `选项:`,
+            `  -m, --method <GET|POST>  HTTP方法`,
+            `  -h, --header <key:value> 添加请求头`,
+            `  -d, --data <JSON>        请求体数据`,
+            `  -j, --json               以JSON格式输出`,
+            ``,
+            `示例:`,
+            `  fetch https://api.example.com/data`,
+            `  fetch -m POST -d '{"name":"test"}' https://api.example.com/create`,
+            ``,
+            `💡 模拟HTTP请求工具`,
+          ].join('\n')
+        } else {
+          const url = args[args.length - 1]
+          const method = args.includes('-m') || args.includes('--method')
+            ? args[args.indexOf('-m') !== -1 ? args.indexOf('-m') + 1 : args.indexOf('--method') + 1] || 'GET'
+            : 'GET'
+          
+          const mockResponse = {
+            url: url,
+            method: method.toUpperCase(),
+            status: 200,
+            statusText: 'OK',
+            headers: {
+              'Content-Type': 'application/json',
+              'Server': 'WebLinuxOS',
+            },
+            body: {
+              message: '请求成功',
+              timestamp: new Date().toISOString(),
+              data: {
+                items: [
+                  { id: 1, name: '项目1' },
+                  { id: 2, name: '项目2' },
+                ],
+                count: 2,
+              },
+            },
+          }
+          
+          output = JSON.stringify(mockResponse, null, 2)
+        }
+        break
+      }
       case 'urlencode':
         if (args.length === 0) {
           output = [
