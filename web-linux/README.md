@@ -1,53 +1,87 @@
 # WebLinuxOS
 
-A feature-rich Linux desktop environment running entirely in the browser. Experience the power of a modern operating system without any installation.
+A fully functional Linux desktop environment running entirely in the browser. Experience a complete operating system interface without any installation required.
 
-![WebLinuxOS](https://raw.githubusercontent.com/saya-ch/WebLinuxOS/main/assets/screenshot.png)
+## Overview
+
+WebLinuxOS brings the power of a Linux desktop to your browser. It features a modern, responsive interface with multi-window management, virtual desktops, and over 120 applications - all running client-side with no backend dependencies.
 
 ## Features
 
 ### Desktop Environment
-- Multi virtual desktops with smooth transitions
-- Advanced window management (drag, resize, minimize, maximize)
-- Dynamic wallpapers with particle effects
-- Smart launcher with fuzzy search
-- Context menus and global keyboard shortcuts
+- Multi virtual desktops with smooth workspace switching
+- Advanced window management (drag, resize, minimize, maximize, close)
+- Dynamic wallpapers with live particle effects
+- Smart launcher with fuzzy search and categorized application listing
+- Context menus with file operations
+- Global keyboard shortcuts for efficient navigation
 
-### Applications (120+)
+### Applications
 
 **System Tools**
-File Manager, Terminal, System Monitor, Settings, Task Manager, Process Monitor, Network Monitor, Disk Analyzer, Backup Tool, Archive Manager
+- File Manager with tree navigation and file operations
+- Terminal emulator with 90+ built-in commands
+- System Monitor displaying resource usage
+- Settings panel for customization
+- Task Manager and Process Monitor
+- Network Monitor and Disk Analyzer
+- Backup Tool and Archive Manager
 
-**Development**
-Code Editor, API Tester, JSON Formatter, Regex Builder, GitHub Trending, Command Reference, Task Automation, Developer Toolkit
+**Development Tools**
+- Code Editor with syntax highlighting
+- API Tester with request builder
+- JSON Formatter and Validator
+- Regex Builder with real-time testing
+- GitHub Trending repository viewer
+- Command Reference documentation
+- Task Automation workflow builder
 
 **Office & Productivity**
-Text Editor, Markdown Editor, Spreadsheet, Calendar, Todo List, Kanban Board, Project Planner, Notes, Mind Map
-
-**Network & Communication**
-Browser, Email Client, Chat Application, News Reader, Cloud Sync
-
-**Multimedia**
-Music Player, Video Player, Paint, Image Viewer, Camera, Sound Recorder, Screen Recorder
+- Text Editor with formatting options
+- Markdown Editor with live preview
+- Spreadsheet application
+- Calendar with event management
+- Todo List and Kanban Board
+- Project Planner with timeline
+- Notes and Mind Map tools
 
 **Utilities**
-Calculator, Password Manager, Pomodoro Timer, Color Picker, QR Generator, Unit Converter, Currency Converter, Voice Transcriber, Recipe Book
+- Calculator with scientific functions
+- Password Manager with encryption
+- Pomodoro Timer for productivity
+- Color Picker with palette generation
+- QR Code Generator
+- Unit and Currency Converter
+- Online Toolkit (JSON, Base64, URL encoding/decoding, hash calculation)
+
+**Multimedia**
+- Music Player with playlist support
+- Video Player with controls
+- Paint application with drawing tools
+- Image Viewer with zoom
+- Camera and Screen Recorder
+- Sound Recorder
 
 **Entertainment**
-Weather, World Clock, Snake Game, Tetris, Virtual Pet
+- Weather application with forecasts
+- World Clock with multiple time zones
+- Classic games (Snake, Tetris)
+- Virtual Pet companion
 
-### Terminal Emulator
-- 90+ built-in commands
+### Terminal Features
+- 90+ built-in shell commands
 - Python 3 runtime via Pyodide
 - Command history and auto-completion
-- File operations and system monitoring
+- File system navigation and operations
+- System information commands
+- Calculator and utility functions
 
 ### Web Services Integration
-- Real-time weather data (Open-Meteo)
-- IP geolocation (ipapi.co)
-- Cryptocurrency prices (CoinGecko)
-- Currency conversion
-- Air quality index
+- Real-time weather data from Open-Meteo
+- IP geolocation from ipapi.co
+- Cryptocurrency prices from CoinGecko
+- Currency conversion rates
+- Air quality index data
 
 ## Quick Start
 
@@ -55,7 +89,7 @@ Weather, World Clock, Snake Game, Tetris, Virtual Pet
 # Clone the repository
 git clone https://github.com/saya-ch/WebLinuxOS.git
 
-# Navigate to project directory
+# Navigate to the project directory
 cd WebLinuxOS/web-linux
 
 # Install dependencies
@@ -73,51 +107,70 @@ npm run deploy
 
 ## Technology Stack
 
-- React 19 - UI component framework
-- TypeScript 6 - Type-safe development
-- Zustand 5 - State management
-- Vite 8 - Build tool
-- Pyodide - Python in browser
+- **React 19** - UI component framework
+- **TypeScript 6** - Type-safe development
+- **Zustand 5** - Lightweight state management
+- **Vite 8** - Fast build tool
+- **Pyodide** - Python runtime in browser
+- **Lucide React** - Icon library
 
 ## Keyboard Shortcuts
 
 ### System
-- `Ctrl+Shift+L` - Open launcher
-- `Ctrl+K` - Open global search
-- `Ctrl+P` - Command palette
-- `Alt+Tab` - Cycle windows
-- `F11` - Toggle fullscreen
-- `PrintScreen` - Screenshot
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+Shift+L | Open launcher |
+| Ctrl+K | Open global search |
+| Ctrl+P | Command palette |
+| Alt+Tab | Cycle windows |
+| F11 | Toggle fullscreen |
+| PrintScreen | Screenshot |
+| Ctrl+Q | Close window |
+| Ctrl+M | Minimize window |
 
-### Applications
-- `Super+T` - Terminal
-- `Super+E` - File Manager
-- `Super+,` - Settings
-- `Super+A` - Calculator
+### Application Launch
+| Shortcut | Application |
+|----------|-------------|
+| Super+T | Terminal |
+| Super+E | File Manager |
+| Super+, | Settings |
+| Super+B | Browser |
+| Super+A | Calculator |
+
+### Virtual Desktops
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+Alt+[1-9] | Switch to desktop |
+| Ctrl+Alt+Arrow Left/Right | Switch workspace |
 
 ## Project Structure
 
 ```
 web-linux/
 ├── src/
-│   ├── apps/           # 120+ applications
-│   ├── components/     # Desktop components
-│   ├── store.tsx      # Zustand state management
-│   ├── apps.tsx       # App registry
-│   └── icons.tsx      # Icon registry
-├── public/            # Static assets
-└── package.json
+│   ├── apps/           # Application components
+│   ├── components/     # Desktop UI components
+│   ├── store.tsx       # Zustand state management
+│   ├── apps.tsx        # Application registry
+│   ├── icons.tsx       # Icon definitions
+│   └── types.ts        # TypeScript type definitions
+├── public/             # Static assets
+├── index.html          # Entry HTML
+├── vite.config.ts      # Vite configuration
+├── tsconfig.json       # TypeScript configuration
+└── package.json        # Dependencies and scripts
 ```
 
-## Performance
+## Performance Optimizations
 
-WebLinuxOS includes comprehensive performance optimizations:
+WebLinuxOS includes several performance optimizations:
 
-- Code splitting by application
-- Lazy loading for faster initial load
-- GPU acceleration for animations
-- Memoization to prevent unnecessary re-renders
-- Content visibility for long lists
+- **Code Splitting**: Applications are split into separate chunks
+- **Lazy Loading**: Components load on demand
+- **GPU Acceleration**: CSS animations leverage hardware acceleration
+- **Memoization**: React memo prevents unnecessary re-renders
+- **Content Visibility**: Optimized rendering for long lists
+- **Tree Shaking**: Unused code is eliminated during build
 
 ## Browser Compatibility
 
@@ -126,14 +179,32 @@ WebLinuxOS includes comprehensive performance optimizations:
 - Safari 14+
 - Edge 90+
 
+## Security
+
+- Input sanitization for all user inputs
+- Safe expression evaluation in terminal calculator
+- Local storage encryption for sensitive data
+- No external API keys exposed in client code
+- CSP headers for XSS protection
+
 ## License
 
-MIT License
+MIT License - see LICENSE file for details
 
 ## Live Demo
 
-Visit the live demo: https://saya-ch.github.io/WebLinuxOS/
+Visit the live demo at: https://saya-ch.github.io/WebLinuxOS/
+
+## Contributing
+
+Contributions are welcome. Please see CONTRIBUTING.md for guidelines.
+
+## Acknowledgments
+
+- Pyodide for enabling Python in the browser
+- Lucide for beautiful icons
+- All open source libraries used in this project
 
 ---
 
-Made with React, TypeScript, and modern web technologies.
+Built with React, TypeScript, and modern web technologies

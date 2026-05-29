@@ -11,6 +11,40 @@ function useLatest<T>(value: T): { current: T } {
   return ref
 }
 
+function safeEval(expression: string): number {
+  const sanitized = expression
+    .replace(/\b(sqrt|sin|cos|tan|log|log10|abs|ceil|floor|round)\b/g, 'Math.$1')
+    .replace(/\b(PI|E)\b/g, 'Math.$1')
+  
+  const unsafePatterns = [
+    /(window|document|global|this|eval|Function|require|import|process)/gi,
+    /[`'"]/g,
+    /new\s+\w+/gi,
+    /\.(prototype|constructor)\b/g,
+    /(\[|\]|\{|\})\s*\{/g,
+  ]
+  
+  for (const pattern of unsafePatterns) {
+    if (pattern.test(expression)) {
+      throw new Error('不允许的表达式内容')
+    }
+  }
+  
+  const validPattern = /^[\d+\-*/%^().\sMath]+$/
+  if (!validPattern.test(sanitized)) {
+    throw new Error('表达式包含无效字符')
+  }
+  
+  const fn = new Function(`'use strict'; return (${sanitized})`)
+  const result = fn()
+  
+  if (typeof result !== 'number' || !isFinite(result)) {
+    throw new Error('结果不是有效数字')
+  }
+  
+  return result
+}
+
 interface HistoryEntry {
   input: string
   output: string
@@ -394,6 +428,8 @@ export default function Terminal() {
             `用法: calc <数学表达式>`,
             ``,
             `支持的运算符: +, -, *, /, %, **, ()`,
+            `支持的函数: sqrt, sin, cos, tan, log, log10, abs, ceil, floor, round`,
+            `支持的常量: PI, E`,
             ``,
             `示例:`,
             `  calc 2 + 3 * 4`,
@@ -404,20 +440,7 @@ export default function Terminal() {
           ].join('\n')
         } else {
           try {
-            const sanitized = expression
-              .replace(/sqrt/g, 'Math.sqrt')
-              .replace(/sin/g, 'Math.sin')
-              .replace(/cos/g, 'Math.cos')
-              .replace(/tan/g, 'Math.tan')
-              .replace(/log/g, 'Math.log')
-              .replace(/log10/g, 'Math.log10')
-              .replace(/abs/g, 'Math.abs')
-              .replace(/ceil/g, 'Math.ceil')
-              .replace(/floor/g, 'Math.floor')
-              .replace(/round/g, 'Math.round')
-              .replace(/PI/g, 'Math.PI')
-              .replace(/E/g, 'Math.E')
-            const result = new Function(`return ${sanitized}`)()
+            const result = safeEval(expression)
             output = `= ${result}`
           } catch (e) {
             output = `calc: 表达式错误 - ${(e as Error).message}`
