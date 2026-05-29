@@ -442,6 +442,8 @@ export const appRegistry: AppDefinition[] = [
   { id: 'unit-converter', name: '单位转换器', icon: '📏', component: 'UnitConverter', category: 'utilities', defaultWidth: 700, defaultHeight: 700, minWidth: 500, minHeight: 500, resizable: true, multiple: false },
   { id: 'regex-tester', name: '正则表达式测试', icon: '🔍', component: 'RegexTester', category: 'development', defaultWidth: 900, defaultHeight: 650, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
   { id: 'json-formatter', name: 'JSON 格式化', icon: '📋', component: 'JSONFormatter', category: 'development', defaultWidth: 1000, defaultHeight: 700, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
+  { id: 'json-schema-validator', name: 'JSON Schema 验证', icon: '📋', component: 'JSONSchemaValidator', category: 'development', defaultWidth: 1000, defaultHeight: 700, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
+  { id: 'markdown-to-html', name: 'Markdown 转 HTML', icon: '📄', component: 'MarkdownToHTML', category: 'office', defaultWidth: 1000, defaultHeight: 700, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
   { id: 'qr-generator', name: 'QR 码生成器', icon: '📷', component: 'QRGenerator', category: 'utilities', defaultWidth: 900, defaultHeight: 650, minWidth: 600, minHeight: 450, resizable: true, multiple: false },
   { id: 'task-dashboard', name: '协作任务看板', icon: '📊', component: 'TaskDashboard', category: 'office', defaultWidth: 1200, defaultHeight: 800, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
   { id: 'system-dashboard', name: '系统仪表盘', icon: '📊', component: 'SystemDashboard', category: 'system', defaultWidth: 1200, defaultHeight: 800, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
