@@ -1,44 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#0f0f23;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a3e;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="tux" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2a2a2a;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
-      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
-    </radialGradient>
   </defs>
   
   <!-- 背景 -->
-  <rect width="128" height="128" rx="32" fill="url(#bg)"/>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
   
-  <!-- 发光效果 -->
-  <circle cx="64" cy="64" r="48" fill="url(#glow)"/>
-  
-  <!-- 极简 Tux 头像 -->
-  <g>
-    <!-- 头部 -->
-    <ellipse cx="64" cy="58" rx="32" ry="30" fill="url(#tux)"/>
-    
-    <!-- 白色面部 -->
-    <ellipse cx="64" cy="62" rx="22" ry="18" fill="#ffffff"/>
-    
-    <!-- 眼睛 -->
-    <circle cx="52" cy="52" r="5" fill="#1a1a1a"/>
-    <circle cx="76" cy="52" r="5" fill="#1a1a1a"/>
-    <circle cx="53" cy="51" r="1.5" fill="#ffffff"/>
-    <circle cx="77" cy="51" r="1.5" fill="#ffffff"/>
-    
-    <!-- 嘴巴 -->
-    <path d="M54 66 Q64 76 74 66 Q64 70 54 66 Z" fill="#f59e0b"/>
-    
-    <!-- 脚 -->
-    <path d="M44 84 L38 92 L46 92 L46 96 L54 96 L54 90 Z" fill="#f59e0b"/>
-    <path d="M84 84 L90 92 L82 92 L82 96 L74 96 L74 90 Z" fill="#f59e0b"/>
+  <!-- 简单的 W 标志 -->
+  <g transform="translate(24, 32)">
+    <path d="M12 64 L28 24 L44 64 L60 24 L76 64 L80 12 L88 12 L88 80 L80 80 L64 40 L48 80 L32 40 L16 80 L8 80 L8 12 L16 12 Z" fill="url(#primary)"/>
   </g>
+  
+  <!-- 装饰性外圈 -->
+  <circle cx="64" cy="64" r="56" fill="none" stroke="url(#primary)" stroke-width="2" opacity="0.2"/>
 </svg>
