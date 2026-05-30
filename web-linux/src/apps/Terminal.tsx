@@ -1178,14 +1178,12 @@ export default function Terminal() {
               break
             }
             const parsed = JSON.parse(jsonStr)
-            let result: any = parsed
+            let result: unknown = parsed
             
             const path = expr.replace(/\./g, ' ').trim().split(/\s+/).filter(Boolean)
             for (const part of path) {
               if (part === '[]') {
-                if (Array.isArray(result)) {
-                  result = result
-                } else {
+                if (!Array.isArray(result)) {
                   throw new Error(`无法在非数组上使用 []`)
                 }
               } else if (part.includes('|')) {
@@ -1194,29 +1192,35 @@ export default function Terminal() {
                   if (p.startsWith('.')) {
                     const key = p.slice(1)
                     if (Array.isArray(result)) {
-                      result = result.map((item: any) => item[key])
-                    } else {
-                      result = result[key]
+                      result = result.map((item: unknown) => 
+                        typeof item === 'object' && item !== null ? (item as Record<string, unknown>)[key] : undefined
+                      )
+                    } else if (typeof result === 'object' && result !== null) {
+                      result = (result as Record<string, unknown>)[key]
                     }
                   }
                 }
               } else if (Array.isArray(result)) {
-                result = result.map((item: any) => item[part])
-              } else {
-                result = result[part]
+                result = result.map((item: unknown) => 
+                  typeof item === 'object' && item !== null ? (item as Record<string, unknown>)[part] : undefined
+                )
+              } else if (typeof result === 'object' && result !== null) {
+                result = (result as Record<string, unknown>)[part]
               }
             }
             
             if (expr.includes('|')) {
               const pipeParts = expr.split('|').map(p => p.trim())
-              let current = parsed
+              let current: unknown = parsed
               for (const part of pipeParts) {
                 if (part.startsWith('.')) {
                   const key = part.slice(1)
                   if (Array.isArray(current)) {
-                    current = current.map((item: any) => item[key])
-                  } else {
-                    current = current[key]
+                    current = current.map((item: unknown) => 
+                      typeof item === 'object' && item !== null ? (item as Record<string, unknown>)[key] : undefined
+                    )
+                  } else if (typeof current === 'object' && current !== null) {
+                    current = (current as Record<string, unknown>)[key]
                   }
                 } else if (part === '.[]') {
                   if (!Array.isArray(current)) {
@@ -2040,81 +2044,7 @@ export default function Terminal() {
         ].join('\n')
         break
       }
-      case 'translate': {
-        if (args.length === 0) {
-          output = [
-            `🌍 translate - 翻译工具`,
-            ``,
-            `用法: translate <文本> [目标语言]`,
-            ``,
-            `支持的语言:`,
-            `  zh, cn, chinese - 中文`,
-            `  en, english - 英语`,
-            `  ja, japanese - 日语`,
-            `  ko, korean - 韩语`,
-            `  fr, french - 法语`,
-            `  de, german - 德语`,
-            ``,
-            `示例:`,
-            `  translate Hello world zh`,
-            `  translate 你好 en`,
-            `  translate Bonjour fr`,
-          ].join('\n')
-        } else {
-          const text = args.slice(0, -1).join(' ') || args.join(' ')
-          const targetLang = args[args.length - 1] || 'zh'
-          
-          const translations: Record<string, Record<string, string>> = {
-            en: {
-              'hello': '你好', 'world': '世界', 'hello world': '你好世界',
-              'good morning': '早上好', 'thank you': '谢谢',
-              'welcome': '欢迎', 'goodbye': '再见',
-              'computer': '计算机', 'web': '网页', 'linux': 'Linux'
-            },
-            zh: {
-              '你好': 'Hello', '世界': 'World', '你好世界': 'Hello World',
-              '早上好': 'Good morning', '谢谢': 'Thank you',
-              '欢迎': 'Welcome', '再见': 'Goodbye',
-              '计算机': 'Computer', '网页': 'Web', '系统': 'System'
-            },
-            ja: {
-              'hello': 'こんにちは', 'world': '世界', 'thank you': 'ありがとう',
-              'welcome': 'ようこそ', 'goodbye': 'さようなら'
-            },
-            ko: {
-              'hello': '안녕하세요', 'world': '세계', 'thank you': '감사합니다',
-              'welcome': '환영합니다', 'goodbye': '안녕히 가세요'
-            },
-            fr: {
-              'hello': 'Bonjour', 'world': 'Monde', 'thank you': 'Merci',
-              'welcome': 'Bienvenue', 'goodbye': 'Au revoir'
-            },
-            de: {
-              'hello': 'Hallo', 'world': 'Welt', 'thank you': 'Danke',
-              'welcome': 'Willkommen', 'goodbye': 'Auf Wiedersehen'
-            }
-          }
-          
-          const langKey = targetLang.toLowerCase() === 'cn' ? 'zh' : 
-                         targetLang.toLowerCase() === 'chinese' ? 'zh' :
-                         targetLang.toLowerCase() === 'english' ? 'en' :
-                         targetLang.toLowerCase() === 'japanese' ? 'ja' :
-                         targetLang.toLowerCase() === 'korean' ? 'ko' :
-                         targetLang.toLowerCase() === 'french' ? 'fr' :
-                         targetLang.toLowerCase() === 'german' ? 'de' :
-                         targetLang.toLowerCase()
-          
-          if (!translations[langKey]) {
-            output = `translate: 不支持的目标语言 '${targetLang}'`
-          } else {
-            const lowerText = text.toLowerCase()
-            const result = translations[langKey][lowerText] || 
-                          `[翻译中] "${text}" -> 翻译结果 (模拟)`
-            output = `🌍 翻译结果:\n\n${text}\n↓\n${result}`
-          }
-        }
-        break
-      }
+
       case 'news': {
         const newsItems = [
           { title: 'WebLinuxOS 4.7.0 发布', category: '科技', summary: '新增终端命令、改进用户界面、增强性能优化' },
@@ -2911,49 +2841,29 @@ tcp LISTEN 0 128 *:22 *:* users:(("sshd",pid=567,fd=3))`
         ].join('\n')
         break
       }
-      case 'systemctl-list':
-      case 'systemctl': {
-        if (args[0] === 'list-units' || args.length === 0) {
-          const services = [
-            { name: 'ssh.service', load: 'loaded', active: 'active', running: 'OpenSSH server daemon' },
-            { name: 'nginx.service', load: 'loaded', active: 'active', running: 'A nginx HTTP server' },
-            { name: 'docker.service', load: 'loaded', active: 'active', running: 'Docker Application Container Engine' },
-            { name: 'firewalld.service', load: 'loaded', active: 'active', running: 'firewalld - dynamic firewall daemon' },
-            { name: 'cron.service', load: 'loaded', active: 'active', running: 'Regular background program processing daemon' },
-            { name: 'rsyslog.service', load: 'loaded', active: 'active', running: 'System Logging Service' },
-            { name: 'systemd-journald.service', load: 'loaded', active: 'active', running: 'Journal Service' },
-            { name: 'systemd-networkd.service', load: 'loaded', active: 'active', running: 'Network Service' },
-          ]
-          output = [
-            '  UNIT                           LOAD   ACTIVE   SUB     DESCRIPTION',
-            '─'.repeat(75),
-            ...services.map(s => 
-              `  ${s.name.padEnd(30)} ${s.load.padEnd(8)} ${s.active.padEnd(8)} ${s.running}`
-            ),
-            '─'.repeat(75),
-            '',
-            `LOADED = units loaded by the system`,
-            `ACTIVE = high-level unit activation state`,
-            `SUB = low-level unit activation state`,
-          ].join('\n')
-        } else if (args[0] === 'status') {
-          output = `● ${args[1] || 'ssh.service'} - OpenSSH server daemon
-   Loaded: loaded (/usr/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
-   Active: ${args[1] ? 'active (running)' : 'inactive (dead)'} since ${new Date().toDateString()}; 2 weeks ago
- Main PID: ${Math.floor(Math.random() * 1000 + 500)} (sshd)
-   CGroup: /system.slice/ssh.service
-           └─${Math.floor(Math.random() * 1000 + 500)} /usr/sbin/sshd -D`
-        } else if (args[0] === 'start') {
-          output = `Starting ${args[1] || 'service'}...`
-        } else if (args[0] === 'stop') {
-          output = `Stopping ${args[1] || 'service'}...`
-        } else if (args[0] === 'restart') {
-          output = `Restarting ${args[1] || 'service'}...\nJob for ${args[1] || 'service'} done.`
-        } else if (args[0] === 'enable') {
-          output = `Created symlink /etc/systemd/system/multi-user.target.wants/${args[1] || 'service'}.service`
-        } else {
-          output = `systemctl: 操作 '${args[0]}' 不受支持\n用法: systemctl [操作] [服务名]\n操作: list-units, status, start, stop, restart, enable`
-        }
+      case 'systemctl-list': {
+        const services = [
+          { name: 'ssh.service', load: 'loaded', active: 'active', running: 'OpenSSH server daemon' },
+          { name: 'nginx.service', load: 'loaded', active: 'active', running: 'A nginx HTTP server' },
+          { name: 'docker.service', load: 'loaded', active: 'active', running: 'Docker Application Container Engine' },
+          { name: 'firewalld.service', load: 'loaded', active: 'active', running: 'firewalld - dynamic firewall daemon' },
+          { name: 'cron.service', load: 'loaded', active: 'active', running: 'Regular background program processing daemon' },
+          { name: 'rsyslog.service', load: 'loaded', active: 'active', running: 'System Logging Service' },
+          { name: 'systemd-journald.service', load: 'loaded', active: 'active', running: 'Journal Service' },
+          { name: 'systemd-networkd.service', load: 'loaded', active: 'active', running: 'Network Service' },
+        ]
+        output = [
+          '  UNIT                           LOAD   ACTIVE   SUB     DESCRIPTION',
+          '─'.repeat(75),
+          ...services.map(s => 
+            `  ${s.name.padEnd(30)} ${s.load.padEnd(8)} ${s.active.padEnd(8)} ${s.running}`
+          ),
+          '─'.repeat(75),
+          '',
+          `LOADED = units loaded by the system`,
+          `ACTIVE = high-level unit activation state`,
+          `SUB = low-level unit activation state`,
+        ].join('\n')
         break
       }
       case 'cron': {

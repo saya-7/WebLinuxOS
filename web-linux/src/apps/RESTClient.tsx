@@ -65,7 +65,7 @@ export default function RESTClient() {
         <div style={{ display: 'flex', gap: '10px' }}>
           <select
             value={method}
-            onChange={(e) => setMethod(e.target.value as any)}
+            onChange={(e) => setMethod(e.target.value as 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH')}
             style={{
               padding: '10px 14px',
               background: '#313244',

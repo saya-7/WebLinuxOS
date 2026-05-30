@@ -175,7 +175,7 @@ const DataVisualizer = memo(function DataVisualizer() {
       } else {
         addNotification({ title: '格式错误', message: 'JSON 应该是一个数组', type: 'error' })
       }
-    } catch (e) {
+    } catch {
       addNotification({ title: '解析错误', message: '无效的 JSON 格式', type: 'error' })
     }
   }, [jsonInput, addNotification])

@@ -197,6 +197,7 @@ const JSONSchemaValidator = memo(function JSONSchemaValidator() {
             })
           }
         } catch {
+          // 忽略无效的正则表达式
         }
       }
       if (schema.format) {

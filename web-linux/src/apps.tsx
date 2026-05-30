@@ -285,6 +285,21 @@ function RealTimeTranslatorIcon() {
   );
 }
 
+function ComponentSandboxIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <rect x="2" y="3" width="20" height="18" rx="2" />
+      <path d="M2 9h20" />
+      <path d="M9 21v-6a3 3 0 0 1 3-3h0a3 3 0 0 1 3 3v6" />
+      <path d="M18 13v4" />
+      <path d="M14 15v4" />
+      <circle cx="6" cy="6" r="1" fill="currentColor" />
+      <circle cx="9" cy="6" r="1" fill="currentColor" />
+      <circle cx="12" cy="6" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
 function OnlineToolkitIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
@@ -621,6 +636,7 @@ function AdvancedDataVizIcon() {
 }
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'component-sandbox', name: '组件开发沙盒', icon: <ComponentSandboxIcon />, component: 'ComponentSandbox', category: 'development', defaultWidth: 1200, defaultHeight: 800, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
   { id: 'realtime-dashboard', name: '实时数据仪表盘', icon: <RealTimeDashboardIcon />, component: 'RealTimeDashboard', category: 'utilities', defaultWidth: 1200, defaultHeight: 850, minWidth: 900, minHeight: 650, resizable: true, multiple: false },
   { id: 'smart-news-reader', name: '智能新闻阅读器', icon: <SmartNewsReaderIcon />, component: 'SmartNewsReader', category: 'internet', defaultWidth: 1200, defaultHeight: 850, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
   { id: 'advanced-data-viz', name: '高级数据可视化', icon: <AdvancedDataVizIcon />, component: 'AdvancedDataViz', category: 'development', defaultWidth: 1200, defaultHeight: 850, minWidth: 900, minHeight: 650, resizable: true, multiple: false },

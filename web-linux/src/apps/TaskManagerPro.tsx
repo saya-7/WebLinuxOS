@@ -18,11 +18,16 @@ const TaskManagerPro: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
-        return parsed.map((t: any) => ({
-          ...t,
-          createdAt: new Date(t.createdAt),
-          completedAt: t.completedAt ? new Date(t.completedAt) : null
-        }))
+        if (Array.isArray(parsed)) {
+          return parsed.map((t: unknown) => {
+            const task = t as Record<string, unknown>
+            return {
+              ...task,
+              createdAt: new Date(task.createdAt as string),
+              completedAt: task.completedAt ? new Date(task.completedAt as string) : null
+            } as Task
+          })
+        }
       } catch {
         return []
       }
@@ -189,11 +194,11 @@ const TaskManagerPro: React.FC = () => {
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {[
-            { label: '全部', value: 'all', count: stats.total },
-            { label: '进行中', value: 'active', count: stats.active },
-            { label: '已完成', value: 'completed', count: stats.completed }
+            { label: '全部', value: 'all' as const, count: stats.total },
+            { label: '进行中', value: 'active' as const, count: stats.active },
+            { label: '已完成', value: 'completed' as const, count: stats.completed }
           ].map(({ label, value, count }) => (
-            <button key={value} onClick={() => setFilter(value as any)} style={{
+            <button key={value} onClick={() => setFilter(value)} style={{
               padding: '8px 16px',
               borderRadius: '20px',
               border: filter === value ? '2px solid #8b7cf0' : '2px solid rgba(255,255,255,0.1)',
@@ -499,7 +504,7 @@ const TaskManagerPro: React.FC = () => {
                   </label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
+                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' })}
                     style={{
                       width: '100%',
                       padding: '10px 14px',

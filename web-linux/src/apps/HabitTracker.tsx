@@ -70,7 +70,7 @@ const HabitTracker = memo(function HabitTracker() {
       
       const isCompleted = habit.completedDates.includes(today)
       let newDates: string[]
-      let newStreak = habit.streak
+      let newStreak: number
       
       if (isCompleted) {
         newDates = habit.completedDates.filter(d => d !== today)

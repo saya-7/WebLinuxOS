@@ -250,7 +250,7 @@ const SmartNewsReader = memo(function SmartNewsReader() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto' }}>
-            {savedArticles.map((article, _index) => (
+            {savedArticles.map((article) => (
               <div
                 key={article.url}
                 style={{
@@ -306,7 +306,7 @@ const SmartNewsReader = memo(function SmartNewsReader() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {filteredArticles.map((article, _index) => (
+          {filteredArticles.map((article) => (
             <article
               key={article.url}
               style={{
