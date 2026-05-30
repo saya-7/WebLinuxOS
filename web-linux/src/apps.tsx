@@ -511,6 +511,17 @@ function GitHubExplorerIcon() {
   )
 }
 
+function WhiteboardProIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 8h18" />
+      <path d="M8 14l2 2 4-4" />
+      <circle cx="16" cy="14" r="1" fill="currentColor" />
+    </svg>
+  )
+}
+
 function CustomClipboardIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
@@ -659,6 +670,7 @@ function AICodeTutorIcon() {
 }
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'whiteboard-pro', name: '专业白板', icon: <WhiteboardProIcon />, component: 'WhiteboardPro', category: 'office', defaultWidth: 1200, defaultHeight: 900, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
   { id: 'github-explorer', name: 'GitHub 探索器', icon: <GitHubExplorerIcon />, component: 'GitHubExplorer', category: 'development', defaultWidth: 1200, defaultHeight: 850, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
   { id: 'ai-code-tutor', name: 'AI 编程导师', icon: <AICodeTutorIcon />, component: 'AICodeTutor', category: 'development', defaultWidth: 1400, defaultHeight: 900, minWidth: 1000, minHeight: 600, resizable: true, multiple: false },
   { id: 'component-sandbox', name: '组件开发沙盒', icon: <ComponentSandboxIcon />, component: 'ComponentSandbox', category: 'development', defaultWidth: 1200, defaultHeight: 800, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
