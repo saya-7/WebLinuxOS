@@ -1,252 +1,294 @@
 # WebLinuxOS
 
-一个完全运行在浏览器中的现代化Linux桌面环境。基于React、TypeScript和前沿Web技术构建，提供完整的桌面体验，无需任何安装。
+A fully functional web-based Linux desktop environment that runs entirely in the browser. Built with React, TypeScript, and modern web technologies, it provides a complete desktop experience without any installation required.
 
-## 核心特性
+## Live Demo
 
-### 桌面环境
-- **多虚拟桌面**: 支持创建和切换多个工作区，可自定义壁纸
-- **高级窗口管理**: 拖拽、调整大小、最小化、最大化，流畅动画效果
-- **智能启动器**: 支持模糊搜索和分类浏览的应用启动器
-- **系统托盘**: 快速访问网络、音量、电池和通知指示器
-- **全局搜索**: 基于模糊匹配的应用启动器和文件搜索
-- **命令面板**: 为高级用户提供键盘驱动的命令执行
-- **上下文菜单**: 右键菜单支持文件操作和快速操作
-- **动态壁纸**: 支持粒子效果和交互式背景动画
-- **启动画面**: 优雅的加载动画
+Visit the live demo at: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
 
-### 应用程序生态
-系统内置120+功能完善的应用程序，涵盖多个类别：
+## Overview
 
-**系统工具**
-- 文件管理器（树形导航、文件操作）
-- 终端模拟器（90+内置命令）
-- 系统监视器（实时资源使用情况）
-- 任务管理器和进程监视器
-- 网络监视器和磁盘分析器
-- 备份工具和归档管理器
-- 系统设置（主题自定义）
+WebLinuxOS brings the power of a Linux desktop to your browser. It features a modern, responsive interface with multi-window management, virtual desktops, and over 120 applications - all running client-side with no backend dependencies.
 
-**开发工具**
-- 代码编辑器（语法高亮）
-- API测试器（请求构建器）
-- JSON格式化器和验证器
-- 正则表达式构建器（实时测试）
-- GitHub热门仓库查看器
-- 命令参考文档
-- 任务自动化工作流构建器
-- 通过Pyodide实现的Python REPL
+## Key Features
 
-**办公与生产力**
-- 文本编辑器（格式化选项）
-- Markdown编辑器（实时预览）
-- 电子表格应用
-- 日历（事件管理）
-- 待办事项和看板
-- 项目规划器（时间线视图）
-- 笔记和思维导图工具
-- 演示文稿创建器
-- 学习卡片
+### Complete Desktop Environment
 
-**实用工具**
-- 计算器（科学计算功能）
-- 密码管理器（加密存储）
-- 番茄工作法（生产力工具）
-- 取色器（调色板生成）
-- 二维码生成器
-- 单位和货币转换器
-- 在线工具箱（JSON、Base64、URL编解码、哈希计算）
-- 实时翻译器
+WebLinuxOS delivers a fully functional Linux desktop experience directly in your browser:
 
-**多媒体**
-- 音乐播放器（播放列表支持）
-- 视频播放器（控制选项）
-- 绘图应用（绘图工具）
-- 图片查看器（缩放功能）
-- 摄像头和屏幕录制器
-- 录音机
-- 图片优化器
+- **Multi Virtual Desktops** - Create and switch between multiple workspaces with customizable wallpapers
+- **Advanced Window Management** - Drag, resize, minimize, maximize, and close windows with smooth animations
+- **Smart Launcher** - Application launcher with fuzzy search and categorized app listing (120+ apps)
+- **System Tray** - Quick access to network, volume, battery, and notification indicators
+- **Global Search** - Fast app launcher and file search powered by fuzzy matching
+- **Command Palette** - Keyboard-driven command execution for power users (Ctrl+P)
+- **Context Menus** - Right-click menus with file operations and quick actions
+- **Live Wallpapers** - Interactive particle effects and dynamic backgrounds
+- **Boot Splash** - Elegant animated loading screen
 
-**娱乐**
-- 天气应用（天气预报）
-- 世界时钟（多时区）
-- 经典游戏（贪吃蛇、俄罗斯方块）
-- 虚拟宠物
-- 粒子系统可视化
+### Development Tools
 
-### 终端特性
+A comprehensive suite for developers:
 
-内置终端模拟器提供：
+- **Code Editor** with syntax highlighting and multiple themes
+- **API Tester** with request builder and history
+- **JSON Formatter & Validator** with syntax highlighting
+- **Regex Builder & Tester** with real-time validation
+- **GitHub Trending** repository viewer
+- **Command Reference** documentation
+- **Task Automation** workflow builder
+- **Code Snippets Manager** for storing and organizing code
+- **Python REPL** via Pyodide (Python 3 runtime in browser)
+- **Terminal Emulator** with 90+ built-in commands
 
-- 90+内置shell命令
-- 通过Pyodide运行Python 3
-- 命令历史记录和自动补全
-- 文件系统导航和操作
-- 系统信息命令
-- 计算器和实用功能
-- 趣味命令（cowsay、fortune、ASCII艺术）
+### Office & Productivity
 
-### Web服务集成
+Essential tools for productivity:
 
-- Open-Meteo实时天气数据
-- ipapi.co IP地理定位
-- CoinGecko加密货币价格
-- 货币转换汇率
-- 空气质量指数数据
+- **Text Editor** with formatting options
+- **Markdown Editor** with live preview
+- **Spreadsheet** application with formula support
+- **Calendar** with event management
+- **Todo List & Kanban Board** for task management
+- **Project Planner** with timeline views and Gantt charts
+- **Notes & Mind Map** tools for organization
+- **Presentation** creator with slides
+- **Flashcards** for learning and memorization
 
-## 快速开始
+### Utilities & Tools
+
+Handy utilities for everyday tasks:
+
+- **Calculator** with scientific functions
+- **Password Manager** with encryption
+- **Pomodoro Timer** for productivity
+- **Color Picker** with palette generation
+- **QR Code Generator** with customization
+- **Unit & Currency Converter** with real-time rates
+- **Real-time Translator** supporting multiple languages
+- **Online Toolkit** - JSON, Base64, URL encoding/decoding, hash calculation
+
+### Multimedia
+
+Media applications:
+
+- **Music Player** with playlist support and visualization
+- **Video Player** with controls and subtitle support
+- **Paint** application with drawing tools
+- **Image Viewer** with zoom and navigation
+- **Camera & Screen Recorder** for capture
+- **Sound Recorder** for audio recording
+- **Image Optimizer** for compression
+
+### Entertainment & Lifestyle
+
+Fun applications:
+
+- **Weather** application with forecasts and hourly data
+- **World Clock** with multiple time zones
+- **News Reader** with RSS feed support
+- **Classic games** (Snake, Tetris)
+- **Virtual Pet** companion
+- **Particle System** visualizer
+
+### Terminal Emulator
+
+The built-in terminal provides a full-featured command-line experience:
+
+- 90+ built-in shell commands (ls, cd, cat, mkdir, rm, cp, mv, find, grep, etc.)
+- Python 3 runtime via Pyodide
+- Command history and auto-completion
+- File system navigation and operations
+- System information commands (neofetch, uptime, df, free, ps, top)
+- Calculator and utility functions
+- Fun commands (cowsay, fortune, ASCII art, sl)
+- Git, npm, node commands
+- Network commands (ping, curl, wget)
+
+### Web Services Integration
+
+Real-time data from public APIs:
+
+- Weather data from Open-Meteo
+- IP geolocation from ipapi.co
+- Cryptocurrency prices from CoinGecko
+- Currency conversion rates
+- Air quality index data
+- GitHub trending repositories
+
+## Quick Start
 
 ```bash
-# 克隆仓库
+# Clone the repository
 git clone https://github.com/saya-ch/WebLinuxOS.git
 
-# 进入项目目录
+# Navigate to the project directory
 cd WebLinuxOS/web-linux
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动开发服务器
+# Start development server
 npm run dev
 
-# 构建生产版本
+# Build for production
 npm run build
 
-# 部署到GitHub Pages
+# Deploy to GitHub Pages
 npm run deploy
 ```
 
-## 键盘快捷键
+## Keyboard Shortcuts
 
-### 系统快捷键
-| 快捷键 | 功能 |
-|--------|------|
-| Ctrl+Shift+L | 打开启动器 |
-| Ctrl+K | 全局搜索 |
-| Ctrl+P | 命令面板 |
-| Alt+Tab | 切换窗口 |
-| F11 | 切换全屏 |
-| PrintScreen | 截图 |
-| Ctrl+Q | 关闭窗口 |
-| Ctrl+M | 最小化窗口 |
+### System Navigation
 
-### 应用启动
-| 快捷键 | 应用 |
-|--------|------|
-| Super+T | 终端 |
-| Super+E | 文件管理器 |
-| Super+, | 设置 |
-| Super+B | 浏览器 |
-| Super+A | 计算器 |
-| Super+G | 代码编辑器 |
-| Super+H | 帮助 |
-| Super+D | 系统监视器 |
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+Shift+L | Open launcher |
+| Ctrl+K | Open global search |
+| Ctrl+P | Command palette |
+| Alt+Tab | Cycle windows |
+| Ctrl+Alt+Tab | Cycle windows reverse |
+| F11 | Toggle fullscreen |
+| PrintScreen | Screenshot |
+| Ctrl+Q | Close window |
+| Ctrl+M | Minimize window |
 
-### 虚拟桌面
-| 快捷键 | 功能 |
-|--------|------|
-| Ctrl+Alt+[1-9] | 切换到桌面 |
-| Ctrl+Alt+←/→ | 切换工作区 |
-| Ctrl+Shift+Alt+[1-9] | 移动窗口到桌面 |
+### Application Launch
 
-## 技术栈
+| Shortcut | Application |
+|----------|-------------|
+| Super+T | Terminal |
+| Super+E | File Manager |
+| Super+, | Settings |
+| Super+B | Browser |
+| Super+A | Calculator |
+| Super+G | Code Editor |
+| Super+H | Help |
+| Super+D | System Monitor |
 
-- **React 19** - UI组件框架
-- **TypeScript 6** - 类型安全开发
-- **Zustand 5** - 轻量级状态管理
-- **Vite 8** - 快速构建工具
-- **Pyodide** - 浏览器中的Python运行时
-- **Lucide React** - 图标库
-- **Marked** - Markdown解析
+### Virtual Desktops
 
-## 项目结构
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+Alt+1-9 | Switch to desktop |
+| Ctrl+Alt+Arrow | Switch workspace |
+| Ctrl+Shift+Alt+1-9 | Move window to desktop |
+| Ctrl+Shift+Alt+Arrow | Move window and follow |
 
-```
-web-linux/
-├── src/
-│   ├── apps/           # 应用组件（120+应用）
-│   ├── components/     # 桌面UI组件
-│   │   └── desktop/    # 桌面、任务栏、窗口管理
-│   ├── store.tsx       # Zustand状态管理
-│   ├── apps.tsx        # 应用注册表
-│   ├── icons.tsx       # 图标定义
-│   └── types.ts        # TypeScript类型定义
-├── public/             # 静态资源
-├── index.html          # 入口HTML
-├── vite.config.ts      # Vite配置
-├── tsconfig.json       # TypeScript配置
-└── package.json       # 依赖和脚本
-```
+## Technology Stack
 
-## 性能优化
+WebLinuxOS is built with modern, production-ready technologies:
 
-WebLinuxOS包含多项性能优化：
+- **React 19** - UI component framework with concurrent features
+- **TypeScript 6** - Type-safe development with advanced type inference
+- **Zustand 5** - Lightweight state management
+- **Vite 8** - Fast build tool with hot module replacement
+- **Pyodide** - Python runtime in the browser
+- **Lucide React** - Beautiful, consistent icon library
+- **Marked** - Markdown parsing and rendering
 
-- **代码分割**: 应用被分割成独立的代码块
-- **懒加载**: 组件按需加载
-- **GPU加速**: CSS动画利用硬件加速
-- **记忆化**: React memo防止不必要的重新渲染
-- **内容可见性**: 长列表渲染优化
-- **摇树优化**: 构建时消除未使用代码
-- **防抖存储**: LocalStorage操作优化
+## Performance Optimizations
 
-## 浏览器兼容性
+WebLinuxOS includes several performance optimizations:
 
-- Chrome 90+ (推荐)
+- **Code Splitting** - Applications are split into separate chunks for faster loading
+- **Lazy Loading** - Components load on demand to reduce initial bundle size
+- **GPU Acceleration** - CSS animations leverage hardware acceleration
+- **Memoization** - React.memo and useMemo prevent unnecessary re-renders
+- **Content Visibility** - Optimized rendering for long lists
+- **Tree Shaking** - Unused code is eliminated during build
+- **Debounced Storage** - LocalStorage operations are optimized
+- **Virtual Scrolling** - Efficient rendering for large lists
+
+## Browser Compatibility
+
+WebLinuxOS supports all modern browsers:
+
+- Chrome 90+ (Recommended)
 - Firefox 88+
 - Safari 14+
 - Edge 90+
 
-## 安全特性
+## Security Features
 
-- 所有用户输入的安全处理
-- 终端计算器的安全表达式求值
-- 敏感数据的本地存储加密
-- 客户端代码中不暴露外部API密钥
-- XSS防护的内容安全策略头
+- Input sanitization for all user inputs
+- Safe expression evaluation in terminal calculator
+- Local storage encryption for sensitive data
+- No external API keys exposed in client code
+- Content Security Policy headers for XSS protection
 
-## 架构亮点
+## Architecture Highlights
 
-### 窗口管理
-窗口管理系统支持：
-- 基于Z-index的窗口层级
-- 窗口最小化/最大化/还原
-- 窗口拖拽和调整大小
-- 多显示器感知
-- 窗口状态持久化
+### Window Management
 
-### 文件系统
-虚拟文件系统具有：
-- 分层文件夹结构
-- 文件操作（创建、删除、重命名、移动）
-- 撤销/重做支持
-- LocalStorage持久化
-- 文件类型图标
+The sophisticated window management system supports:
 
-### 状态管理
-Zustand驱动的状态管理：
-- 集中式应用注册表
-- 窗口状态跟踪
-- 桌面图标管理
-- 主题和壁纸设置
-- 用户偏好设置
+- Z-index based window layering
+- Window minimize/maximize/restore with animations
+- Window drag and resize with constraints
+- Multi-monitor awareness
+- Window state persistence across sessions
+- Focus management with keyboard navigation
 
-## 在线演示
+### Virtual File System
 
-访问在线演示: [https://saya-ch.github.io/WebLinuxOS/](https://saya-ch.github.io/WebLinuxOS/)
+Complete file system with:
 
-## 贡献
+- Hierarchical folder structure
+- Full file operations (create, delete, rename, move, copy)
+- Undo/redo support
+- LocalStorage persistence
+- File type icons and metadata
+- Drag and drop support
 
-欢迎贡献！请随时提交Issue和Pull Request。
+### State Management
 
-## 许可证
+Zustand-powered centralized state:
 
-MIT许可证 - 详见LICENSE文件。
+- Application registry
+- Window state tracking
+- Desktop icons management
+- Theme and wallpaper settings
+- User preferences
+- File system operations
+- Notification system
 
-## 致谢
+## Project Structure
 
-- Pyodide 实现浏览器中的Python
-- Lucide 提供精美图标
-- React团队 提供组件框架
-- Vite团队 提供构建工具
-- 本项目使用的所有开源库
+```
+web-linux/
+├── src/
+│   ├── apps/           # Application components (120+ apps)
+│   ├── components/     # Desktop UI components
+│   │   └── desktop/   # Desktop, Taskbar, Window management
+│   ├── store.tsx      # Zustand state management
+│   ├── apps.tsx       # Application registry
+│   ├── icons.tsx      # Icon definitions
+│   └── types.ts       # TypeScript type definitions
+├── public/            # Static assets
+├── index.html         # Entry HTML
+├── vite.config.ts     # Vite configuration
+├── tsconfig.json      # TypeScript configuration
+└── package.json       # Dependencies and scripts
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Acknowledgments
+
+- Pyodide for enabling Python in the browser
+- Lucide for beautiful icons
+- React team for the component framework
+- Vite team for the build tool
+- All open source libraries used in this project
+
+---
+
+Built with React, TypeScript, and modern web technologies
