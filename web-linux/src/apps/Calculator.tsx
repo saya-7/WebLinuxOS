@@ -1064,11 +1064,11 @@ export default function Calculator() {
       
       {/* 第十三行：更多双曲函数 */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        <InteractiveButton style={buttonStyles.func} onClick={handleSinh}>sinh</InteractiveButton>
+        <InteractiveButton style={buttonStyles.func} onClick={handleCosh}>cosh</InteractiveButton>
         <InteractiveButton style={buttonStyles.func} onClick={handleTanH}>tanh</InteractiveButton>
         <InteractiveButton style={buttonStyles.func} onClick={handleNthRoot}>NTH</InteractiveButton>
         <InteractiveButton style={buttonStyles.func} onClick={handleAsin}>asin</InteractiveButton>
-        <InteractiveButton style={buttonStyles.func} onClick={handleAcos}>acos</InteractiveButton>
-        <InteractiveButton style={buttonStyles.func} onClick={handleAtan}>atan</InteractiveButton>
       </div>
     </div>
   )

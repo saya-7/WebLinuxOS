@@ -635,7 +635,20 @@ function AdvancedDataVizIcon() {
   )
 }
 
+function AICodeTutorIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <path d="M12 3L2 9l10 6 10-6-10-6z" />
+      <path d="M2 15l10 6 10-6" />
+      <path d="M12 12l-4-2" />
+      <path d="M12 12l4-2" />
+      <path d="M12 12v8" />
+    </svg>
+  )
+}
+
 export const appRegistry: AppDefinition[] = [
+  { id: 'ai-code-tutor', name: 'AI 编程导师', icon: <AICodeTutorIcon />, component: 'AICodeTutor', category: 'development', defaultWidth: 1400, defaultHeight: 900, minWidth: 1000, minHeight: 600, resizable: true, multiple: false },
   { id: 'component-sandbox', name: '组件开发沙盒', icon: <ComponentSandboxIcon />, component: 'ComponentSandbox', category: 'development', defaultWidth: 1200, defaultHeight: 800, minWidth: 900, minHeight: 600, resizable: true, multiple: false },
   { id: 'realtime-dashboard', name: '实时数据仪表盘', icon: <RealTimeDashboardIcon />, component: 'RealTimeDashboard', category: 'utilities', defaultWidth: 1200, defaultHeight: 850, minWidth: 900, minHeight: 650, resizable: true, multiple: false },
   { id: 'smart-news-reader', name: '智能新闻阅读器', icon: <SmartNewsReaderIcon />, component: 'SmartNewsReader', category: 'internet', defaultWidth: 1200, defaultHeight: 850, minWidth: 800, minHeight: 600, resizable: true, multiple: false },
