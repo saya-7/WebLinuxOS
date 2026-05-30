@@ -1,4 +1,4 @@
-import type { FileNode } from './types'
+import type { FileNode } from '../types'
 
 export function findNodeById(nodes: FileNode[], id: string): FileNode | null {
   for (const node of nodes) {

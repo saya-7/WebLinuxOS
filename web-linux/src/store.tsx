@@ -1,21 +1,23 @@
 import { create } from 'zustand'
 import type { AppDefinition, WindowState, DesktopIcon, FileNode } from './types'
 import {
+  findNodeById,
+  findParentNode,
+  findNodeByPath,
+  resolvePath,
+  traverseTree,
+  copyNodeWithNewParent,
+  removeFromTree,
+  updateInTree,
+  validateFileName
+} from './store/fileUtils'
+import {
   STORAGE_KEYS,
   loadFromStorage,
   debouncedSaveToStorage,
   saveToStorage,
   clearAllStorage
 } from './store/storageUtils'
-import {
-  findNodeById,
-  findParentNode,
-  findNodeByPath,
-  traverseTree,
-  copyNodeWithNewParent,
-  removeFromTree,
-  updateInTree
-} from './store/fileUtils'
 import {
   defaultDesktopIcons,
   defaultFiles,
@@ -245,9 +247,7 @@ export const useStore = create<Store>((set, get) => ({
   },
 
   resetToDefaults: () => {
-    // 清除所有 localStorage 数据
-    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key))
-    // 重置状态
+    clearAllStorage()
     set({
       files: defaultFiles,
       desktopIcons: defaultDesktopIcons,
@@ -256,10 +256,10 @@ export const useStore = create<Store>((set, get) => ({
       liveWallpaper: 'particles',
       liveWallpaperEnabled: false,
       currentDesktop: 1,
-      totalDesktops: 4,
-      windowsPerDesktop: initWindowsPerDesktop(4),
+      totalDesktops: defaultTotalDesktops,
+      windowsPerDesktop: initWindowsPerDesktop(defaultTotalDesktops),
       favorites: [],
-      pinnedApps: ['terminal', 'files', 'browser', 'settings'],
+      pinnedApps: defaultPinnedApps,
     })
   },
 
@@ -884,4 +884,4 @@ export const useStore = create<Store>((set, get) => ({
   },
 }))
 
-export { findNodeById, findParentNode, findNodeByPath, resolvePath }
+export { findNodeById, findParentNode, findNodeByPath, resolvePath, validateFileName }
