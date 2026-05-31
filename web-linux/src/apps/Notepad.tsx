@@ -56,6 +56,8 @@ export default function Notepad() {
   const [replaceText, setReplaceText] = useState('')
   const [scrollTop, setScrollTop] = useState(0)
   const [wordWrap, setWordWrap] = useState(true)
+  const [autoSave, setAutoSave] = useState(true)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const findFolderByName = useCallback((nodes: FileNode[], name: string): FileNode | undefined => {
@@ -124,6 +126,14 @@ export default function Notepad() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [handleSave])
+
+  useEffect(() => {
+    if (!autoSave || !isModified || !fileId) return
+    const timer = setTimeout(() => {
+      handleSave()
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [autoSave, isModified, fileId, content, handleSave])
 
   const handleNameSubmit = useCallback(() => {
     if (nameInput.trim()) {
@@ -209,6 +219,17 @@ export default function Notepad() {
         <button onClick={() => { setShowSearch(true); setShowReplace(true) }} style={tbBtn}>替换</button>
         <div style={{ width: 1, height: 16, background: '#45475a' }} />
         <button onClick={() => setWordWrap(!wordWrap)} style={{ ...tbBtn, background: wordWrap ? '#45475a' : 'transparent' }}>换行</button>
+        <button 
+          onClick={() => setAutoSave(!autoSave)} 
+          style={{ 
+            ...tbBtn, 
+            background: autoSave ? '#45475a' : 'transparent',
+            color: autoSave ? '#a6e3a1' : '#cdd6f4'
+          }}
+          title="自动保存"
+        >
+          {autoSave ? '自动保存' : '手动保存'}
+        </button>
         <div style={{ flex: 1 }} />
         {editingName ? (
           <input 
@@ -296,7 +317,10 @@ export default function Notepad() {
 
       <div className="notepad-status-bar" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 12px', background: '#181825', borderTop: '1px solid #313244', fontSize: 11, color: '#6c7086' }}>
         <span>字数: {wordCount} | 字符: {charCount} | 行数: {lines.length}</span>
-        <span>{isModified ? '已修改' : '已保存'} | {fileId ? '已关联文件' : '新文件'}</span>
+        <span>
+          {isModified ? '已修改' : '已保存'} | {fileId ? '已关联文件' : '新文件'}
+          {lastSaved && !isModified && ` | 最后保存: ${lastSaved.toLocaleTimeString()}`}
+        </span>
       </div>
     </div>
   )

@@ -12,6 +12,23 @@ interface WeatherData {
   forecast: ForecastDay[]
   hourlyForecast: HourlyForecast[]
   alerts: WeatherAlert[]
+  airQuality?: AirQuality
+  sunInfo?: SunInfo
+}
+
+interface AirQuality {
+  aqi: number
+  category: string
+  pm25: number
+  pm10: number
+  o3: number
+  no2: number
+}
+
+interface SunInfo {
+  sunrise: string
+  sunset: string
+  dayLength: string
 }
 
 interface ForecastDay {
@@ -91,7 +108,7 @@ const Weather = memo(function Weather() {
     
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,uv_index&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,uv_index&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,sunrise,sunset&timezone=auto`
       )
       
       if (!response.ok) throw new Error('Failed to fetch weather data')
@@ -114,6 +131,15 @@ const Weather = memo(function Weather() {
         const date = new Date(dateStr)
         const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
         return days[date.getDay()]
+      }
+
+      const calculateDayLength = (sunrise: string, sunset: string): string => {
+        const rise = new Date(sunrise)
+        const set = new Date(sunset)
+        const diff = Math.floor((set.getTime() - rise.getTime()) / 1000 / 60)
+        const hours = Math.floor(diff / 60)
+        const minutes = diff % 60
+        return `${hours}小时${minutes}分钟`
       }
 
       const weatherData: WeatherData = {
@@ -352,6 +378,36 @@ const Weather = memo(function Weather() {
                 </div>
               ))}
             </div>
+
+            {weather.sunInfo && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 12,
+                marginBottom: 24
+              }}>
+                {[
+                  { icon: '🌅', label: '日出', value: weather.sunInfo.sunrise },
+                  { icon: '🌇', label: '日落', value: weather.sunInfo.sunset },
+                  { icon: '⏱️', label: '日照时长', value: weather.sunInfo.dayLength },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      borderRadius: 12,
+                      padding: 16,
+                      textAlign: 'center',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  >
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>{item.icon}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>{item.label}</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>{item.value}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div style={{ marginBottom: 24 }}>
               <h3 style={{ color: '#fff', margin: '0 0 12px 0', fontSize: 16, fontWeight: 600 }}>
