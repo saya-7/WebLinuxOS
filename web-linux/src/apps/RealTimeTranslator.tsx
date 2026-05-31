@@ -7,10 +7,17 @@ interface Language {
   nativeName: string;
 }
 
-
+interface TranslationHistory {
+  id: string;
+  from: string;
+  to: string;
+  sourceText: string;
+  translatedText: string;
+  timestamp: Date;
+}
 
 const languages: Language[] = [
-  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '简体中文' },
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'ja', name: 'Japanese', nativeName: '日本語' },
   { code: 'ko', name: 'Korean', nativeName: '한국어' },
@@ -24,32 +31,28 @@ const languages: Language[] = [
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
 ];
 
-interface TranslationHistory {
-  id: string;
-  from: string;
-  to: string;
-  sourceText: string;
-  translatedText: string;
-  timestamp: Date;
-}
-
 export default function RealTimeTranslator() {
   const { theme } = useStore();
   const [sourceText, setSourceText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
-  const [sourceLang, setSourceLang] = useState('zh');
+  const [sourceLang, setSourceLang] = useState('zh-CN');
   const [targetLang, setTargetLang] = useState('en');
   const [isTranslating, setIsTranslating] = useState(false);
   const [history, setHistory] = useState<TranslationHistory[]>(() => {
     try {
       const saved = localStorage.getItem('weblinux-translator-history');
-      return saved ? JSON.parse(saved) : [];
+      return saved ? JSON.parse(saved).map((item: any) => ({
+        ...item,
+        timestamp: new Date(item.timestamp)
+      })) : [];
     } catch {
       return [];
     }
   });
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef<unknown>(null);
+  const [error, setError] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const debounceTimerRef = useRef<number | null>(null);
 
   const isDark = theme === 'dark';
   const bg = isDark ? '#1e1e2e' : '#f7f7fa';
@@ -65,49 +68,79 @@ export default function RealTimeTranslator() {
     }
 
     setIsTranslating(true);
-    
+    setError(null);
+
     try {
-      // 使用模拟翻译（实际项目中可以接入真实的翻译API）
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const response = await fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`
+      );
       
-      // 简单的模拟翻译逻辑
-      const mockTranslation = `[${targetLang.toUpperCase()}] ${text}`;
-      setTranslatedText(mockTranslation);
+      if (!response.ok) {
+        throw new Error('Translation failed');
+      }
+
+      const data = await response.json();
       
-      // 保存到历史记录
-      const newHistory: TranslationHistory = {
-        id: Date.now().toString(),
-        from: sourceLang,
-        to: targetLang,
-        sourceText: text,
-        translatedText: mockTranslation,
-        timestamp: new Date(),
-      };
-      
-      const updatedHistory = [newHistory, ...history].slice(0, 50);
-      setHistory(updatedHistory);
-      localStorage.setItem('weblinux-translator-history', JSON.stringify(updatedHistory));
-    } catch (error) {
-      console.error('Translation error:', error);
+      if (data.responseStatus === 200) {
+        const translation = data.responseData.translatedText;
+        setTranslatedText(translation);
+        
+        const newHistory: TranslationHistory = {
+          id: Date.now().toString(),
+          from: sourceLang,
+          to: targetLang,
+          sourceText: text,
+          translatedText: translation,
+          timestamp: new Date(),
+        };
+        
+        const updatedHistory = [newHistory, ...history].slice(0, 50);
+        setHistory(updatedHistory);
+        localStorage.setItem('weblinux-translator-history', JSON.stringify(updatedHistory));
+      } else {
+        throw new Error(data.responseDetails || 'Translation failed');
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      setError('翻译失败，请稍后重试');
+      setTranslatedText(`[${languages.find(l => l.code === targetLang)?.nativeName}] ${text}`);
     } finally {
       setIsTranslating(false);
     }
   };
 
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (sourceText.trim()) {
+      debounceTimerRef.current = setTimeout(() => {
+        translateText(sourceText);
+      }, 800);
+    } else {
+      setTranslatedText('');
+    }
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [sourceText, sourceLang, targetLang]);
+
   const swapLanguages = () => {
     const tempLang = sourceLang;
     setSourceLang(targetLang);
     setTargetLang(tempLang);
-    
+
     const tempText = sourceText;
     setSourceText(translatedText);
     setTranslatedText(tempText);
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      // 可以添加通知提示
-    });
+    navigator.clipboard.writeText(text).catch(console.error);
   };
 
   const clearHistory = () => {
@@ -117,31 +150,43 @@ export default function RealTimeTranslator() {
     }
   };
 
+  const loadFromHistory = (item: TranslationHistory) => {
+    setSourceLang(item.from);
+    setTargetLang(item.to);
+    setSourceText(item.sourceText);
+    setTranslatedText(item.translatedText);
+  };
+
   const startRecording = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognitionClass = window.SpeechRecognition || (window as unknown as { webkitSpeechRecognition: typeof window.SpeechRecognition }).webkitSpeechRecognition;
+      const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (!SpeechRecognitionClass) return;
-      
+
       const recognition = new SpeechRecognitionClass();
       recognitionRef.current = recognition;
-      
+
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.lang = sourceLang;
-      
-      recognition.onresult = (event: Event) => {
-        const speechEvent = event as SpeechRecognitionEvent;
-        const transcript = Array.from(speechEvent.results)
-          .map((result) => result[0].transcript)
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
           .join('');
-        
+
         setSourceText(transcript);
       };
-      
+
       recognition.onend = () => {
         setIsRecording(false);
       };
-      
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event);
+        setIsRecording(false);
+        setError('语音识别失败');
+      };
+
       recognition.start();
       setIsRecording(true);
     } else {
@@ -150,7 +195,7 @@ export default function RealTimeTranslator() {
   };
 
   const stopRecording = () => {
-    const recognition = recognitionRef.current as { stop?: () => void; abort?: () => void } | null;
+    const recognition = recognitionRef.current;
     if (recognition) {
       recognition.stop?.();
       recognition.abort?.();
@@ -158,47 +203,61 @@ export default function RealTimeTranslator() {
     }
   };
 
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      translateText(sourceText);
-    }, 800);
-    
-    return () => clearTimeout(debounceTimer);
-  }, [sourceText, sourceLang, targetLang]);
+  const speakText = (text: string, lang: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const getLanguageName = (code: string) => {
+    const lang = languages.find(l => l.code === code);
+    return lang ? lang.nativeName : code;
+  };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      background: bg,
-      color: text,
-    }}>
-      <div style={{
-        padding: '16px',
-        borderBottom: `1px solid ${border}`,
-        background: cardBg,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: bg, color: text }}>
+      <div style={{ padding: '16px 20px', borderBottom: `1px solid ${border}`, background: cardBg }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontSize: '28px' }}>🌐</span>
           <div>
             <div style={{ fontWeight: 600, fontSize: '16px' }}>实时翻译助手</div>
-            <div style={{ fontSize: '12px', opacity: 0.7 }}>多语言即时翻译</div>
+            <div style={{ fontSize: '12px', opacity: 0.7 }}>支持多语言翻译和语音输入</div>
           </div>
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {error && (
           <div style={{
-            background: cardBg,
-            borderRadius: '16px',
-            border: `1px solid ${border}`,
-            overflow: 'hidden',
+            padding: '12px 16px',
+            marginBottom: '16px',
+            borderRadius: '8px',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#ef4444',
+            fontSize: '14px',
           }}>
+            {error}
+            <button
+              onClick={() => setError(null)}
+              style={{
+                marginLeft: '12px',
+                background: 'none',
+                border: 'none',
+                color: '#ef4444',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ background: cardBg, borderRadius: '16px', border: `1px solid ${border}`, overflow: 'hidden' }}>
             <div style={{
               padding: '12px 16px',
               borderBottom: `1px solid ${border}`,
@@ -218,11 +277,12 @@ export default function RealTimeTranslator() {
                   color: text,
                   fontSize: '13px',
                   cursor: 'pointer',
+                  outline: 'none',
                 }}
               >
                 {languages.map(lang => (
                   <option key={lang.code} value={lang.code}>
-                    {lang.nativeName} ({lang.name})
+                    {lang.nativeName}
                   </option>
                 ))}
               </select>
@@ -237,7 +297,11 @@ export default function RealTimeTranslator() {
                     color: text,
                     cursor: 'pointer',
                     fontSize: '12px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s',
                   }}
+                  onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
                 >
                   🗑️ 清空
                 </button>
@@ -247,13 +311,33 @@ export default function RealTimeTranslator() {
                     padding: '6px 12px',
                     borderRadius: '6px',
                     border: 'none',
-                    background: isRecording ? '#e74c3c' : 'transparent',
-                    color: isRecording ? '#fff' : text,
+                    background: isRecording ? '#ef4444' : 'transparent',
+                    color: isRecording ? 'white' : text,
                     cursor: 'pointer',
                     fontSize: '12px',
+                    fontWeight: 500,
+                    transition: 'all 0.2s',
                   }}
                 >
                   {isRecording ? '⏹️ 停止' : '🎤 语音'}
+                </button>
+                <button
+                  onClick={() => speakText(sourceText, sourceLang)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: text,
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+                >
+                  🔊
                 </button>
               </div>
             </div>
@@ -263,48 +347,54 @@ export default function RealTimeTranslator() {
               placeholder="输入要翻译的文本..."
               style={{
                 width: '100%',
-                minHeight: '150px',
+                minHeight: '140px',
                 padding: '16px',
                 border: 'none',
                 background: 'transparent',
                 color: text,
-                fontSize: '16px',
+                fontSize: '15px',
                 resize: 'vertical',
                 outline: 'none',
                 boxSizing: 'border-box',
+                lineHeight: '1.6',
               }}
             />
           </div>
 
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <button
               onClick={swapLanguages}
               style={{
-                width: '50px',
-                height: '50px',
+                width: '52px',
+                height: '52px',
                 borderRadius: '50%',
                 border: `1px solid ${border}`,
                 background: cardBg,
                 color: accent,
-                fontSize: '20px',
+                fontSize: '22px',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'rotate(180deg)';
+                e.currentTarget.style.background = accent;
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'rotate(0deg)';
+                e.currentTarget.style.background = cardBg;
+                e.currentTarget.style.color = accent;
               }}
             >
-              ↺
+              ⇄
             </button>
           </div>
 
-          <div style={{
-            background: cardBg,
-            borderRadius: '16px',
-            border: `1px solid ${border}`,
-            overflow: 'hidden',
-          }}>
+          <div style={{ background: cardBg, borderRadius: '16px', border: `1px solid ${border}`, overflow: 'hidden' }}>
             <div style={{
               padding: '12px 16px',
               borderBottom: `1px solid ${border}`,
@@ -324,39 +414,65 @@ export default function RealTimeTranslator() {
                   color: text,
                   fontSize: '13px',
                   cursor: 'pointer',
+                  outline: 'none',
                 }}
               >
                 {languages.map(lang => (
                   <option key={lang.code} value={lang.code}>
-                    {lang.nativeName} ({lang.name})
+                    {lang.nativeName}
                   </option>
                 ))}
               </select>
-              <button
-                onClick={() => copyToClipboard(translatedText)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: text,
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-              >
-                📋 复制
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => speakText(translatedText, targetLang)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: text,
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+                >
+                  🔊
+                </button>
+                <button
+                  onClick={() => copyToClipboard(translatedText)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: text,
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+                >
+                  📋 复制
+                </button>
+              </div>
             </div>
             <div style={{
-              minHeight: '150px',
+              minHeight: '140px',
               padding: '16px',
-              fontSize: '16px',
+              fontSize: '15px',
               position: 'relative',
+              lineHeight: '1.6',
             }}>
               {isTranslating ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
                   <span>翻译中</span>
-                  <span>...</span>
+                  <span style={{ animation: 'pulse 1.5s infinite' }}>...</span>
                 </div>
               ) : translatedText ? (
                 translatedText
@@ -367,11 +483,7 @@ export default function RealTimeTranslator() {
           </div>
 
           {history.length > 0 && (
-            <div style={{
-              background: cardBg,
-              borderRadius: '16px',
-              border: `1px solid ${border}`,
-            }}>
+            <div style={{ background: cardBg, borderRadius: '16px', border: `1px solid ${border}` }}>
               <div style={{
                 padding: '12px 16px',
                 borderBottom: `1px solid ${border}`,
@@ -387,7 +499,7 @@ export default function RealTimeTranslator() {
                     borderRadius: '4px',
                     border: 'none',
                     background: 'transparent',
-                    color: '#e74c3c',
+                    color: '#ef4444',
                     cursor: 'pointer',
                     fontSize: '12px',
                   }}
@@ -395,29 +507,33 @@ export default function RealTimeTranslator() {
                   清空
                 </button>
               </div>
-              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
                 {history.map(item => (
                   <div
                     key={item.id}
-                    onClick={() => {
-                      setSourceLang(item.from);
-                      setTargetLang(item.to);
-                      setSourceText(item.sourceText);
-                      setTranslatedText(item.translatedText);
-                    }}
+                    onClick={() => loadFromHistory(item)}
                     style={{
                       padding: '12px 16px',
                       borderBottom: `1px solid ${border}`,
                       cursor: 'pointer',
                       transition: 'background 0.2s',
                     }}
+                    onMouseOver={(e) => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                   >
                     <div style={{
-                      fontSize: '14px',
-                      marginBottom: '4px',
+                      fontSize: '12px',
+                      marginBottom: '6px',
                       opacity: 0.7,
+                      display: 'flex',
+                      gap: '8px',
                     }}>
-                      {item.from} → {item.to}
+                      <span>{getLanguageName(item.from)}</span>
+                      <span>→</span>
+                      <span>{getLanguageName(item.to)}</span>
+                      <span style={{ marginLeft: 'auto' }}>
+                        {new Date(item.timestamp).toLocaleTimeString('zh-CN')}
+                      </span>
                     </div>
                     <div style={{
                       fontSize: '13px',
@@ -425,6 +541,7 @@ export default function RealTimeTranslator() {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
+                      opacity: 0.8,
                     }}>
                       {item.sourceText}
                     </div>
@@ -444,6 +561,13 @@ export default function RealTimeTranslator() {
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

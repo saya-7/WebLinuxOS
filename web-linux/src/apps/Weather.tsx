@@ -133,15 +133,6 @@ const Weather = memo(function Weather() {
         return days[date.getDay()]
       }
 
-      const calculateDayLength = (sunrise: string, sunset: string): string => {
-        const rise = new Date(sunrise)
-        const set = new Date(sunset)
-        const diff = Math.floor((set.getTime() - rise.getTime()) / 1000 / 60)
-        const hours = Math.floor(diff / 60)
-        const minutes = diff % 60
-        return `${hours}小时${minutes}分钟`
-      }
-
       const weatherData: WeatherData = {
         temperature: Math.round(data.current.temperature_2m),
         humidity: data.current.relative_humidity_2m,

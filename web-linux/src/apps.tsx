@@ -683,7 +683,7 @@ function IntelligentCodeGeneratorIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
       <circle cx="12" cy="12" r="10"/>
-      <path d="M12 2a10 10 0 010 20"/>
+      <path d="M12 2a10 10 0 0 1 0 20"/>
       <path d="M2 12h20"/>
       <path d="m8 12 3 3 3-3"/>
       <circle cx="12" cy="8" r="1" fill="currentColor"/>
@@ -691,7 +691,20 @@ function IntelligentCodeGeneratorIcon() {
   )
 }
 
+function AITaskAssistantIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M9 10h6" />
+      <path d="M9 14h6" />
+      <path d="M12 2a10 10 0 0 0-10 10" />
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+    </svg>
+  )
+}
+
 export const appRegistry: AppDefinition[] = [
+  { id: 'ai-task-assistant', name: 'AI 任务助手', icon: <AITaskAssistantIcon />, component: 'AITaskAssistant', category: 'utilities', defaultWidth: 1100, defaultHeight: 850, minWidth: 700, minHeight: 600, resizable: true, multiple: false },
   { id: 'intelligent-code-generator', name: '智能代码生成器', icon: <IntelligentCodeGeneratorIcon />, component: 'IntelligentCodeGenerator', category: 'development', defaultWidth: 1300, defaultHeight: 850, minWidth: 900, minHeight: 650, resizable: true, multiple: false },
   { id: 'code-formatter', name: '代码格式化', icon: <CodeFormatterIcon />, component: 'CodeFormatter', category: 'development', defaultWidth: 1000, defaultHeight: 700, minWidth: 700, minHeight: 500, resizable: true, multiple: false },
   { id: 'whiteboard-pro', name: '专业白板', icon: <WhiteboardProIcon />, component: 'WhiteboardPro', category: 'office', defaultWidth: 1200, defaultHeight: 900, minWidth: 800, minHeight: 600, resizable: true, multiple: false },

@@ -57,7 +57,6 @@ export default function Notepad() {
   const [scrollTop, setScrollTop] = useState(0)
   const [wordWrap, setWordWrap] = useState(true)
   const [autoSave, setAutoSave] = useState(true)
-  const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const findFolderByName = useCallback((nodes: FileNode[], name: string): FileNode | undefined => {
@@ -319,7 +318,6 @@ export default function Notepad() {
         <span>字数: {wordCount} | 字符: {charCount} | 行数: {lines.length}</span>
         <span>
           {isModified ? '已修改' : '已保存'} | {fileId ? '已关联文件' : '新文件'}
-          {lastSaved && !isModified && ` | 最后保存: ${lastSaved.toLocaleTimeString()}`}
         </span>
       </div>
     </div>
