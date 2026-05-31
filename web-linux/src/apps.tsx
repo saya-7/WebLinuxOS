@@ -598,6 +598,19 @@ function CustomBookIcon() {
   )
 }
 
+function ColorPaletteIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="6" r="2" fill="#7C6CF0" stroke="none" />
+      <circle cx="17.5" cy="10" r="2" fill="#9B8AF0" stroke="none" />
+      <circle cx="17.5" cy="16" r="2" fill="#B8A8FF" stroke="none" />
+      <circle cx="6.5" cy="16" r="2" fill="#D8D0FF" stroke="none" />
+      <circle cx="6.5" cy="10" r="2" fill="#F0EEFF" stroke="none" />
+    </svg>
+  )
+}
+
 function BookmarkManagerIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none">
@@ -713,6 +726,7 @@ function AITaskAssistantIcon() {
 }
 
 export const appRegistry: AppDefinition[] = [
+  { id: 'color-palette-generator', name: '配色方案生成器', icon: <ColorPaletteIcon />, component: 'ColorPaletteGenerator', category: 'utilities', defaultWidth: 900, defaultHeight: 800, minWidth: 700, minHeight: 600, resizable: true, multiple: false },
   { id: 'cron-tools', name: 'Cron 生成器', icon: <CronIcon />, component: 'CronTools', category: 'development', defaultWidth: 700, defaultHeight: 750, minWidth: 500, minHeight: 500, resizable: true, multiple: false },
   { id: 'ai-task-assistant', name: 'AI 任务助手', icon: <AITaskAssistantIcon />, component: 'AITaskAssistant', category: 'utilities', defaultWidth: 1100, defaultHeight: 850, minWidth: 700, minHeight: 600, resizable: true, multiple: false },
   { id: 'intelligent-code-generator', name: '智能代码生成器', icon: <IntelligentCodeGeneratorIcon />, component: 'IntelligentCodeGenerator', category: 'development', defaultWidth: 1300, defaultHeight: 850, minWidth: 900, minHeight: 650, resizable: true, multiple: false },
