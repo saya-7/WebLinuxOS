@@ -158,9 +158,9 @@ const WindowManager = memo(function WindowManager() {
 
   return (
     <>
-      {memoizedWindows.map(({ win, Component, app }) => (
+      {memoizedWindows.map(({ win, Component }) => (
         <Window key={win.id} window={win}>
-          <ErrorBoundary appName={app.name}>
+          <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>
               <Component />
             </Suspense>
