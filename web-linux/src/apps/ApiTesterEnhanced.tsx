@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react'
+import { useState, useCallback, memo } from 'react'
 
 interface RequestHistory {
   id: string

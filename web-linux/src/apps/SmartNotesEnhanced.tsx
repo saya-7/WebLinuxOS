@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { marked } from 'marked'
 
 interface Note {

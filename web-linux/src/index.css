@@ -3462,3 +3462,325 @@ a:hover {
   pointer-events: none;
   opacity: 0.3;
 }
+
+/* Enhanced Splash Screen Styles */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 20%, rgba(139, 124, 240, 0.3) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0, 206, 201, 0.25) 0%, transparent 50%),
+              linear-gradient(135deg, #0a0a18 0%, #161630 40%, #0f0f23 70%, #161630 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: splashFadeOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) 2s forwards;
+}
+
+.splash-screen-orb {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.splash-screen-orb-1 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 124, 240, 0.25) 0%, transparent 70%);
+  left: 15%;
+  top: 25%;
+  animation: splashOrbFloat 8s ease-in-out infinite;
+  filter: blur(50px);
+}
+
+.splash-screen-orb-2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 206, 201, 0.2) 0%, transparent 70%);
+  right: 20%;
+  bottom: 30%;
+  animation: splashOrbFloat 10s ease-in-out infinite reverse;
+  filter: blur(45px);
+}
+
+.splash-screen-orb-3 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%);
+  left: 55%;
+  top: 15%;
+  animation: splashOrbFloat 12s ease-in-out infinite;
+  filter: blur(35px);
+}
+
+.splash-screen-orb-4 {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 124, 240, 0.08) 0%, transparent 60%);
+  left: 30%;
+  top: 40%;
+  animation: splashPulse 4s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+.splash-logo {
+  font-size: 120px;
+  margin-bottom: 32px;
+  animation: splashLogoFloat 3s ease-in-out infinite, splashLogoGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(139, 124, 240, 0.6));
+  transform: scale(1);
+}
+
+.splash-title {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #e8e8f4 0%, #a29bfe 50%, #8b7cf0 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  animation: splashTextGlow 2s ease-in-out infinite;
+  text-shadow: 0 0 50px rgba(139, 124, 240, 0.4);
+  letter-spacing: -1px;
+}
+
+.splash-subtitle {
+  font-size: 18px;
+  color: #a0a0c8;
+  font-weight: 600;
+  margin-bottom: 32px;
+  animation: splashFadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  letter-spacing: 0.5px;
+}
+
+.splash-status {
+  font-size: 14px;
+  color: #7878a8;
+  animation: splashFadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+  letter-spacing: 0.3px;
+  margin-bottom: 32px;
+}
+
+.splash-progress-container {
+  width: 320px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  animation: splashFadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+  box-shadow: 0 0 25px rgba(139, 124, 240, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.splash-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #6c5ce7, #a29bfe, #8b7cf0, transparent);
+  background-size: 200% 100%;
+  border-radius: 3px;
+  animation: splashLoadingShimmer 2s ease-in-out forwards;
+}
+
+@keyframes splashLogoFloat {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+    filter: drop-shadow(0 0 40px rgba(139, 124, 240, 0.6));
+  }
+  50% { 
+    transform: translateY(-10px) scale(1.05); 
+    filter: drop-shadow(0 0 60px rgba(139, 124, 240, 0.8));
+  }
+}
+
+@keyframes splashLogoGlow {
+  0%, 100% { 
+    filter: drop-shadow(0 0 40px rgba(139, 124, 240, 0.6));
+  }
+  50% { 
+    filter: drop-shadow(0 0 80px rgba(139, 124, 240, 0.9));
+  }
+}
+
+@keyframes splashTextGlow {
+  0%, 100% { 
+    filter: drop-shadow(0 0 50px rgba(139, 124, 240, 0.4)); 
+  }
+  50% { 
+    filter: drop-shadow(0 0 80px rgba(139, 124, 240, 0.6));
+  }
+}
+
+@keyframes splashFadeUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(35px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes splashFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes splashLoadingShimmer {
+  0% { 
+    background-position: -200% 0; 
+    width: 0%;
+  }
+  30% { width: 75%; }
+  100% { 
+    background-position: 200% 0; 
+    width: 100%;
+  }
+}
+
+@keyframes splashPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@keyframes splashOrbFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -15px) rotate(2deg); }
+  50% { transform: translate(-5px, 10px) rotate(-1deg); }
+  75% { transform: translate(-10px, -5px) rotate(1deg); }
+}
+
+/* Enhanced Desktop Background Effects */
+.desktop-background-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.25) 100%),
+              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 124, 240, 0.015) 2px, rgba(139, 124, 240, 0.015) 4px);
+  pointer-events: none;
+  animation: desktopBackgroundShift 20s ease-in-out infinite;
+}
+
+.desktop-aurora-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(139, 124, 240, 0.03) 40%, transparent 50%, rgba(0, 206, 201, 0.02) 60%, transparent 70%);
+  pointer-events: none;
+  animation: desktopAuroraGlow 15s ease-in-out infinite;
+}
+
+.desktop-gradient-orb {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.desktop-gradient-orb-1 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139, 124, 240, 0.08) 0%, transparent 70%);
+  left: 10%;
+  top: 20%;
+  animation: desktopOrbFloat 20s ease-in-out infinite;
+  filter: blur(40px);
+}
+
+.desktop-gradient-orb-2 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0, 206, 201, 0.06) 0%, transparent 70%);
+  right: 15%;
+  bottom: 30%;
+  animation: desktopOrbFloat 25s ease-in-out infinite reverse;
+  filter: blur(35px);
+}
+
+.desktop-gradient-orb-3 {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 107, 107, 0.05) 0%, transparent 70%);
+  left: 50%;
+  top: 50%;
+  animation: desktopOrbFloat 18s ease-in-out infinite;
+  filter: blur(30px);
+}
+
+@keyframes desktopBackgroundShift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes desktopAuroraGlow {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(20px); }
+}
+
+@keyframes desktopOrbFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(15px, -10px) rotate(3deg); }
+  66% { transform: translate(-10px, 15px) rotate(-2deg); }
+}
+
+@keyframes particlePulse {
+  0%, 100% { 
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.desktop-live-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: left 0.02s linear, top 0.02s linear;
+  animation: particlePulse 2s ease-in-out infinite;
+}
+
+.desktop-particle-connections {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.desktop-particle-connections line {
+  filter: blur(0.5px);
+}
+
+/* Context Menu Improvements */
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  transition: all 0.15s ease;
+  border-radius: 6px;
+  margin: 2px 6px;
+}
+
+.context-menu-item:hover {
+  background: var(--context-menu-hover);
+  transform: translateX(4px);
+}
+
+.context-menu-item:active {
+  transform: translateX(2px);
+  background: var(--accent-bg);
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 6px 12px;
+}

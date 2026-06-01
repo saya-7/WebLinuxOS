@@ -382,197 +382,29 @@ const Desktop = memo(function Desktop() {
 
   if (showSplash) {
     return (
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: `
-            radial-gradient(ellipse at 20% 20%, rgba(139, 124, 240, 0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 80%, rgba(0, 206, 201, 0.25) 0%, transparent 50%),
-            linear-gradient(135deg, #0a0a18 0%, #161630 40%, #0f0f23 70%, #161630 100%)
-          `,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 99999,
-          animation: 'fadeOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) 2s forwards',
-        }}
-      >
-        {/* Enhanced background orbs with glow */}
-        <div style={{
-          position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-          <div style={{
-            position: 'absolute',
-            width: '500px',
-            height: '500px',
-            background: 'radial-gradient(circle, rgba(139, 124, 240, 0.25) 0%, transparent 70%)',
-            left: '15%',
-            top: '25%',
-            animation: 'floatOrb 8s ease-in-out infinite',
-            filter: 'blur(50px)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            width: '400px',
-            height: '400px',
-            background: 'radial-gradient(circle, rgba(0, 206, 201, 0.2) 0%, transparent 70%)',
-            right: '20%',
-            bottom: '30%',
-            animation: 'floatOrb 10s ease-in-out infinite reverse',
-            filter: 'blur(45px)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%)',
-            left: '55%',
-            top: '15%',
-            animation: 'floatOrb 12s ease-in-out infinite',
-            filter: 'blur(35px)'
-          }} />
-          {/* Additional light rays */}
-          <div style={{
-            position: 'absolute',
-            width: '600px',
-            height: '600px',
-            background: 'radial-gradient(circle, rgba(139, 124, 240, 0.08) 0%, transparent 60%)',
-            left: '30%',
-            top: '40%',
-            animation: 'pulse 4s ease-in-out infinite',
-            filter: 'blur(60px)'
-          }} />
+      <div className="splash-screen">
+        <div className="splash-screen-orb">
+          <div className="splash-screen-orb-1" />
+          <div className="splash-screen-orb-2" />
+          <div className="splash-screen-orb-3" />
+          <div className="splash-screen-orb-4" />
         </div>
         
-        <div
-          style={{
-            fontSize: '120px',
-            marginBottom: '32px',
-            animation: 'logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite',
-            filter: 'drop-shadow(0 0 40px rgba(139, 124, 240, 0.6))',
-            transform: 'scale(1)',
-          }}
-        >
+        <div className="splash-logo">
           🐧
         </div>
-        <div
-          style={{
-            fontSize: '48px',
-            fontWeight: '800',
-            background: 'linear-gradient(135deg, #e8e8f4 0%, #a29bfe 50%, #8b7cf0 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '16px',
-            animation: 'textGlow 2s ease-in-out infinite',
-            textShadow: '0 0 50px rgba(139, 124, 240, 0.4)',
-            letterSpacing: '-1px',
-          }}
-        >
+        <div className="splash-title">
           WebLinuxOS
         </div>
-        <div
-          style={{
-            fontSize: '18px',
-            color: '#a0a0c8',
-            fontWeight: '600',
-            marginBottom: '32px',
-            animation: 'fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both',
-            letterSpacing: '0.5px',
-          }}
-        >
+        <div className="splash-subtitle">
           Web-Based Linux Desktop Environment
         </div>
-        <div
-          style={{
-            fontSize: '14px',
-            color: '#7878a8',
-            animation: 'fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both',
-            letterSpacing: '0.3px',
-            marginBottom: '32px',
-          }}
-        >
+        <div className="splash-status">
           正在启动桌面环境...
         </div>
-        <div
-          style={{
-            width: '320px',
-            height: '6px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '3px',
-            overflow: 'hidden',
-            animation: 'fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both',
-            boxShadow: '0 0 25px rgba(139, 124, 240, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          }}
-        >
-          <div
-            style={{
-              height: '100%',
-              background: 'linear-gradient(90deg, transparent, #6c5ce7, #a29bfe, #8b7cf0, transparent)',
-              backgroundSize: '200% 100%',
-              borderRadius: '3px',
-              animation: 'loadingShimmer 2s ease-in-out forwards',
-            }}
-          />
+        <div className="splash-progress-container">
+          <div className="splash-progress-bar" />
         </div>
-        <style>{`
-          @keyframes logoFloat {
-            0%, 100% { 
-              transform: translateY(0) scale(1); 
-              filter: drop-shadow(0 0 40px rgba(139, 124, 240, 0.6));
-            }
-            50% { 
-              transform: translateY(-10px) scale(1.05); 
-              filter: drop-shadow(0 0 60px rgba(139, 124, 240, 0.8));
-            }
-          }
-          @keyframes logoGlow {
-            0%, 100% { 
-              filter: drop-shadow(0 0 40px rgba(139, 124, 240, 0.6));
-            }
-            50% { 
-              filter: drop-shadow(0 0 80px rgba(139, 124, 240, 0.9));
-            }
-          }
-          @keyframes textGlow {
-            0%, 100% { 
-              filter: drop-shadow(0 0 50px rgba(139, 124, 240, 0.4)); 
-            }
-            50% { 
-              filter: drop-shadow(0 0 80px rgba(139, 124, 240, 0.6));
-            }
-          }
-          @keyframes fadeUp {
-            from { 
-              opacity: 0; 
-              transform: translateY(35px); 
-            }
-            to { 
-              opacity: 1; 
-              transform: translateY(0); 
-            }
-          }
-          @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; visibility: hidden; }
-          }
-          @keyframes loadingShimmer {
-            0% { 
-              background-position: -200% 0; 
-              width: 0%;
-            }
-            30% { width: 75%; }
-            100% { 
-              background-position: 200% 0; 
-              width: 100%;
-            }
-          }
-          @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.1); }
-          }
-        `}</style>
       </div>
     )
   }
@@ -596,77 +428,16 @@ const Desktop = memo(function Desktop() {
       tabIndex={-1}
     >
       {/* Enhanced animated background layers */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: `
-          radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.25) 100%),
-          repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(139, 124, 240, 0.015) 2px,
-            rgba(139, 124, 240, 0.015) 4px
-          )
-        `,
-        pointerEvents: 'none',
-        animation: 'backgroundShift 20s ease-in-out infinite'
-      }} />
+      <div className="desktop-background-layer" />
       
       {/* Aurora effect overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: `
-          linear-gradient(120deg, 
-            transparent 30%, 
-            rgba(139, 124, 240, 0.03) 40%, 
-            transparent 50%,
-            rgba(0, 206, 201, 0.02) 60%,
-            transparent 70%
-          )
-        `,
-        pointerEvents: 'none',
-        animation: 'auroraGlow 15s ease-in-out infinite'
-      }} />
+      <div className="desktop-aurora-effect" />
       
       {/* Floating gradient orbs */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        overflow: 'hidden',
-        pointerEvents: 'none'
-      }}>
-        <div style={{
-          position: 'absolute',
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(139, 124, 240, 0.08) 0%, transparent 70%)',
-          left: '10%',
-          top: '20%',
-          animation: 'floatOrb 20s ease-in-out infinite',
-          filter: 'blur(40px)'
-        }} />
-        <div style={{
-          position: 'absolute',
-          width: '300px',
-          height: '300px',
-          background: 'radial-gradient(circle, rgba(0, 206, 201, 0.06) 0%, transparent 70%)',
-          right: '15%',
-          bottom: '30%',
-          animation: 'floatOrb 25s ease-in-out infinite reverse',
-          filter: 'blur(35px)'
-        }} />
-        <div style={{
-          position: 'absolute',
-          width: '350px',
-          height: '350px',
-          background: 'radial-gradient(circle, rgba(255, 107, 107, 0.05) 0%, transparent 70%)',
-          left: '50%',
-          top: '50%',
-          animation: 'floatOrb 18s ease-in-out infinite',
-          filter: 'blur(30px)'
-        }} />
+      <div className="desktop-gradient-orb">
+        <div className="desktop-gradient-orb-1" />
+        <div className="desktop-gradient-orb-2" />
+        <div className="desktop-gradient-orb-3" />
       </div>
       
       {/* Live wallpaper particles */}
@@ -675,25 +446,21 @@ const Desktop = memo(function Desktop() {
           {particles.map(p => (
             <div
               key={p.id}
+              className="desktop-live-particle"
               style={{
-                position: 'absolute',
                 left: `${p.x}%`,
                 top: `${p.y}%`,
                 width: p.size,
                 height: p.size,
-                borderRadius: '50%',
                 background: p.color,
                 boxShadow: `0 0 ${p.size * 6}px ${p.color}, 0 0 ${p.size * 12}px ${p.color}`,
-                pointerEvents: 'none',
-                transition: 'left 0.02s linear, top 0.02s linear',
-                animation: 'particlePulse 2s ease-in-out infinite'
               }}
             />
           ))}
           
           {/* Connecting lines for particles (waves/network effect) */}
           {liveWallpaper !== 'particles' && (
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+            <svg className="desktop-particle-connections">
               {connections.map((conn, idx) => {
                 const p1 = particles[conn.from]
                 const p2 = particles[conn.to]
@@ -707,7 +474,6 @@ const Desktop = memo(function Desktop() {
                     y2={`${p2.y}%`}
                     stroke={`rgba(139, 124, 240, ${conn.opacity})`}
                     strokeWidth={1}
-                    style={{ filter: 'blur(0.5px)' }}
                   />
                 )
               })}
